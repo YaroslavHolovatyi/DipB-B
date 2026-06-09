@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<title>Рис. 2.8 — Логічна модель бази даних</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #ffffff; font-family: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif; color: #1f2937; }
+  .wrap { width: 1200px; margin: 24px auto; padding: 24px; }
+  h1 { font-size: 18px; font-weight: 600; text-align: center; margin: 0 0 24px; color: #111827; }
+  svg { display: block; margin: 0 auto; background: #fafafa; border: 1px solid #e5e7eb; border-radius: 8px; }
+  .caption { text-align: center; margin-top: 12px; font-size: 14px; font-style: italic; color: #4b5563; }
+  .ent-name { font-size: 14px; font-weight: 700; fill: #ffffff; }
+  .attr { font-size: 12px; fill: #1f2937; font-family: "JetBrains Mono", "Consolas", "Courier New", monospace; }
+  .pk { font-weight: 700; fill: #b91c1c; }
+  .fk { fill: #1d4ed8; font-style: italic; }
+  .relline { stroke: #475569; stroke-width: 1.5; fill: none; }
+  .rellabel { font-size: 11px; fill: #475569; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Рис. 2.8 — Логічна модель бази даних (PostgreSQL + PostGIS)</h1>
+  <svg viewBox="0 0 1200 820" width="1200" height="820" xmlns="http://www.w3.org/2000/svg">
+
+    <!-- ENTITY: users -->
+    <g>
+      <rect x="60" y="60" width="220" height="160" rx="6" fill="#ffffff" stroke="#0f172a" stroke-width="1.5"/>
+      <rect x="60" y="60" width="220" height="28" rx="6" fill="#1e3a5f"/>
+      <text x="170" y="80" text-anchor="middle" class="ent-name">users</text>
+      <text x="72" y="108" class="attr pk">PK id : UUID</text>
+      <text x="72" y="126" class="attr">email : citext</text>
+      <text x="72" y="144" class="attr">hashed_password : text</text>
+      <text x="72" y="162" class="attr">display_name : text</text>
+      <text x="72" y="180" class="attr">role : enum</text>
+      <text x="72" y="198" class="attr">created_at : timestamptz</text>
+    </g>
+
+    <!-- ENTITY: refresh_tokens -->
+    <g>
+      <rect x="60" y="260" width="220" height="140" rx="6" fill="#ffffff" stroke="#0f172a" stroke-width="1.5"/>
+      <rect x="60" y="260" width="220" height="28" rx="6" fill="#1e3a5f"/>
+      <text x="170" y="280" text-anchor="middle" class="ent-name">refresh_tokens</text>
+      <text x="72" y="308" class="attr pk">PK id : UUID</text>
+      <text x="72" y="326" class="attr fk">FK user_id → users.id</text>
+      <text x="72" y="344" class="attr">token_hash : text</text>
+      <text x="72" y="362" class="attr">device : text</text>
+      <text x="72" y="380" class="attr">expires_at : timestamptz</text>
+    </g>
+
+    <!-- ENTITY: favorites -->
+    <g>
+      <rect x="60" y="440" width="220" height="110" rx="6" fill="#ffffff" stroke="#0f172a" stroke-width="1.5"/>
+      <rect x="60" y="440" width="220" height="28" rx="6" fill="#1e3a5f"/>
+      <text x="170" y="460" text-anchor="middle" class="ent-name">favorites</text>
+      <text x="72" y="488" class="attr fk">PK,FK user_id → users.id</text>
+      <text x="72" y="506" class="attr fk">PK,FK venue_id → venues.id</text>
+      <text x="72" y="524" class="attr">created_at : timestamptz</text>
+    </g>
+
+    <!-- ENTITY: venues -->
+    <g>
+      <rect x="490" y="60" width="220" height="200" rx="6" fill="#ffffff" stroke="#0f172a" stroke-width="1.5"/>
+      <rect x="490" y="60" width="220" height="28" rx="6" fill="#0f766e"/>
+      <text x="600" y="80" text-anchor="middle" class="ent-name">venues</text>
+      <text x="502" y="108" class="attr pk">PK id : UUID</text>
+      <text x="502" y="126" class="attr">slug : citext</text>
+      <text x="502" y="144" class="attr">name : text</text>
+      <text x="502" y="162" class="attr">category : enum</text>
+      <text x="502" y="180" class="attr" fill="#0f766e">geom : GEOGRAPHY(POINT)</text>
+      <text x="502" y="198" class="attr">address : text</text>
+      <text x="502" y="216" class="attr">avg_check : numeric</text>
+      <text x="502" y="234" class="attr">opening_hours : jsonb</text>
+    </g>
+
+    <!-- ENTITY: venue_photos -->
+    <g>
+      <rect x="490" y="300" width="220" height="110" rx="6" fill="#ffffff" stroke="#0f172a" stroke-width="1.5"/>
+      <rect x="490" y="300" width="220" height="28" rx="6" fill="#0f766e"/>
+      <text x="600" y="320" text-anchor="middle" class="ent-name">venue_photos</text>
+      <text x="502" y="348" class="attr pk">PK id : UUID</text>
+      <text x="502" y="366" class="attr fk">FK venue_id → venues.id</text>
+      <text x="502" y="384" class="attr">url : text</text>
+    </g>
+
+    <!-- ENTITY: checkins -->
+    <g>
+      <rect x="920" y="60" width="220" height="160" rx="6" fill="#ffffff" stroke="#0f172a" stroke-width="1.5"/>
+      <rect x="920" y="60" width="220" height="28" rx="6" fill="#7c2d12"/>
+      <text x="1030" y="80" text-anchor="middle" class="ent-name">checkins</text>
+      <text x="932" y="108" class="attr pk">PK id : UUID</text>
+      <text x="932" y="126" class="attr fk">FK user_id → users.id</text>
+      <text x="932" y="144" class="attr fk">FK venue_id → venues.id</text>
+      <text x="932" y="162" class="attr">checked_in_at : ts</text>
+      <text x="932" y="180" class="attr" fill="#0f766e">geom : GEOGRAPHY(POINT)</text>
+      <text x="932" y="198" class="attr">note : text</text>
+    </g>
+
+    <!-- ENTITY: receipts -->
+    <g>
+      <rect x="920" y="260" width="220" height="180" rx="6" fill="#ffffff" stroke="#0f172a" stroke-width="1.5"/>
+      <rect x="920" y="260" width="220" height="28" rx="6" fill="#7c2d12"/>
+      <text x="1030" y="280" text-anchor="middle" class="ent-name">receipts</text>
+      <text x="932" y="308" class="attr pk">PK id : UUID</text>
+      <text x="932" y="326" class="attr fk">FK user_id → users.id</text>
+      <text x="932" y="344" class="attr fk">FK venue_id → venues.id</text>
+      <text x="932" y="362" class="attr">total_amount : numeric</text>
+      <text x="932" y="380" class="attr">currency : text(3)</text>
+      <text x="932" y="398" class="attr">image_url : text</text>
+      <text x="932" y="416" class="attr">parsed_items : jsonb</text>
+    </g>
+
+    <!-- ENTITY: receipt_items -->
+    <g>
+      <rect x="920" y="480" width="220" height="140" rx="6" fill="#ffffff" stroke="#0f172a" stroke-width="1.5"/>
+      <rect x="920" y="480" width="220" height="28" rx="6" fill="#7c2d12"/>
+      <text x="1030" y="500" text-anchor="middle" class="ent-name">receipt_items</text>
+      <text x="932" y="528" class="attr pk">PK id : UUID</text>
+      <text x="932" y="546" class="attr fk">FK receipt_id → receipts.id</text>
+      <text x="932" y="564" class="attr">name : text</text>
+      <text x="932" y="582" class="attr">qty : int</text>
+      <text x="932" y="600" class="attr">unit_price : numeric</text>
+    </g>
+
+    <!-- ENTITY: tales -->
+    <g>
+      <rect x="490" y="490" width="220" height="160" rx="6" fill="#ffffff" stroke="#0f172a" stroke-width="1.5"/>
+      <rect x="490" y="490" width="220" height="28" rx="6" fill="#5b21b6"/>
+      <text x="600" y="510" text-anchor="middle" class="ent-name">tales</text>
+      <text x="502" y="538" class="attr pk">PK id : UUID</text>
+      <text x="502" y="556" class="attr fk">FK user_id → users.id</text>
+      <text x="502" y="574" class="attr fk">FK checkin_id → checkins.id</text>
+      <text x="502" y="592" class="attr">content : text</text>
+      <text x="502" y="610" class="attr">model_used : text</text>
+      <text x="502" y="628" class="attr">created_at : ts</text>
+    </g>
+
+    <!-- ENTITY: tale_likes -->
+    <g>
+      <rect x="60" y="600" width="220" height="100" rx="6" fill="#ffffff" stroke="#0f172a" stroke-width="1.5"/>
+      <rect x="60" y="600" width="220" height="28" rx="6" fill="#5b21b6"/>
+      <text x="170" y="620" text-anchor="middle" class="ent-name">tale_likes</text>
+      <text x="72" y="648" class="attr fk">PK,FK tale_id → tales.id</text>
+      <text x="72" y="666" class="attr fk">PK,FK user_id → users.id</text>
+      <text x="72" y="684" class="attr">liked_at : ts</text>
+    </g>
+
+    <!-- ENTITY: venue_reviews -->
+    <g>
+      <rect x="490" y="700" width="220" height="100" rx="6" fill="#ffffff" stroke="#0f172a" stroke-width="1.5"/>
+      <rect x="490" y="700" width="220" height="28" rx="6" fill="#0f766e"/>
+      <text x="600" y="720" text-anchor="middle" class="ent-name">venue_reviews</text>
+      <text x="502" y="748" class="attr fk">PK,FK user_id → users.id</text>
+      <text x="502" y="766" class="attr fk">PK,FK venue_id → venues.id</text>
+      <text x="502" y="784" class="attr">rating : int · comment : text</text>
+    </g>
+
+    <!-- Relations: users → refresh_tokens (1:N) -->
+    <path class="relline" d="M170 220 L170 260"/>
+    <text class="rellabel" x="178" y="245">1..N</text>
+
+    <!-- users → favorites -->
+    <path class="relline" d="M170 400 L170 440"/>
+    <text class="rellabel" x="178" y="425">1..N</text>
+
+    <!-- users → checkins -->
+    <path class="relline" d="M280 140 C 540 140, 700 140, 920 140"/>
+    <text class="rellabel" x="600" y="135">1..N</text>
+
+    <!-- users → receipts -->
+    <path class="relline" d="M280 160 C 540 220, 700 320, 920 340"/>
+    <text class="rellabel" x="600" y="245">1..N</text>
+
+    <!-- users → tales -->
+    <path class="relline" d="M170 220 C 170 350, 350 510, 490 545"/>
+    <text class="rellabel" x="280" y="430">1..N</text>
+
+    <!-- venues → checkins -->
+    <path class="relline" d="M710 160 L 920 160"/>
+    <text class="rellabel" x="800" y="155">1..N</text>
+
+    <!-- venues → receipts -->
+    <path class="relline" d="M710 200 C 800 280, 850 330, 920 360"/>
+    <text class="rellabel" x="800" y="280">1..N</text>
+
+    <!-- venues → venue_photos -->
+    <path class="relline" d="M600 260 L 600 300"/>
+    <text class="rellabel" x="608" y="285">1..N</text>
+
+    <!-- venues → venue_reviews -->
+    <path class="relline" d="M600 410 C 600 600, 600 660, 600 700"/>
+    <text class="rellabel" x="608" y="540">1..N</text>
+
+    <!-- venues → favorites -->
+    <path class="relline" d="M490 200 C 380 280, 260 380, 220 440"/>
+    <text class="rellabel" x="320" y="350">1..N</text>
+
+    <!-- checkins → tales -->
+    <path class="relline" d="M1030 220 C 1030 380, 850 470, 710 540"/>
+    <text class="rellabel" x="900" y="400">1..1</text>
+
+    <!-- receipts → receipt_items -->
+    <path class="relline" d="M1030 440 L 1030 480"/>
+    <text class="rellabel" x="1038" y="465">1..N</text>
+
+    <!-- tales → tale_likes -->
+    <path class="relline" d="M490 600 C 380 620, 300 620, 280 640"/>
+    <text class="rellabel" x="370" y="615">1..N</text>
+
+    <!-- legend -->
+    <g transform="translate(60,750)">
+      <text font-size="11" fill="#475569">Легенда:</text>
+      <text font-size="11" class="pk" x="60">PK — первинний ключ</text>
+      <text font-size="11" class="fk" x="220">FK — зовнішній ключ</text>
+      <text font-size="11" fill="#0f766e" x="380">geom — поле PostGIS</text>
+    </g>
+  </svg>
+  <div class="caption">Логічна модель: користувачі, заклади, чекіни, чеки та літературні наративи Tavern Tales</div>
+</div>
+</body>
+</html>

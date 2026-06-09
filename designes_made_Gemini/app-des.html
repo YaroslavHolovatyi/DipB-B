@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Beer & Beverages App Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=JetBrains+Mono:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* --- DESIGN TOKENS --- */
+    :root {
+      /* Background Surfaces */
+      --bg-base: #F9FAFB;
+      --bg-card: #FFFFFF;
+      --bg-elevated: #FFFFFF;
+      
+      /* Brand / Primary */
+      --brand-primary: #6366F1;
+      --brand-primary-hover: #4F46E5;
+      --brand-primary-subtle: #E0E7FF;
+      
+      /* Accents & Gamification */
+      --accent-gold: #F59E0B;
+      --accent-gold-subtle: #FEF3C7;
+      --accent-gold-text: #B45309;
+      --race-dwarf-bg: #FFEDD5;
+      --race-dwarf-text: #9A3412;
+      
+      /* Semantic */
+      --success: #059669;
+      --warning: #D97706;
+      --error: #DC2626;
+      
+      /* Text */
+      --text-primary: #111827;
+      --text-secondary: #6B7280;
+      --text-on-brand: #FFFFFF;
+      --text-on-gold: #111827;
+      
+      /* Borders */
+      --border-default: #E5E7EB;
+      --border-strong: #D1D5DB;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-base: #121214;
+        --bg-card: #18181B;
+        --bg-elevated: #27272A;
+        --brand-primary: #818CF8;
+        --brand-primary-hover: #6366F1;
+        --brand-primary-subtle: #312E81;
+        --accent-gold: #FBBF24;
+        --accent-gold-subtle: #78350F;
+        --accent-gold-text: #FDE68A;
+        --race-dwarf-bg: #7C2D12;
+        --race-dwarf-text: #FDBA74;
+        --success: #10B981;
+        --warning: #FBBF24;
+        --error: #F87171;
+        --text-primary: #F9FAFB;
+        --text-secondary: #A1A1AA;
+        --text-on-brand: #FFFFFF;
+        --text-on-gold: #18181B;
+        --border-default: #27272A;
+        --border-strong: #3F3F46;
+      }
+    }
+
+    /* --- RESET & LAYOUT --- */
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0; padding: 0;
+      background-color: #000; /* Outer background for desktop viewing */
+      display: flex; justify-content: center;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* Mobile App Simulator Container */
+    #app-container {
+      width: 100%; max-width: 414px; /* iPhone Max width */
+      height: 100vh;
+      background-color: var(--bg-base);
+      position: relative;
+      overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+
+    /* --- TYPOGRAPHY UTILITIES --- */
+    .display-xl { font-family: 'JetBrains Mono'; font-weight: 800; font-size: 56px; color: var(--text-primary); }
+    .heading-xl { font-family: 'Fraunces'; font-weight: 700; font-size: 32px; color: var(--text-primary); margin: 0; }
+    .heading-l { font-family: 'Fraunces'; font-weight: 600; font-size: 24px; color: var(--text-primary); margin: 0; }
+    .heading-m { font-weight: 700; font-size: 20px; color: var(--text-primary); margin: 0; }
+    .heading-s { font-weight: 600; font-size: 16px; color: var(--text-primary); margin: 0; }
+    .body-l { font-weight: 400; font-size: 16px; color: var(--text-primary); margin: 0; }
+    .body-m { font-weight: 400; font-size: 14px; color: var(--text-secondary); margin: 0; }
+    .label-l { font-weight: 700; font-size: 16px; margin: 0; }
+    .label-m { font-weight: 600; font-size: 14px; margin: 0; }
+    .label-s { font-weight: 600; font-size: 12px; margin: 0; }
+    .numeric-l { font-family: 'JetBrains Mono'; font-weight: 700; font-size: 24px; color: var(--text-primary); margin: 0; }
+    .numeric-m { font-family: 'JetBrains Mono'; font-weight: 500; font-size: 16px; color: var(--text-primary); margin: 0; }
+
+    /* --- COMPONENT STYLES --- */
+    .view-container { flex: 1; overflow-y: auto; padding-bottom: 90px; display: none; }
+    .view-container.active { display: block; }
+    
+    .screen-header { padding: 24px 16px 16px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: var(--bg-base); z-index: 10; border-bottom: 1px solid var(--border-default); }
+    .section-title { padding: 24px 16px 16px; }
+
+    /* Cards */
+    .horizontal-scroll { display: flex; overflow-x: auto; padding: 0 16px 16px; gap: 12px; scroll-snap-type: x mandatory; scrollbar-width: none; }
+    .horizontal-scroll::-webkit-scrollbar { display: none; }
+    .bar-card { min-width: 280px; scroll-snap-align: start; background: var(--bg-card); border: 1px solid var(--border-default); border-radius: 16px; overflow: hidden; }
+    .bar-card img { width: 100%; height: 140px; object-fit: cover; }
+    .bar-card-content { padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+    
+    .vertical-list { display: flex; flex-direction: column; gap: 12px; padding: 0 16px 24px; }
+    .raid-card { background: var(--bg-card); border: 1px solid var(--border-default); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+    .raid-header { display: flex; justify-content: space-between; align-items: flex-start; }
+    
+    /* Chips & Avatars */
+    .chip { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 999px; height: 24px; }
+    .chip-success { background: var(--success); color: #FFF; }
+    .chip-warning { background: var(--accent-gold-subtle); color: var(--accent-gold-text); }
+    .chip-race { background: var(--race-dwarf-bg); color: var(--race-dwarf-text); }
+    
+    .avatar { width: 32px; height: 32px; border-radius: 999px; object-fit: cover; }
+    .avatar-lg { width: 64px; height: 64px; border-radius: 999px; border: 3px solid var(--race-dwarf-bg); }
+    .avatar-stack { display: flex; }
+    .avatar-stack .avatar { border: 2px solid var(--bg-card); margin-left: -8px; }
+    .avatar-stack .avatar:first-child { margin-left: 0; }
+
+    /* Profile Specifics */
+    .profile-header { display: flex; flex-direction: column; align-items: center; padding: 32px 16px; gap: 12px; }
+    .stats-row { display: flex; justify-content: space-around; padding: 16px; border-top: 1px solid var(--border-default); border-bottom: 1px solid var(--border-default); background: var(--bg-card); }
+    .stat-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .achievements-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 16px; }
+    .achievement-card { background: var(--bg-card); border: 1px solid var(--border-default); border-radius: 16px; padding: 24px 16px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; }
+
+    /* Split Room Specifics */
+    .split-header { padding: 32px 16px 24px; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+    .participant-strip { display: flex; padding: 16px; gap: 16px; overflow-x: auto; background: var(--bg-card); border-bottom: 1px solid var(--border-default); }
+    .participant { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 60px; }
+    .participant .avatar { width: 48px; height: 48px; }
+    .participant.active .avatar { border: 2px solid var(--brand-primary); }
+    .item-list { padding: 0 16px; }
+    .item-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--border-default); }
+    .item-info { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+    .item-actions { display: flex; align-items: center; gap: 12px; }
+
+    /* Buttons & Nav */
+    .btn-gold { background: var(--accent-gold); color: var(--text-on-gold); border: none; border-radius: 999px; padding: 16px 24px; width: calc(100% - 32px); margin: 16px; cursor: pointer; display: flex; justify-content: center; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); position: sticky; bottom: 80px;}
+    .btn-gold:active { transform: scale(0.98); }
+
+    .bottom-nav { position: absolute; bottom: 0; width: 100%; height: 80px; background: var(--bg-card); border-top: 1px solid var(--border-default); display: flex; justify-content: space-around; align-items: center; padding-bottom: 16px; z-index: 50; }
+    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-secondary); cursor: pointer; width: 64px; }
+    .nav-item.active { color: var(--brand-primary); }
+    .nav-icon { font-size: 24px; line-height: 1; }
+  </style>
+</head>
+<body>
+
+<div id="app-container">
+
+  <div id="view-home" class="view-container active">
+    <div class="screen-header">
+      <div>
+        <p class="body-m">Good evening,</p>
+        <h1 class="heading-m">Yaroslav</h1>
+      </div>
+      <img src="https://i.pravatar.cc/150?img=11" class="avatar" style="border: 2px solid var(--race-dwarf-bg);">
+    </div>
+
+    <h2 class="heading-l section-title">Taverns Near You</h2>
+    <div class="horizontal-scroll">
+      <div class="bar-card">
+        <img src="https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=600&q=80" alt="Bar">
+        <div class="bar-card-content">
+          <div style="display: flex; justify-content: space-between;">
+            <h3 class="heading-s">The Prancing Pony</h3>
+            <span class="label-m" style="color: var(--accent-gold)">★ 4.8</span>
+          </div>
+          <p class="body-m">Cozy • Craft Beer • 0.8 km</p>
+        </div>
+      </div>
+      <div class="bar-card">
+        <img src="https://images.unsplash.com/photo-1544148103-0773bf10d330?auto=format&fit=crop&w=600&q=80" alt="Bar">
+        <div class="bar-card-content">
+          <div style="display: flex; justify-content: space-between;">
+            <h3 class="heading-s">Dragon's Breath Pub</h3>
+            <span class="label-m" style="color: var(--accent-gold)">★ 4.5</span>
+          </div>
+          <p class="body-m">Loud • Cocktails • 1.2 km</p>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="heading-l section-title">Upcoming Raids</h2>
+    <div class="vertical-list">
+      <div class="raid-card">
+        <div class="raid-header">
+          <div>
+            <h3 class="heading-m">Friday Night Raid</h3>
+            <p class="body-m">The Prancing Pony • 8:00 PM</p>
+          </div>
+          <div class="chip chip-success"><span class="label-s">Going</span></div>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-default); padding-top: 12px;">
+          <p class="label-m" style="color: var(--brand-primary);">View Chat</p>
+          <div class="avatar-stack">
+            <img class="avatar" src="https://i.pravatar.cc/100?img=33">
+            <img class="avatar" src="https://i.pravatar.cc/100?img=47">
+            <img class="avatar" src="https://i.pravatar.cc/100?img=12">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="view-split" class="view-container">
+    <div class="split-header">
+      <p class="body-m">The Prancing Pony • Table 4</p>
+      <h1 class="numeric-l">₴ 1,450.00</h1>
+      <div class="chip chip-warning"><span class="label-s">Unsettled</span></div>
+    </div>
+
+    <div class="participant-strip">
+      <div class="participant active">
+        <img src="https://i.pravatar.cc/150?img=11" class="avatar">
+        <span class="numeric-m">₴450</span>
+      </div>
+      <div class="participant">
+        <img src="https://i.pravatar.cc/150?img=33" class="avatar">
+        <span class="numeric-m">₴600</span>
+      </div>
+      <div class="participant">
+        <img src="https://i.pravatar.cc/150?img=47" class="avatar">
+        <span class="numeric-m">₴400</span>
+      </div>
+    </div>
+
+    <div class="item-list">
+      <div class="item-row">
+        <div class="item-info">
+          <p class="heading-s">Craft IPA (Pint)</p>
+          <p class="body-m">3x • ₴150.00 / ea</p>
+        </div>
+        <div class="item-actions">
+          <span class="numeric-m">₴450.00</span>
+          <div class="avatar-stack">
+            <img class="avatar" style="width:24px; height:24px;" src="https://i.pravatar.cc/150?img=11">
+            <img class="avatar" style="width:24px; height:24px;" src="https://i.pravatar.cc/150?img=33">
+          </div>
+        </div>
+      </div>
+      
+      <div class="item-row">
+        <div class="item-info">
+          <p class="heading-s">Tavern Burger</p>
+          <p class="body-m">2x • ₴350.00 / ea</p>
+        </div>
+        <div class="item-actions">
+          <span class="numeric-m">₴700.00</span>
+          <div class="avatar-stack">
+            <img class="avatar" style="width:24px; height:24px;" src="https://i.pravatar.cc/150?img=33">
+            <img class="avatar" style="width:24px; height:24px;" src="https://i.pravatar.cc/150?img=47">
+          </div>
+        </div>
+      </div>
+      
+       <div class="item-row">
+        <div class="item-info">
+          <p class="heading-s">Spiced Fries</p>
+          <p class="body-m">2x • ₴150.00 / ea</p>
+        </div>
+        <div class="item-actions">
+          <span class="numeric-m">₴300.00</span>
+          <div class="avatar-stack">
+            <img class="avatar" style="width:24px; height:24px;" src="https://i.pravatar.cc/150?img=11">
+            <img class="avatar" style="width:24px; height:24px;" src="https://i.pravatar.cc/150?img=47">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-gold label-l">Roll D20 to Pay All</button>
+  </div>
+
+
+  <div id="view-profile" class="view-container">
+    <div class="profile-header">
+      <img src="https://i.pravatar.cc/150?img=11" class="avatar-lg">
+      <div style="text-align: center;">
+        <h1 class="heading-m">Yaroslav</h1>
+        <p class="body-m" style="margin-bottom: 8px;">@yaro_dev</p>
+        <div class="chip chip-race"><span class="label-s">Dwarf Warrior</span></div>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-item">
+        <span class="numeric-l">24</span>
+        <span class="label-s" style="color: var(--text-secondary)">Raids</span>
+      </div>
+      <div class="stat-item">
+        <span class="numeric-l">12</span>
+        <span class="label-s" style="color: var(--text-secondary)">Taverns</span>
+      </div>
+      <div class="stat-item">
+        <span class="numeric-l">3</span>
+        <span class="label-s" style="color: var(--text-secondary)">Kind Soul</span>
+      </div>
+    </div>
+
+    <h2 class="heading-l section-title">Achievements</h2>
+    <div class="achievements-grid">
+      <div class="achievement-card">
+        <span style="font-size: 32px;">🍻</span>
+        <p class="heading-s">First Pint</p>
+        <p class="body-m" style="font-size: 12px;">Join your first raid.</p>
+      </div>
+      <div class="achievement-card" style="border-color: var(--accent-gold); background: var(--accent-gold-subtle);">
+        <span style="font-size: 32px;">👑</span>
+        <p class="heading-s" style="color: var(--accent-gold-text)">Kind Soul</p>
+        <p class="body-m" style="font-size: 12px; color: var(--accent-gold-text)">Lost the D20 roll.</p>
+      </div>
+      <div class="achievement-card" style="opacity: 0.5;">
+        <span style="font-size: 32px;">🔒</span>
+        <p class="heading-s">Local Legend</p>
+        <p class="body-m" style="font-size: 12px;">Visit 50 taverns.</p>
+      </div>
+      <div class="achievement-card" style="opacity: 0.5;">
+        <span style="font-size: 32px;">🔒</span>
+        <p class="heading-s">Dungeon Master</p>
+        <p class="body-m" style="font-size: 12px;">Organize 10 raids.</p>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="bottom-nav">
+    <div class="nav-item active" onclick="switchTab('home', this)">
+      <span class="nav-icon">⌂</span>
+      <span class="label-s">Home</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('split', this)">
+      <span class="nav-icon">◓</span>
+      <span class="label-s">Split</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('profile', this)">
+      <span class="nav-icon">👤</span>
+      <span class="label-s">Profile</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function switchTab(viewId, element) {
+    // Hide all views
+    document.querySelectorAll('.view-container').forEach(view => {
+      view.classList.remove('active');
+    });
+    // Show selected view
+    document.getElementById('view-' + viewId).classList.add('active');
+    
+    // Update nav state
+    document.querySelectorAll('.nav-item').forEach(nav => {
+      nav.classList.remove('active');
+    });
+    element.classList.add('active');
+  }
+</script>
+
+</body>
+</html>

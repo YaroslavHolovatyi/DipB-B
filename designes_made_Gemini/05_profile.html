@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>B&B — Profile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=JetBrains+Mono:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-base: #F9FAFB; --bg-card: #FFFFFF; --bg-elevated: #FFFFFF;
+    --brand-primary: #6366F1; --brand-primary-subtle: #E0E7FF;
+    --accent-gold: #F59E0B; --accent-gold-subtle: #FEF3C7; --accent-gold-text: #B45309;
+    --accent-secondary: #10B981; --accent-secondary-subtle: #D1FAE5;
+    --success: #059669; --text-primary: #111827; --text-secondary: #6B7280; --text-disabled: #9CA3AF;
+    --text-on-brand: #FFFFFF;
+    --border-default: #E5E7EB; --border-strong: #D1D5DB;
+    --race-dwarf-bg: #FFEDD5; --race-dwarf-text: #9A3412;
+    --race-elf-bg: #DCFCE7; --race-elf-text: #166534;
+    --tier-gold: #F59E0B; --tier-silver: #94A3B8; --tier-bronze: #B45309;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+  body { background: #1a1a2e; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'Plus Jakarta Sans', sans-serif; padding: 24px; }
+
+  .phone { width: 375px; height: 812px; background: var(--bg-base); border-radius: 44px; overflow: hidden; position: relative; box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 0 0 10px #2a2a3e; display: flex; flex-direction: column; }
+  .status-bar { height: 44px; background: var(--bg-card); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; flex-shrink: 0; }
+  .status-bar .time { font-weight: 700; font-size: 15px; color: var(--text-primary); }
+
+  /* Nav */
+  .nav-header { background: var(--bg-card); padding: 10px 20px 12px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-default); flex-shrink: 0; }
+  .nav-title { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 700; color: var(--text-primary); }
+  .edit-btn { font-size: 14px; font-weight: 700; color: var(--brand-primary); cursor: pointer; }
+
+  /* Scroll area */
+  .scroll-area { flex: 1; overflow-y: auto; scrollbar-width: none; }
+  .scroll-area::-webkit-scrollbar { display: none; }
+
+  /* Hero section */
+  .profile-hero { background: linear-gradient(180deg, #E0E7FF 0%, var(--bg-base) 100%); padding: 28px 20px 20px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .avatar-wrap { position: relative; margin-bottom: 14px; }
+  .avatar-xl { width: 90px; height: 90px; border-radius: 50%; background: var(--race-dwarf-bg); color: var(--race-dwarf-text); font-size: 32px; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 4px solid var(--race-dwarf-text); }
+  .level-badge { position: absolute; bottom: -4px; right: -4px; background: var(--brand-primary); color: white; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 999px; border: 2px solid var(--bg-base); }
+  .user-name { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700; color: var(--text-primary); }
+  .user-username { font-size: 14px; color: var(--text-secondary); margin-top: 2px; }
+  .race-badge { display: inline-flex; align-items: center; gap: 5px; background: var(--race-dwarf-bg); color: var(--race-dwarf-text); border-radius: 999px; padding: 5px 14px; font-size: 13px; font-weight: 700; margin-top: 10px; }
+
+  /* XP bar */
+  .xp-section { padding: 0 20px 16px; }
+  .xp-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .xp-label { font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+  .xp-value { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; color: var(--accent-secondary); }
+  .xp-track { height: 8px; background: var(--border-default); border-radius: 999px; overflow: hidden; }
+  .xp-fill { height: 100%; width: 67%; background: linear-gradient(90deg, var(--accent-secondary), #34D399); border-radius: 999px; }
+
+  /* Stats row */
+  .stats-row { background: var(--bg-card); border-top: 1px solid var(--border-default); border-bottom: 1px solid var(--border-default); display: flex; }
+  .stat { flex: 1; padding: 14px 8px; text-align: center; }
+  .stat + .stat { border-left: 1px solid var(--border-default); }
+  .stat-val { font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: 700; color: var(--text-primary); }
+  .stat-label { font-size: 11px; color: var(--text-secondary); margin-top: 3px; font-weight: 600; }
+
+  /* Section */
+  .section { padding: 16px 20px; }
+  .section-title { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+  .see-all { font-size: 13px; font-weight: 600; color: var(--brand-primary); font-family: 'Plus Jakarta Sans', sans-serif; }
+
+  /* Achievements grid */
+  .achievements-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .achievement { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+  .ach-icon { width: 56px; height: 56px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; position: relative; }
+  .ach-icon.unlocked { background: var(--accent-gold-subtle); border: 2px solid var(--accent-gold); }
+  .ach-icon.locked { background: var(--border-default); opacity: 0.5; }
+  .ach-icon.rare { background: linear-gradient(135deg, var(--brand-primary-subtle), #C7D2FE); border: 2px solid var(--brand-primary); }
+  .ach-icon .lock { position: absolute; bottom: -4px; right: -4px; width: 16px; height: 16px; background: var(--text-disabled); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 8px; color: white; }
+  .ach-name { font-size: 10px; font-weight: 600; color: var(--text-secondary); text-align: center; line-height: 13px; }
+  .ach-name.locked { color: var(--text-disabled); }
+
+  /* Leaderboard snippet */
+  .lb-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border-default); }
+  .lb-row:last-child { border-bottom: none; }
+  .lb-rank { font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 800; width: 28px; text-align: center; flex-shrink: 0; }
+  .lb-avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; }
+  .lb-info { flex: 1; min-width: 0; }
+  .lb-name { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+  .lb-race { font-size: 11px; color: var(--text-secondary); }
+  .lb-score { font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 700; color: var(--text-primary); flex-shrink: 0; }
+
+  /* Favourite bars strip */
+  .fav-scroll { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; padding-bottom: 4px; }
+  .fav-scroll::-webkit-scrollbar { display: none; }
+  .fav-card { width: 100px; flex-shrink: 0; text-align: center; }
+  .fav-img { width: 100px; height: 70px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 5px; }
+  .fav-name { font-size: 11px; font-weight: 600; color: var(--text-primary); line-height: 14px; }
+
+  /* Bottom nav */
+  .bottom-nav { height: 72px; background: var(--bg-card); border-top: 1px solid var(--border-default); display: flex; align-items: center; justify-content: space-around; flex-shrink: 0; padding-bottom: 8px; }
+  .nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; }
+  .nav-icon { font-size: 22px; color: var(--text-disabled); }
+  .nav-icon.active { color: var(--brand-primary); }
+  .nav-label { font-size: 10px; font-weight: 600; color: var(--text-disabled); }
+  .nav-label.active { color: var(--brand-primary); }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <div style="display:flex;gap:6px;align-items:center;">
+      <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="3" fill="none" stroke="#6B7280" stroke-width="1.2" opacity=".4"/><rect x="1.5" y="2.5" width="16" height="7" rx="1.5" fill="#6B7280"/><rect x="22.5" y="3.5" width="2" height="5" rx="1" fill="#6B7280"/></svg>
+    </div>
+  </div>
+
+  <div class="nav-header">
+    <div class="nav-title">⚔️ Profile</div>
+    <div class="edit-btn">Edit</div>
+  </div>
+
+  <div class="scroll-area">
+
+    <!-- Hero -->
+    <div class="profile-hero">
+      <div class="avatar-wrap">
+        <div class="avatar-xl">Y</div>
+        <div class="level-badge">Lvl 12</div>
+      </div>
+      <div class="user-name">Yaroslav</div>
+      <div class="user-username">@yaroslav_dwarf · Lviv</div>
+      <div class="race-badge">⚒️ Dwarf</div>
+    </div>
+
+    <!-- XP bar -->
+    <div class="xp-section">
+      <div class="xp-header">
+        <span class="xp-label">⚡ 2,340 XP · Level 12</span>
+        <span class="xp-value">2,340 / 3,500 to Lvl 13</span>
+      </div>
+      <div class="xp-track"><div class="xp-fill"></div></div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-val">47</div>
+        <div class="stat-label">Check-ins</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val">12</div>
+        <div class="stat-label">Raids</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val">28</div>
+        <div class="stat-label">Friends</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val" style="color:var(--error);">3</div>
+        <div class="stat-label">Kind Soul 😢</div>
+      </div>
+    </div>
+
+    <!-- Achievements -->
+    <div class="section">
+      <div class="section-title">🏆 Achievements <span class="see-all">8/24 unlocked</span></div>
+      <div class="achievements-grid">
+        <div class="achievement">
+          <div class="ach-icon unlocked">🍺</div>
+          <div class="ach-name">First Flagon</div>
+        </div>
+        <div class="achievement">
+          <div class="ach-icon unlocked">⚔️</div>
+          <div class="ach-name">First Raid</div>
+        </div>
+        <div class="achievement">
+          <div class="ach-icon rare">🎲</div>
+          <div class="ach-name">Lucky Dice</div>
+        </div>
+        <div class="achievement">
+          <div class="ach-icon unlocked">🗺️</div>
+          <div class="ach-name">Explorer</div>
+        </div>
+        <div class="achievement">
+          <div class="ach-icon unlocked">💰</div>
+          <div class="ach-name">Kind Soul</div>
+        </div>
+        <div class="achievement">
+          <div class="ach-icon locked">🏔️<div class="lock">🔒</div></div>
+          <div class="ach-name locked">Peak Raider</div>
+        </div>
+        <div class="achievement">
+          <div class="ach-icon locked">⭐<div class="lock">🔒</div></div>
+          <div class="ach-name locked">Century Club</div>
+        </div>
+        <div class="achievement">
+          <div class="ach-icon locked">👑<div class="lock">🔒</div></div>
+          <div class="ach-name locked">Tavern King</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Leaderboard snippet -->
+    <div class="section" style="padding-top:0;">
+      <div class="section-title">🏅 Leaderboard <span class="see-all">See full</span></div>
+      <div class="lb-row">
+        <div class="lb-rank" style="color:var(--tier-gold);">1</div>
+        <div class="lb-avatar" style="background:var(--race-orc-bg);color:var(--race-orc-text);">M</div>
+        <div class="lb-info"><div class="lb-name">Max</div><div class="lb-race">Orc · Lviv</div></div>
+        <div class="lb-score" style="color:var(--tier-gold);">3,850</div>
+      </div>
+      <div class="lb-row">
+        <div class="lb-rank" style="color:var(--tier-silver);">2</div>
+        <div class="lb-avatar" style="background:var(--race-elf-bg);color:var(--race-elf-text);">S</div>
+        <div class="lb-info"><div class="lb-name">Sophia</div><div class="lb-race">Elf · Lviv</div></div>
+        <div class="lb-score" style="color:var(--tier-silver);">3,210</div>
+      </div>
+      <div class="lb-row" style="background:var(--brand-primary-subtle);margin:0 -20px;padding:10px 20px;border-radius:10px;">
+        <div class="lb-rank" style="color:var(--brand-primary);">5</div>
+        <div class="lb-avatar" style="background:var(--race-dwarf-bg);color:var(--race-dwarf-text);border:2px solid var(--brand-primary);">Y</div>
+        <div class="lb-info"><div class="lb-name" style="color:var(--brand-primary);">You (Yaroslav)</div><div class="lb-race">Dwarf · Lviv</div></div>
+        <div class="lb-score" style="color:var(--brand-primary);">2,340</div>
+      </div>
+    </div>
+
+    <!-- Favourite bars -->
+    <div class="section" style="padding-top:0;">
+      <div class="section-title">♥ Favourite Taverns <span class="see-all">See all</span></div>
+      <div class="fav-scroll">
+        <div class="fav-card">
+          <div class="fav-img" style="background:linear-gradient(135deg,#7c3f00,#b8761a);">🍺</div>
+          <div class="fav-name">Lviv Craft Haven</div>
+        </div>
+        <div class="fav-card">
+          <div class="fav-img" style="background:linear-gradient(135deg,#1a3a5c,#2d6a8a);">🐉</div>
+          <div class="fav-name">The Dragon's Den</div>
+        </div>
+        <div class="fav-card">
+          <div class="fav-img" style="background:linear-gradient(135deg,#4a1942,#7b2f6e);">✨</div>
+          <div class="fav-name">Arcane Alehouse</div>
+        </div>
+        <div class="fav-card">
+          <div class="fav-img" style="background:linear-gradient(135deg,#1c3a1c,#2d5e2d);">🌿</div>
+          <div class="fav-name">Elven Grove Bar</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="height: 20px;"></div>
+  </div>
+
+  <!-- Bottom nav -->
+  <div class="bottom-nav">
+    <div class="nav-item">
+      <div class="nav-icon">🏠</div>
+      <div class="nav-label">Home</div>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon">🍺</div>
+      <div class="nav-label">Bars</div>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon">👥</div>
+      <div class="nav-label">Friends</div>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon active">⚔️</div>
+      <div class="nav-label active">Profile</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Beer & Beverages — Database Schema</title>
+  <style>
+
+  :root {
+    --bg: #fbfaf7;
+    --panel: #ffffff;
+    --ink: #1c1917;
+    --muted: #6b6660;
+    --accent: #0f9d8f;
+    --accent-dim: #0f9d8f22;
+    --border: #e6e1d8;
+    --code-bg: #f6f2ea;
+    --code-ink: #2a241e;
+    --kbd-bg: #ebe6dc;
+    --table-stripe: #fafaf6;
+    font-synthesis: none;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14110e;
+      --panel: #1c1916;
+      --ink: #ece6d8;
+      --muted: #9b9388;
+      --accent: #4cd3c2;
+      --accent-dim: #4cd3c233;
+      --border: #2a2520;
+      --code-bg: #221d18;
+      --code-ink: #ece6d8;
+      --kbd-bg: #2a2520;
+      --table-stripe: #1f1a16;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: saturate(140%) blur(8px);
+  }
+  .topbar-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+  .brand {
+    font-weight: 700;
+    color: var(--ink);
+    text-decoration: none;
+    letter-spacing: -0.01em;
+    font-size: 16px;
+  }
+  .topnav { display: flex; gap: 20px; }
+  .topnav a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    padding: 4px 0;
+    border-bottom: 2px solid transparent;
+  }
+  .topnav a:hover { color: var(--ink); }
+  .topnav a.active { color: var(--ink); border-bottom-color: var(--accent); }
+
+  .layout {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 32px 24px 64px;
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 48px;
+  }
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { position: static !important; max-height: none !important; }
+  }
+
+  .sidebar {
+    position: sticky;
+    top: 80px;
+    align-self: start;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+  }
+  .toc-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .toc ul { list-style: none; padding: 0; margin: 0; }
+  .toc li { margin: 0; padding: 0; }
+  .toc a {
+    display: block;
+    padding: 4px 8px;
+    border-left: 2px solid transparent;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+  .toc a:hover { color: var(--ink); background: var(--accent-dim); }
+  .toc-level-1 a { padding-left: 20px; font-size: 12.5px; }
+  .toc-level-2 a { padding-left: 32px; font-size: 12px; color: var(--muted); }
+
+  .content {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 40px 48px;
+    min-width: 0;
+  }
+  @media (max-width: 700px) {
+    .content { padding: 24px; }
+  }
+
+  .content h1, .content h2, .content h3, .content h4 {
+    line-height: 1.25;
+    letter-spacing: -0.012em;
+    margin-top: 1.8em;
+    margin-bottom: 0.5em;
+    color: var(--ink);
+    scroll-margin-top: 80px;
+    font-weight: 700;
+  }
+  .content h1 {
+    font-size: 2.0em;
+    margin-top: 0;
+    padding-bottom: 0.3em;
+    border-bottom: 1px solid var(--border);
+  }
+  .content h2 {
+    font-size: 1.45em;
+    padding-top: 0.4em;
+    border-top: 1px solid var(--border);
+    padding-top: 1.2em;
+    margin-top: 2em;
+  }
+  .content h3 { font-size: 1.15em; }
+  .content h4 { font-size: 1.0em; color: var(--muted); text-transform: none; }
+
+  .anchor {
+    color: var(--muted);
+    text-decoration: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+    margin-right: 4px;
+    font-weight: 400;
+  }
+  h1:hover .anchor, h2:hover .anchor, h3:hover .anchor, h4:hover .anchor {
+    opacity: 1;
+  }
+
+  .content p { margin: 1em 0; }
+  .content a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; }
+  .content a:hover { border-bottom-color: var(--accent); }
+
+  .content ul, .content ol { margin: 1em 0; padding-left: 1.4em; }
+  .content li { margin: 0.3em 0; }
+  .content li > p { margin: 0.3em 0; }
+
+  .content code {
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    font-size: 0.88em;
+    background: var(--code-bg);
+    color: var(--code-ink);
+    padding: 0.12em 0.36em;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+  .content pre {
+    background: var(--code-bg);
+    color: var(--code-ink);
+    padding: 16px 18px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .content pre code {
+    background: transparent;
+    border: none;
+    padding: 0;
+    font-size: inherit;
+  }
+
+  .content blockquote {
+    border-left: 3px solid var(--accent);
+    background: var(--accent-dim);
+    margin: 1.4em 0;
+    padding: 0.6em 1em;
+    border-radius: 0 6px 6px 0;
+    color: var(--ink);
+  }
+  .content blockquote p:first-child { margin-top: 0; }
+  .content blockquote p:last-child { margin-bottom: 0; }
+
+  .content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.4em 0;
+    font-size: 0.94em;
+    overflow-x: auto;
+    display: block;
+  }
+  .content thead { background: var(--code-bg); }
+  .content th, .content td {
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    text-align: left;
+    vertical-align: top;
+  }
+  .content th { font-weight: 700; }
+  .content tbody tr:nth-child(even) { background: var(--table-stripe); }
+
+  .content hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 2.4em 0;
+  }
+
+  .content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+  }
+
+  .footer {
+    border-top: 1px solid var(--border);
+    background: var(--panel);
+    margin-top: 32px;
+  }
+  .footer-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 16px 24px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  /* highlight.js minimal token theme using the document palette */
+  .hljs { color: var(--code-ink); background: transparent; }
+  .hljs-keyword, .hljs-built_in, .hljs-type { color: #b4540a; font-weight: 600; }
+  @media (prefers-color-scheme: dark) {
+    .hljs-keyword, .hljs-built_in, .hljs-type { color: #f0a35a; }
+  }
+  .hljs-string, .hljs-attr, .hljs-meta-string { color: #2c8a3e; }
+  @media (prefers-color-scheme: dark) {
+    .hljs-string, .hljs-attr, .hljs-meta-string { color: #79c98a; }
+  }
+  .hljs-number, .hljs-literal { color: #6b3fa0; }
+  @media (prefers-color-scheme: dark) {
+    .hljs-number, .hljs-literal { color: #c4a4f4; }
+  }
+  .hljs-comment, .hljs-meta { color: var(--muted); font-style: italic; }
+  .hljs-name, .hljs-title, .hljs-section, .hljs-selector-tag { color: #0f6997; font-weight: 600; }
+  @media (prefers-color-scheme: dark) {
+    .hljs-name, .hljs-title, .hljs-section, .hljs-selector-tag { color: #6cb8e6; }
+  }
+  .hljs-symbol, .hljs-attribute { color: #b4540a; }
+
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="index.html">Beer &amp; Beverages</a>
+      <nav class="topnav"><a href="../index.html" class="">Home</a><a href="../PROJECT.html" class="">Project Overview</a><a href="../SETUP.html" class="">Setup Guide</a><a href="SCHEMA.html" class="active">Database Schema</a></nav>
+    </div>
+  </header>
+  <div class="layout">
+    <aside class="sidebar">
+      <nav class="toc" aria-label="Table of contents">
+    <div class="toc-title">Contents</div>
+    <ul><li class="toc-level-0"><a href="#beer-beverages-database-schema">Beer & Beverages — Database Schema</a></li>
+<li class="toc-level-1"><a href="#why-postgresql-vs-the-original-mysql-8">Why PostgreSQL (vs. the original MySQL 8)</a></li>
+<li class="toc-level-1"><a href="#conventions-used-everywhere">Conventions used everywhere</a></li>
+<li class="toc-level-1"><a href="#table-groups">Table groups</a></li>
+<li class="toc-level-2"><a href="#1-geography-reference-data">1. Geography & reference data</a></li>
+<li class="toc-level-2"><a href="#2-users-auth">2. Users & auth</a></li>
+<li class="toc-level-2"><a href="#3-bars">3. Bars</a></li>
+<li class="toc-level-2"><a href="#4-quiz">4. Quiz</a></li>
+<li class="toc-level-2"><a href="#5-social">5. Social</a></li>
+<li class="toc-level-2"><a href="#6-raids-events-planned-gatherings">6. Raids (events / planned gatherings)</a></li>
+<li class="toc-level-2"><a href="#7-checks-receipts-and-the-collaborative-split-room">7. Checks (receipts) and the collaborative split room</a></li>
+<li class="toc-level-2"><a href="#8-achievements">8. Achievements</a></li>
+<li class="toc-level-2"><a href="#9-notifications">9. Notifications</a></li>
+<li class="toc-level-2"><a href="#10-chat-messaging-real-time-with-raid-chats-and-message-state-ticks">10. Chat & messaging (real-time, with raid chats and message-state ticks)</a></li>
+<li class="toc-level-2"><a href="#11-tavern-tales-ai-dungeon-master">11. Tavern Tales — AI Dungeon Master</a></li>
+<li class="toc-level-1"><a href="#indexing-strategy-summary">Indexing strategy summary</a></li>
+<li class="toc-level-1"><a href="#mapping-from-the-original-mysql-schema">Mapping from the original MySQL schema</a></li>
+<li class="toc-level-1"><a href="#counts-sanity-check">Counts (sanity check)</a></li>
+<li class="toc-level-1"><a href="#whats-next">What's next</a></li></ul>
+  </nav>
+    </aside>
+    <main class="content">
+      <h1 id="beer-beverages-database-schema"><a class="anchor" href="#beer-beverages-database-schema" aria-hidden="true">#</a> Beer &amp; Beverages — Database Schema</h1>
+<p>PostgreSQL 16 schema for the mobile rebuild (React Native + Expo / FastAPI / PostgreSQL).
+Companion to <code>schema.sql</code>.</p>
+<h2 id="why-postgresql-vs-the-original-mysql-8"><a class="anchor" href="#why-postgresql-vs-the-original-mysql-8" aria-hidden="true">#</a> Why PostgreSQL (vs. the original MySQL 8)</h2>
+<p>The data model is heavily relational (users ↔ friends, friend groups ↔ members, quiz answers ↔ races with scores, receipt items ↔ participants). Postgres keeps that intact while adding three specific wins for this app:</p>
+<ul>
+<li><strong>PostGIS</strong> — <code>GEOGRAPHY(POINT, 4326)</code> on <code>cities</code>, <code>bars</code>, and <code>raids</code> lets us run &quot;bars/raids near me&quot; queries with a real spatial index. Useful for <code>expo-location</code> on the phone.</li>
+<li><strong>JSONB columns</strong> — receipt OCR responses, achievement requirements, push-notification payloads, and quiz score breakdowns are stored as JSON without needing extra tables.</li>
+<li><strong>Full-text search</strong> — bars have a maintained <code>tsvector</code> column + GIN index for fast catalog search across name, description, and address; a <code>pg_trgm</code> index handles fuzzy &quot;name contains&quot; queries.</li>
+</ul>
+<h2 id="conventions-used-everywhere"><a class="anchor" href="#conventions-used-everywhere" aria-hidden="true">#</a> Conventions used everywhere</h2>
+<ul>
+<li><code>BIGINT GENERATED BY DEFAULT AS IDENTITY</code> for primary keys (Spring/JPA <code>IDENTITY</code> equivalent).</li>
+<li><code>TIMESTAMPTZ</code> for every timestamp; server runs in UTC, clients convert.</li>
+<li><code>citext</code> for <code>users.email</code> and <code>users.username</code> so uniqueness is case-insensitive.</li>
+<li><code>created_at</code> / <code>updated_at</code> on mutable rows, with a shared <code>set_updated_at()</code> trigger.</li>
+<li><code>deleted_at TIMESTAMPTZ</code> (soft delete) on user-facing entities: <code>users</code>, <code>bars</code>, <code>checks</code>.</li>
+<li>Junction tables use <strong>composite primary keys</strong> (e.g. <code>(user_id, bar_id)</code> on <code>bar_favorites</code>).</li>
+<li>All foreign keys declare <code>ON DELETE</code> policy explicitly (<code>CASCADE</code> / <code>RESTRICT</code> / <code>SET NULL</code>).</li>
+<li>Enums (<code>CREATE TYPE … AS ENUM</code>) for closed value sets — <code>user_role</code>, <code>price_category</code>, <code>friendship_status</code>, <code>raid_status</code>, etc.</li>
+</ul>
+<h2 id="table-groups"><a class="anchor" href="#table-groups" aria-hidden="true">#</a> Table groups</h2>
+<h3 id="1-geography-reference-data"><a class="anchor" href="#1-geography-reference-data" aria-hidden="true">#</a> 1. Geography &amp; reference data</h3>
+<p><code>cities</code>, <code>vibes</code>, <code>drinks</code>, <code>races</code>, <code>race_drinks</code>, <code>race_vibes</code>.
+Static lookup tables seeded once. <code>cities.location</code> is PostGIS, so we can later add <code>WHERE ST_DWithin(...)</code> queries.</p>
+<h3 id="2-users-auth"><a class="anchor" href="#2-users-auth" aria-hidden="true">#</a> 2. Users &amp; auth</h3>
+<p><code>users</code> (1 row per account), <code>refresh_tokens</code> (one row per active JWT refresh — stored as a SHA-256 hash, never raw), <code>push_tokens</code> (Expo / APNs / FCM device tokens for push notifications). <code>users.race_id</code> is nullable: it&#39;s only set once the user completes the quiz.</p>
+<h3 id="3-bars"><a class="anchor" href="#3-bars" aria-hidden="true">#</a> 3. Bars</h3>
+<p><code>bars</code> is the main catalog. It maintains a <code>search_vector</code> column updated by a trigger so search queries hit a GIN index rather than scanning the table. <code>rating_avg</code> and <code>rating_count</code> are denormalized caches refreshed when a review is created/updated (a follow-up trigger can be added, or the FastAPI layer can update them — TBD when we wire up reviews).
+Companions: <code>bar_vibes</code> (many-to-many with <code>vibes</code>), <code>bar_photos</code>, <code>bar_reviews</code> (one review per user per bar, enforced by <code>UNIQUE (bar_id, user_id)</code>), <code>bar_favorites</code> (composite-PK join).</p>
+<h3 id="4-quiz"><a class="anchor" href="#4-quiz" aria-hidden="true">#</a> 4. Quiz</h3>
+<p><code>quiz_questions</code> (ordered via <code>position</code>), <code>quiz_answers</code> (ordered inside a question), <code>quiz_answer_races</code> (each answer awards points to one or more races — <code>(answer_id, race_id, score)</code>), <code>user_quiz_results</code> (each quiz run is recorded, so users can retake; <code>score_breakdown</code> JSONB stores the per-race totals for auditability).</p>
+<h3 id="5-social"><a class="anchor" href="#5-social" aria-hidden="true">#</a> 5. Social</h3>
+<ul>
+<li><code>user_friends</code>: symmetric friendship. On accept, we insert two rows so &quot;find my friends&quot; is one indexed read. <code>CHECK (user_id &lt;&gt; friend_id)</code> blocks self-friending.</li>
+<li><code>friend_requests</code>: a partial unique index (<code>WHERE status = &#39;pending&#39;</code>) prevents duplicate pending requests between the same pair, while still allowing past declined/cancelled ones to exist.</li>
+<li><code>friend_groups</code> + <code>friend_group_members</code> (&quot;Party for Dungeon&quot;). <code>owner_id</code> for control, <code>role</code> enum (<code>member</code> / <code>admin</code>) inside the group.</li>
+</ul>
+<h3 id="6-raids-events-planned-gatherings"><a class="anchor" href="#6-raids-events-planned-gatherings" aria-hidden="true">#</a> 6. Raids (events / planned gatherings)</h3>
+<p><code>raids</code> represent a planned meet-up at a bar (or at a freeform location). <code>bar_id</code> is nullable for off-catalog spots; a PostGIS <code>location</code> lets the &quot;Raids near you&quot; feed work without a bar reference. RSVP via <code>raid_participants</code> with <code>status</code> enum (<code>going</code> / <code>maybe</code> / <code>declined</code>). Partial index <code>WHERE status IN (&#39;planned&#39;,&#39;ongoing&#39;)</code> keeps the upcoming-raids feed query fast.</p>
+<h3 id="7-checks-receipts-and-the-collaborative-split-room"><a class="anchor" href="#7-checks-receipts-and-the-collaborative-split-room" aria-hidden="true">#</a> 7. Checks (receipts) and the collaborative split room</h3>
+<ul>
+<li><code>checks</code> — header row per uploaded receipt. <code>bar_id</code> nullable + <code>bar_name_freeform</code> for receipts from places not in our catalog. <code>ocr_payload JSONB</code> stores the raw Vision API response for audit / re-parse.</li>
+<li><code>check_items</code> — parsed line items.</li>
+<li><code>check_participants</code> — people in the split. <code>user_id</code> is nullable so guests with no account can still be assigned items. New <code>status</code> enum (<code>invited</code> → <code>joined</code> → <code>ready</code> → <code>left</code>) drives the split-room flow: registered users start as <code>invited</code> and a <code>check_invite</code> notification fires; guests are inserted as <code>joined</code> directly because they don&#39;t have an account. Timestamps <code>joined_at</code>, <code>ready_at</code>, <code>left_at</code> log each transition. The room is considered closed when every active participant is <code>ready</code> and all items are fully assigned.</li>
+<li><code>check_item_assignments</code> — composite-PK join <code>(check_item_id, participant_id)</code> with <code>quantity</code> and <code>amount</code>; this is what powers the &quot;₴X owed by Y&quot; output. Updated incrementally over the WebSocket as participants claim items live.</li>
+<li><code>dice_proposals</code> — opens the unanimous-consent vote for the D20 &quot;Choose One to Pay for All&quot; game. <code>status</code> is <code>pending</code> → <code>accepted</code> (every vote = <code>accept</code>, dice will roll) or <code>declined</code> (any vote = <code>decline</code>, game off) or <code>cancelled</code> (participant left, proposer cancelled) or <code>completed</code> (dice rolled and a winner recorded). A partial unique index <code>(check_id) WHERE status=&#39;pending&#39;</code> ensures only one proposal exists per check at a time.</li>
+<li><code>dice_proposal_votes</code> — composite-PK join <code>(proposal_id, user_id)</code> with a <code>vote</code> enum (<code>pending</code> / <code>accept</code> / <code>decline</code>). One row per registered participant; guests don&#39;t vote.</li>
+<li><code>kind_soul_events</code> — captures the dice outcome. One per check (UNIQUE). Linked back to its <code>dice_proposals</code> row via <code>proposal_id</code> for the audit trail. Drives the &quot;Добра Душа&quot; leaderboard.</li>
+</ul>
+<h3 id="8-achievements"><a class="anchor" href="#8-achievements" aria-hidden="true">#</a> 8. Achievements</h3>
+<p><code>achievements</code> defines what can be earned (<code>code</code> is the stable string ID used in code, e.g. <code>KIND_SOUL_10</code>). <code>requirement JSONB</code> lets us encode rules like <code>{&quot;type&quot;:&quot;check_count&quot;,&quot;threshold&quot;:10}</code> without a schema change per achievement type. <code>user_achievements</code> is the composite-PK join with an optional <code>progress JSONB</code> so we can show &quot;7/10 receipts uploaded&quot; before unlock.</p>
+<h3 id="9-notifications"><a class="anchor" href="#9-notifications" aria-hidden="true">#</a> 9. Notifications</h3>
+<p>One table covers in-app + push. <code>type</code> enum routes display logic; <code>data JSONB</code> carries everything else (raid id, friend id, etc.). <code>related_entity_type</code> + <code>related_entity_id</code> give a generic deep-link target. Partial index on unread rows keeps the badge query cheap.</p>
+<h3 id="10-chat-messaging-real-time-with-raid-chats-and-message-state-ticks"><a class="anchor" href="#10-chat-messaging-real-time-with-raid-chats-and-message-state-ticks" aria-hidden="true">#</a> 10. Chat &amp; messaging (real-time, with raid chats and message-state ticks)</h3>
+<ul>
+<li><code>conversations</code> — one row per direct (1-on-1) or group conversation. Three optional FK links classify the chat: <code>friend_group_id</code> (UNIQUE) ties a group chat to a saved friend group so membership stays in sync; <code>raid_id</code> (UNIQUE) ties a group chat to a raid so the chat exists for every raid automatically and follows raid RSVPs; both null means an ad-hoc group chat or a direct conversation. <code>last_message_at</code> is bumped by a trigger when any message is inserted, so chat-list sort is O(1) read.</li>
+<li><code>conversation_participants</code> — composite PK <code>(conversation_id, user_id)</code>. Two watermark columns drive the message-state ticks: <code>last_delivered_at</code> (newest message confirmed to have reached this user&#39;s device — bumped on a <code>delivery.ack</code> WebSocket frame or a successful Expo Push receipt) and <code>last_read_at</code> (newest message this user has read — bumped when the user opens the conversation). <code>left_at</code> lets a user leave a group without losing history. Partial index on <code>WHERE left_at IS NULL</code> keeps the &quot;my active conversations&quot; query fast.</li>
+<li><code>messages</code> — body and/or attachments (JSONB array of <code>{url, type, name, size}</code>). <code>reply_to_id</code> self-references for threaded replies. <code>deleted_at</code> for soft delete. Composite index <code>(conversation_id, created_at DESC)</code> for paginated message lists. <code>CHECK</code> constraint enforces non-empty content. A message&#39;s tick state (sent / delivered / read) is computed at query time by comparing <code>messages.created_at</code> against the other participants&#39; <code>last_delivered_at</code> / <code>last_read_at</code>.</li>
+<li><code>message_reactions</code> — composite PK <code>(message_id, user_id, emoji)</code> so a user can react with multiple emojis.</li>
+<li><code>user_presence</code> — one row per user, updated by the WebSocket layer (<code>status</code> enum and <code>last_seen_at</code>). Used for the green-dot indicator in the chat list.</li>
+</ul>
+<p>Chat membership for raid chats is kept in sync with raid RSVPs at the application layer (or via a deferred trigger): inserts on <code>raid_participants</code> with <code>status IN (&#39;going&#39;,&#39;maybe&#39;)</code> insert a matching <code>conversation_participants</code> row; deletions or transitions to <code>declined</code> set <code>left_at</code>.</p>
+<p>Chat messages do <strong>not</strong> create rows in <code>notifications</code> (that would create heavy churn). Instead, the WebSocket layer pushes the message directly to online recipients; offline recipients get a single Expo Push notification whose successful receipt also drives the <code>last_delivered_at</code> update.</p>
+<h3 id="11-tavern-tales-ai-dungeon-master"><a class="anchor" href="#11-tavern-tales-ai-dungeon-master" aria-hidden="true">#</a> 11. Tavern Tales — AI Dungeon Master</h3>
+<ul>
+<li><code>dnd_class_info</code> — reference table seeded with the twelve 5e player classes. <code>slug</code> is of type <code>dnd_class</code> (enum) and acts as the primary key; <code>hit_die</code> is constrained to {6, 8, 10, 12}. Surfaced by <code>GET /api/dnd/classes</code> to drive the character-creation picker.</li>
+<li><code>dnd_characters</code> — one row per character. <code>user_id</code> and <code>race_id</code> link back to the existing tables (so the race comes for free from the quiz result on <code>users.race_id</code>). <code>class_slug</code> enforces FK to <code>dnd_class_info</code>. Stats live in a JSONB blob (<code>{&quot;str&quot;:14,...}</code>) so we don&#39;t have six columns to migrate when 5e adds an option. HP, AC, level, XP, alignment, inventory, and known spells round out the sheet. <code>last_played_at</code> indexed (descending, nulls last, partial on not-deleted) so the &quot;your characters&quot; list is a cheap read.</li>
+<li><code>dnd_sessions</code> — one row per quest. <code>mode</code> is the three-mode enum that controls the AI&#39;s system prompt. <code>summary</code> is a rolling text summary the AI maintains so older turns can be evicted from the live context window once the message log exceeds a configurable threshold. <code>metadata JSONB</code> holds world state (location, objective, NPCs met). <code>input_tokens_used</code> / <code>output_tokens_used</code> track per-session cost. A <strong>partial unique index</strong> <code>(character_id) WHERE status IN (&#39;active&#39;,&#39;paused&#39;)</code> enforces one open quest per character at a time.</li>
+<li><code>dnd_messages</code> — the turn log. <code>role</code> distinguishes <code>user</code>, <code>assistant</code>, <code>system</code>, <code>dice_roll</code>, and <code>narration</code> so the UI styles them differently. <code>metadata JSONB</code> holds structured payloads — for <code>dice_roll</code>: <code>{&quot;dice&quot;:&quot;d20&quot;,&quot;modifier&quot;:3,&quot;result&quot;:17,&quot;purpose&quot;:&quot;persuasion&quot;}</code>; for <code>assistant</code> turns the AI optionally embeds <code>state_change</code> (HP delta, loot diff) or <code>request_roll</code> blocks the client renders as a &quot;Roll&quot; button. <code>tokens_in</code> / <code>tokens_out</code> per row.</li>
+<li><code>dnd_usage_quota</code> — one row per user (PK is <code>user_id</code>). Daily and monthly token caps with reset dates. The API rejects new turns with a <code>429</code> and the quota payload when a cap is hit; a cron resets the counters at the boundary.</li>
+</ul>
+<p>Tavern Tales is single-player only in MVP. The schema deliberately does not introduce party / co-op tables; a future &quot;party play&quot; extension would add a <code>dnd_party</code> join layer without changing any existing column.</p>
+<h2 id="indexing-strategy-summary"><a class="anchor" href="#indexing-strategy-summary" aria-hidden="true">#</a> Indexing strategy summary</h2>
+<table>
+<thead>
+<tr>
+<th>Index type</th>
+<th>Where</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GiST</td>
+<td><code>cities.location</code>, <code>bars.location</code>, <code>raids.location</code></td>
+<td>spatial &quot;nearby&quot; queries</td>
+</tr>
+<tr>
+<td>GIN</td>
+<td><code>bars.search_vector</code></td>
+<td>full-text bar search</td>
+</tr>
+<tr>
+<td>GIN trigram</td>
+<td><code>bars.name</code></td>
+<td>fuzzy name match</td>
+</tr>
+<tr>
+<td>Partial</td>
+<td><code>users(is_active) WHERE deleted_at IS NULL</code></td>
+<td>active-user lists</td>
+</tr>
+<tr>
+<td>Partial</td>
+<td><code>friend_requests(sender_id, recipient_id) WHERE status=&#39;pending&#39;</code></td>
+<td>dedupe inbound requests</td>
+</tr>
+<tr>
+<td>Partial</td>
+<td><code>notifications(recipient_id) WHERE read_at IS NULL</code></td>
+<td>unread badge</td>
+</tr>
+<tr>
+<td>Partial</td>
+<td><code>raids(scheduled_at) WHERE status IN (&#39;planned&#39;,&#39;ongoing&#39;)</code></td>
+<td>upcoming feed</td>
+</tr>
+<tr>
+<td>Composite</td>
+<td><code>idx_checks_user (user_id, created_at DESC)</code></td>
+<td>profile receipt history</td>
+</tr>
+</tbody></table>
+<h2 id="mapping-from-the-original-mysql-schema"><a class="anchor" href="#mapping-from-the-original-mysql-schema" aria-hidden="true">#</a> Mapping from the original MySQL schema</h2>
+<table>
+<thead>
+<tr>
+<th>Old entity (from .docx)</th>
+<th>New table(s)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>users</code></td>
+<td><code>users</code></td>
+</tr>
+<tr>
+<td><code>cities</code> (<code>x</code>, <code>y</code> columns)</td>
+<td><code>cities</code> (<code>location GEOGRAPHY</code>)</td>
+</tr>
+<tr>
+<td><code>races</code>, <code>drinks</code>, <code>vibes</code></td>
+<td>same, plus <code>race_drinks</code> / <code>race_vibes</code></td>
+</tr>
+<tr>
+<td><code>quiz_questions</code>, <code>quiz_answers</code>, <code>quiz_answer_races</code></td>
+<td>same + new <code>user_quiz_results</code> for history</td>
+</tr>
+<tr>
+<td><code>user_friends</code>, <code>friend_requests</code></td>
+<td>same</td>
+</tr>
+<tr>
+<td><code>friend_groups</code>, <code>friend_group_members</code></td>
+<td>same</td>
+</tr>
+<tr>
+<td><code>achievements</code></td>
+<td><code>achievements</code> + <code>user_achievements</code></td>
+</tr>
+<tr>
+<td><code>notifications</code></td>
+<td><code>notifications</code></td>
+</tr>
+<tr>
+<td><code>Check</code>, <code>CheckItem</code> (Java models)</td>
+<td><code>checks</code>, <code>check_items</code>, plus new <code>check_participants</code>, <code>check_item_assignments</code>, <code>kind_soul_events</code></td>
+</tr>
+<tr>
+<td>(implicit) Bar entity</td>
+<td><code>bars</code>, <code>bar_photos</code>, <code>bar_reviews</code>, <code>bar_vibes</code>, <code>bar_favorites</code></td>
+</tr>
+<tr>
+<td>(implicit) &quot;Raids near you&quot;</td>
+<td><code>raids</code>, <code>raid_participants</code></td>
+</tr>
+<tr>
+<td>(new) JWT refresh / push</td>
+<td><code>refresh_tokens</code>, <code>push_tokens</code></td>
+</tr>
+<tr>
+<td>(new) Tavern Tales AI DM</td>
+<td><code>dnd_class_info</code>, <code>dnd_characters</code>, <code>dnd_sessions</code>, <code>dnd_messages</code>, <code>dnd_usage_quota</code></td>
+</tr>
+</tbody></table>
+<h2 id="counts-sanity-check"><a class="anchor" href="#counts-sanity-check" aria-hidden="true">#</a> Counts (sanity check)</h2>
+<ul>
+<li>4 extensions (<code>citext</code>, <code>pg_trgm</code>, <code>postgis</code>, <code>uuid-ossp</code>)</li>
+<li>23 enum types</li>
+<li>44 tables</li>
+<li>54 indexes (plus auto PK / unique indexes)</li>
+<li>12 triggers (search vector + conversation <code>last_message_at</code> bump + 10 × <code>updated_at</code>)</li>
+<li>68 foreign keys, all resolved to existing tables</li>
+</ul>
+<h2 id="whats-next"><a class="anchor" href="#whats-next" aria-hidden="true">#</a> What&#39;s next</h2>
+<ol>
+<li><strong>Seed data</strong> — Lviv as the first city (with coords), starter races, drinks, vibes, a quiz, and a baseline achievement set.</li>
+<li><strong>Alembic migrations</strong> — split this file into versioned migrations for FastAPI.</li>
+<li><strong>SQLAlchemy models</strong> — auto-generate from the schema, then refine relationships and lazy/eager loading.</li>
+<li><strong>Triggers / functions for rating recalc</strong> — <code>bar_reviews</code> write → recompute <code>bars.rating_avg</code> / <code>rating_count</code> (currently left to the app layer).</li>
+</ol>
+
+    </main>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      Diploma project &middot; Lviv Polytechnic &middot; Mobile rebuild of "Довідка пабів м. Львів"
+    </div>
+  </footer>
+</body>
+</html>

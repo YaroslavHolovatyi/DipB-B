@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Beer &amp; Beverages — Documentation</title>
+  <style>
+
+  :root {
+    --bg: #fbfaf7;
+    --panel: #ffffff;
+    --ink: #1c1917;
+    --muted: #6b6660;
+    --accent: #0f9d8f;
+    --accent-dim: #0f9d8f22;
+    --border: #e6e1d8;
+    --code-bg: #f6f2ea;
+    --code-ink: #2a241e;
+    --kbd-bg: #ebe6dc;
+    --table-stripe: #fafaf6;
+    font-synthesis: none;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14110e;
+      --panel: #1c1916;
+      --ink: #ece6d8;
+      --muted: #9b9388;
+      --accent: #4cd3c2;
+      --accent-dim: #4cd3c233;
+      --border: #2a2520;
+      --code-bg: #221d18;
+      --code-ink: #ece6d8;
+      --kbd-bg: #2a2520;
+      --table-stripe: #1f1a16;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: saturate(140%) blur(8px);
+  }
+  .topbar-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+  .brand {
+    font-weight: 700;
+    color: var(--ink);
+    text-decoration: none;
+    letter-spacing: -0.01em;
+    font-size: 16px;
+  }
+  .topnav { display: flex; gap: 20px; }
+  .topnav a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    padding: 4px 0;
+    border-bottom: 2px solid transparent;
+  }
+  .topnav a:hover { color: var(--ink); }
+  .topnav a.active { color: var(--ink); border-bottom-color: var(--accent); }
+
+  .layout {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 32px 24px 64px;
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 48px;
+  }
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { position: static !important; max-height: none !important; }
+  }
+
+  .sidebar {
+    position: sticky;
+    top: 80px;
+    align-self: start;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+  }
+  .toc-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .toc ul { list-style: none; padding: 0; margin: 0; }
+  .toc li { margin: 0; padding: 0; }
+  .toc a {
+    display: block;
+    padding: 4px 8px;
+    border-left: 2px solid transparent;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+  .toc a:hover { color: var(--ink); background: var(--accent-dim); }
+  .toc-level-1 a { padding-left: 20px; font-size: 12.5px; }
+  .toc-level-2 a { padding-left: 32px; font-size: 12px; color: var(--muted); }
+
+  .content {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 40px 48px;
+    min-width: 0;
+  }
+  @media (max-width: 700px) {
+    .content { padding: 24px; }
+  }
+
+  .content h1, .content h2, .content h3, .content h4 {
+    line-height: 1.25;
+    letter-spacing: -0.012em;
+    margin-top: 1.8em;
+    margin-bottom: 0.5em;
+    color: var(--ink);
+    scroll-margin-top: 80px;
+    font-weight: 700;
+  }
+  .content h1 {
+    font-size: 2.0em;
+    margin-top: 0;
+    padding-bottom: 0.3em;
+    border-bottom: 1px solid var(--border);
+  }
+  .content h2 {
+    font-size: 1.45em;
+    padding-top: 0.4em;
+    border-top: 1px solid var(--border);
+    padding-top: 1.2em;
+    margin-top: 2em;
+  }
+  .content h3 { font-size: 1.15em; }
+  .content h4 { font-size: 1.0em; color: var(--muted); text-transform: none; }
+
+  .anchor {
+    color: var(--muted);
+    text-decoration: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+    margin-right: 4px;
+    font-weight: 400;
+  }
+  h1:hover .anchor, h2:hover .anchor, h3:hover .anchor, h4:hover .anchor {
+    opacity: 1;
+  }
+
+  .content p { margin: 1em 0; }
+  .content a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; }
+  .content a:hover { border-bottom-color: var(--accent); }
+
+  .content ul, .content ol { margin: 1em 0; padding-left: 1.4em; }
+  .content li { margin: 0.3em 0; }
+  .content li > p { margin: 0.3em 0; }
+
+  .content code {
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    font-size: 0.88em;
+    background: var(--code-bg);
+    color: var(--code-ink);
+    padding: 0.12em 0.36em;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+  .content pre {
+    background: var(--code-bg);
+    color: var(--code-ink);
+    padding: 16px 18px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .content pre code {
+    background: transparent;
+    border: none;
+    padding: 0;
+    font-size: inherit;
+  }
+
+  .content blockquote {
+    border-left: 3px solid var(--accent);
+    background: var(--accent-dim);
+    margin: 1.4em 0;
+    padding: 0.6em 1em;
+    border-radius: 0 6px 6px 0;
+    color: var(--ink);
+  }
+  .content blockquote p:first-child { margin-top: 0; }
+  .content blockquote p:last-child { margin-bottom: 0; }
+
+  .content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.4em 0;
+    font-size: 0.94em;
+    overflow-x: auto;
+    display: block;
+  }
+  .content thead { background: var(--code-bg); }
+  .content th, .content td {
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    text-align: left;
+    vertical-align: top;
+  }
+  .content th { font-weight: 700; }
+  .content tbody tr:nth-child(even) { background: var(--table-stripe); }
+
+  .content hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 2.4em 0;
+  }
+
+  .content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+  }
+
+  .footer {
+    border-top: 1px solid var(--border);
+    background: var(--panel);
+    margin-top: 32px;
+  }
+  .footer-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 16px 24px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  /* highlight.js minimal token theme using the document palette */
+  .hljs { color: var(--code-ink); background: transparent; }
+  .hljs-keyword, .hljs-built_in, .hljs-type { color: #b4540a; font-weight: 600; }
+  @media (prefers-color-scheme: dark) {
+    .hljs-keyword, .hljs-built_in, .hljs-type { color: #f0a35a; }
+  }
+  .hljs-string, .hljs-attr, .hljs-meta-string { color: #2c8a3e; }
+  @media (prefers-color-scheme: dark) {
+    .hljs-string, .hljs-attr, .hljs-meta-string { color: #79c98a; }
+  }
+  .hljs-number, .hljs-literal { color: #6b3fa0; }
+  @media (prefers-color-scheme: dark) {
+    .hljs-number, .hljs-literal { color: #c4a4f4; }
+  }
+  .hljs-comment, .hljs-meta { color: var(--muted); font-style: italic; }
+  .hljs-name, .hljs-title, .hljs-section, .hljs-selector-tag { color: #0f6997; font-weight: 600; }
+  @media (prefers-color-scheme: dark) {
+    .hljs-name, .hljs-title, .hljs-section, .hljs-selector-tag { color: #6cb8e6; }
+  }
+  .hljs-symbol, .hljs-attribute { color: #b4540a; }
+
+
+  .lede { font-size: 1.08em; color: var(--muted); max-width: 65ch; }
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin: 28px 0 32px;
+  }
+  .card {
+    display: block;
+    padding: 20px 22px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg);
+    color: var(--ink);
+    text-decoration: none;
+    transition: border-color 0.15s, transform 0.15s;
+  }
+  .card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .card.highlight { border-color: var(--accent); background: var(--accent-dim); }
+  .card.highlight .card-eyebrow { color: var(--accent); }
+  .card h3 { margin: 4px 0 8px; font-size: 1.05em; }
+  .card p { margin: 0; color: var(--muted); font-size: 0.94em; line-height: 1.55; }
+  .card-eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="index.html">Beer &amp; Beverages</a>
+      <nav class="topnav">
+        <a href="index.html" class="active">Home</a>
+        <a href="SETUP.html">Setup</a>
+        <a href="PROJECT.html">Project Overview</a>
+        <a href="database/SCHEMA.html">Database Schema</a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout" style="grid-template-columns: 1fr;">
+    <main class="content">
+      
+<h1>Beer &amp; Beverages</h1>
+<p class="lede">Mobile rebuild of the diploma project <em>"Довідка пабів м. Львів"</em> on a new stack: React Native + Expo, FastAPI on Python 3.12, PostgreSQL 16 with PostGIS, an AI Dungeon Master powered by OpenAI GPT-4o, and a WebSocket-based real-time layer for multi-device features.</p>
+
+<div class="cards">
+  <a class="card highlight" href="SETUP.html">
+    <div class="card-eyebrow">Start here</div>
+    <h3>Setup Guide</h3>
+    <p>Everything to install on your Ubuntu/Debian laptop before writing code — system packages, Docker, Python 3.12 via uv, Node 22 via nvm, Expo Go, VS Code, GitHub, OpenAI account, and a verify script that checks it all.</p>
+  </a>
+  <a class="card" href="PROJECT.html">
+    <div class="card-eyebrow">Specification</div>
+    <h3>Project Overview</h3>
+    <p>Vision, technology stack, architecture, feature catalogue (split room, unanimous-consent dice, raid chat, message states, Tavern Tales AI DM), REST API surface, real-time / WebSocket protocol, demo plan, and the 9-phase roadmap.</p>
+  </a>
+  <a class="card" href="database/SCHEMA.html">
+    <div class="card-eyebrow">Reference</div>
+    <h3>Database Schema</h3>
+    <p>PostgreSQL 16 schema with PostGIS, citext, full-text search, JSONB. 44 tables grouped by domain — auth, bars, social, raids, checks, chat, achievements, Tavern Tales — with the design rationale for every column.</p>
+  </a>
+  <a class="card" href="database/schema.sql">
+    <div class="card-eyebrow">DDL</div>
+    <h3>schema.sql</h3>
+    <p>The raw <code>CREATE TABLE</code> statements, enum types, indexes, and triggers. Validated through <code>pgsql-parser</code>: all 68 foreign keys resolve.</p>
+  </a>
+</div>
+
+<h2>Stack at a glance</h2>
+<table>
+  <thead><tr><th>Layer</th><th>Choice</th></tr></thead>
+  <tbody>
+    <tr><td>Mobile UI</td><td>React Native + Expo, Tamagui</td></tr>
+    <tr><td>Navigation</td><td>Expo Router (file-based)</td></tr>
+    <tr><td>Client state</td><td>Redux Toolkit + RTK Query</td></tr>
+    <tr><td>API</td><td>FastAPI on Python 3.12, SQLAlchemy 2.0 async + Alembic</td></tr>
+    <tr><td>Auth</td><td>JWT access + rotating refresh, Argon2 password hashing</td></tr>
+    <tr><td>Realtime</td><td>FastAPI WebSocket + Redis Pub/Sub fan-out</td></tr>
+    <tr><td>Database</td><td>PostgreSQL 16 + PostGIS + citext + pg_trgm</td></tr>
+    <tr><td>Object storage</td><td>S3-compatible (Cloudflare R2 or AWS S3) via presigned URLs</td></tr>
+    <tr><td>Push</td><td>Expo Push Notifications</td></tr>
+  </tbody>
+</table>
+
+    </main>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      Diploma project &middot; Lviv Polytechnic &middot; Mobile rebuild of "Довідка пабів м. Львів"
+    </div>
+  </footer>
+</body>
+</html>

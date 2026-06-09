@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>B&B — Home Feed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=JetBrains+Mono:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-base: #F9FAFB; --bg-card: #FFFFFF; --bg-elevated: #FFFFFF;
+    --brand-primary: #6366F1; --brand-primary-hover: #4F46E5; --brand-primary-subtle: #E0E7FF;
+    --accent-gold: #F59E0B; --accent-gold-subtle: #FEF3C7; --accent-gold-text: #B45309;
+    --accent-secondary: #10B981; --accent-secondary-subtle: #D1FAE5;
+    --success: #059669; --warning: #D97706; --error: #DC2626;
+    --text-primary: #111827; --text-secondary: #6B7280; --text-disabled: #9CA3AF;
+    --text-on-brand: #FFFFFF; --text-on-gold: #111827;
+    --border-default: #E5E7EB; --border-strong: #D1D5DB; --border-focus: #6366F1;
+    --race-dwarf-bg: #FFEDD5; --race-dwarf-text: #9A3412;
+    --race-elf-bg: #DCFCE7; --race-elf-text: #166534;
+    --race-human-bg: #DBEAFE; --race-human-text: #1E40AF;
+    --race-orc-bg: #ECFCCB; --race-orc-text: #4D7C0F;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+  body { background: #1a1a2e; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'Plus Jakarta Sans', sans-serif; padding: 24px; }
+
+  /* Phone frame */
+  .phone { width: 375px; height: 812px; background: var(--bg-base); border-radius: 44px; overflow: hidden; position: relative; box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 0 0 10px #2a2a3e, inset 0 0 0 2px rgba(255,255,255,0.05); display: flex; flex-direction: column; }
+  .status-bar { height: 44px; background: var(--bg-base); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; flex-shrink: 0; }
+  .status-bar .time { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 15px; color: var(--text-primary); }
+  .status-bar .icons { display: flex; gap: 6px; align-items: center; }
+  .status-bar .icons svg { color: var(--text-primary); }
+
+  /* Sticky header */
+  .header { padding: 8px 20px 12px; background: rgba(249,250,251,0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-default); flex-shrink: 0; z-index: 10; }
+  .header-row { display: flex; align-items: center; justify-content: space-between; }
+  .greeting { font-family: 'Plus Jakarta Sans', sans-serif; }
+  .greeting .sub { font-size: 12px; color: var(--text-secondary); font-weight: 400; }
+  .greeting .name { font-size: 18px; color: var(--text-primary); font-weight: 700; margin-top: 1px; }
+  .header-actions { display: flex; align-items: center; gap: 12px; }
+  .icon-btn { width: 40px; height: 40px; border-radius: 12px; background: var(--bg-card); border: 1px solid var(--border-default); display: flex; align-items: center; justify-content: center; position: relative; cursor: pointer; }
+  .notif-badge { position: absolute; top: 7px; right: 7px; width: 8px; height: 8px; background: var(--error); border-radius: 50%; border: 1.5px solid var(--bg-base); }
+  .avatar-sm { width: 36px; height: 36px; border-radius: 50%; background: var(--race-dwarf-bg); border: 2.5px solid var(--race-dwarf-text); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: var(--race-dwarf-text); overflow: hidden; }
+
+  /* Scrollable content */
+  .scroll-area { flex: 1; overflow-y: auto; scrollbar-width: none; padding-bottom: 20px; }
+  .scroll-area::-webkit-scrollbar { display: none; }
+
+  /* Section label */
+  .section-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 20px 12px; }
+  .section-title { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 600; color: var(--text-primary); }
+  .see-all { font-size: 13px; font-weight: 600; color: var(--brand-primary); }
+
+  /* Horizontal tavern cards */
+  .h-scroll { display: flex; gap: 12px; padding: 0 20px 4px; overflow-x: auto; scrollbar-width: none; }
+  .h-scroll::-webkit-scrollbar { display: none; }
+  .tavern-card { width: 200px; flex-shrink: 0; background: var(--bg-card); border-radius: 16px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.07); border: 1px solid var(--border-default); }
+  .tavern-card-img { height: 110px; position: relative; overflow: hidden; }
+  .tavern-card-img img { width: 100%; height: 100%; object-fit: cover; }
+  .tavern-card-img .overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.4)); }
+  .tavern-card-img .rating { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.55); backdrop-filter: blur(4px); border-radius: 8px; padding: 3px 8px; display: flex; align-items: center; gap: 3px; }
+  .tavern-card-img .rating .star { color: var(--accent-gold); font-size: 11px; }
+  .tavern-card-img .rating span { font-size: 11px; font-weight: 700; color: #fff; }
+  .tavern-card-body { padding: 10px 12px 12px; }
+  .tavern-name { font-family: 'Fraunces', serif; font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tavern-meta { display: flex; align-items: center; gap: 6px; }
+  .chip-sm { font-size: 11px; font-weight: 600; color: var(--text-secondary); background: var(--bg-base); border: 1px solid var(--border-default); border-radius: 999px; padding: 2px 8px; }
+  .chip-dist { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500; color: var(--text-secondary); }
+
+  /* Raid cards */
+  .raid-list { padding: 0 20px; display: flex; flex-direction: column; gap: 12px; }
+  .raid-card { background: var(--bg-card); border-radius: 16px; padding: 14px 16px; border: 1px solid var(--border-default); box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 12px; }
+  .raid-icon { width: 44px; height: 44px; border-radius: 12px; background: var(--brand-primary-subtle); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+  .raid-info { flex: 1; min-width: 0; }
+  .raid-name { font-size: 14px; font-weight: 700; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .raid-where { font-size: 12px; color: var(--text-secondary); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .raid-right { text-align: right; flex-shrink: 0; }
+  .raid-time { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; color: var(--brand-primary); }
+  .raid-party { font-size: 11px; color: var(--text-secondary); margin-top: 3px; }
+  .rsvp-going { font-size: 11px; font-weight: 600; color: var(--success); background: #D1FAE5; border-radius: 999px; padding: 2px 8px; display: inline-block; margin-top: 4px; }
+  .rsvp-maybe { font-size: 11px; font-weight: 600; color: var(--warning); background: #FEF3C7; border-radius: 999px; padding: 2px 8px; display: inline-block; margin-top: 4px; }
+
+  /* Activity feed */
+  .activity-list { padding: 0 20px; display: flex; flex-direction: column; gap: 2px; }
+  .activity-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border-default); }
+  .activity-item:last-child { border-bottom: none; }
+  .act-avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; }
+  .act-text { flex: 1; font-size: 13px; color: var(--text-primary); line-height: 18px; }
+  .act-text strong { font-weight: 700; }
+  .act-time { font-size: 11px; color: var(--text-disabled); flex-shrink: 0; }
+  .act-icon { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+
+  /* FAB */
+  .fab { position: absolute; bottom: 28px; right: 20px; width: 56px; height: 56px; border-radius: 999px; background: var(--accent-gold); box-shadow: 0 4px 20px rgba(245,158,11,0.4); display: flex; align-items: center; justify-content: center; font-size: 22px; cursor: pointer; z-index: 20; }
+
+  /* Bottom nav */
+  .bottom-nav { height: 72px; background: var(--bg-card); border-top: 1px solid var(--border-default); display: flex; align-items: center; justify-content: space-around; flex-shrink: 0; padding-bottom: 8px; }
+  .nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; padding: 6px 12px; }
+  .nav-icon { font-size: 22px; color: var(--text-disabled); }
+  .nav-icon.active { color: var(--brand-primary); }
+  .nav-label { font-size: 10px; font-weight: 600; color: var(--text-disabled); }
+  .nav-label.active { color: var(--brand-primary); }
+  .nav-badge { position: relative; }
+  .nav-badge-dot { position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; background: var(--error); border-radius: 50%; border: 1.5px solid var(--bg-card); }
+</style>
+</head>
+<body>
+<div class="phone">
+  <!-- Status bar -->
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <div class="icons">
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><rect x="0" y="3" width="3" height="9" rx="1"/><rect x="4.5" y="2" width="3" height="10" rx="1"/><rect x="9" y="0.5" width="3" height="11.5" rx="1"/><rect x="13.5" y="0" width="2.5" height="12" rx="1" opacity=".3"/></svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 2.4C5.6 2.4 3.5 3.4 2 5L0 3C2.1 1.1 4.9 0 8 0s5.9 1.1 8 3l-2 2C12.5 3.4 10.4 2.4 8 2.4z"/><path d="M8 6c-1.4 0-2.6.6-3.5 1.5L3 6C4.3 4.8 6.1 4 8 4s3.7.8 5 2l-1.5 1.5C10.6 6.6 9.4 6 8 6z"/><circle cx="8" cy="10" r="2"/></svg>
+      <svg width="25" height="12" viewBox="0 0 25 12" fill="currentColor"><rect x="0" y="1" width="22" height="10" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".4"/><rect x="1.5" y="2.5" width="16" height="7" rx="1.5"/><rect x="22.5" y="3.5" width="2" height="5" rx="1"/></svg>
+    </div>
+  </div>
+
+  <!-- Sticky header -->
+  <div class="header">
+    <div class="header-row">
+      <div class="greeting">
+        <div class="sub">Good morning, Adventurer 🍺</div>
+        <div class="name">Yaroslav</div>
+      </div>
+      <div class="header-actions">
+        <div class="icon-btn">
+          🔔
+          <div class="notif-badge"></div>
+        </div>
+        <div class="avatar-sm">Y</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scrollable body -->
+  <div class="scroll-area">
+
+    <!-- Recommended Taverns -->
+    <div class="section-header">
+      <span class="section-title">⚔️ Taverns Near You</span>
+      <span class="see-all">See all</span>
+    </div>
+    <div class="h-scroll">
+      <div class="tavern-card">
+        <div class="tavern-card-img" style="background: linear-gradient(135deg, #7c3f00, #b8761a);">
+          <div class="overlay"></div>
+          <div class="rating"><span class="star">★</span><span>4.8</span></div>
+        </div>
+        <div class="tavern-card-body">
+          <div class="tavern-name">Lviv Craft Haven</div>
+          <div class="tavern-meta">
+            <span class="chip-sm">🍺 Craft</span>
+            <span class="chip-dist">0.4 km</span>
+          </div>
+        </div>
+      </div>
+      <div class="tavern-card">
+        <div class="tavern-card-img" style="background: linear-gradient(135deg, #1a3a5c, #2d6a8a);">
+          <div class="overlay"></div>
+          <div class="rating"><span class="star">★</span><span>4.6</span></div>
+        </div>
+        <div class="tavern-card-body">
+          <div class="tavern-name">The Dragon's Den</div>
+          <div class="tavern-meta">
+            <span class="chip-sm">🎸 Live</span>
+            <span class="chip-dist">1.1 km</span>
+          </div>
+        </div>
+      </div>
+      <div class="tavern-card">
+        <div class="tavern-card-img" style="background: linear-gradient(135deg, #2d3748, #4a5568);">
+          <div class="overlay"></div>
+          <div class="rating"><span class="star">★</span><span>4.5</span></div>
+        </div>
+        <div class="tavern-card-body">
+          <div class="tavern-name">Old Quarter Pub</div>
+          <div class="tavern-meta">
+            <span class="chip-sm">🕯 Cozy</span>
+            <span class="chip-dist">1.8 km</span>
+          </div>
+        </div>
+      </div>
+      <div class="tavern-card">
+        <div class="tavern-card-img" style="background: linear-gradient(135deg, #4a1942, #7b2f6e);">
+          <div class="overlay"></div>
+          <div class="rating"><span class="star">★</span><span>4.7</span></div>
+        </div>
+        <div class="tavern-card-body">
+          <div class="tavern-name">Arcane Alehouse</div>
+          <div class="tavern-meta">
+            <span class="chip-sm">✨ Magic</span>
+            <span class="chip-dist">2.2 km</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Upcoming Raids -->
+    <div class="section-header">
+      <span class="section-title">🗡️ Your Upcoming Raids</span>
+      <span class="see-all">See all</span>
+    </div>
+    <div class="raid-list">
+      <div class="raid-card">
+        <div class="raid-icon">🍻</div>
+        <div class="raid-info">
+          <div class="raid-name">Friday Night Fellowship</div>
+          <div class="raid-where">Lviv Craft Haven · Party of 5</div>
+        </div>
+        <div class="raid-right">
+          <div class="raid-time">19:00</div>
+          <div class="raid-party">Fri, May 29</div>
+          <div class="rsvp-going">Going</div>
+        </div>
+      </div>
+      <div class="raid-card">
+        <div class="raid-icon">⚔️</div>
+        <div class="raid-info">
+          <div class="raid-name">Weekend Warriors</div>
+          <div class="raid-where">The Dragon's Den · Party of 3</div>
+        </div>
+        <div class="raid-right">
+          <div class="raid-time">21:30</div>
+          <div class="raid-party">Sat, May 30</div>
+          <div class="rsvp-maybe">Maybe</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Friends' Activity -->
+    <div class="section-header">
+      <span class="section-title">🧙 Friends' Activity</span>
+    </div>
+    <div class="activity-list">
+      <div class="activity-item">
+        <div class="act-avatar" style="background: var(--race-elf-bg); color: var(--race-elf-text);">S</div>
+        <div class="act-text"><strong>Sophia (Elf)</strong> checked in at <strong>Arcane Alehouse</strong> ✨</div>
+        <span class="act-time">2m</span>
+      </div>
+      <div class="activity-item">
+        <div class="act-avatar" style="background: var(--race-orc-bg); color: var(--race-orc-text);">M</div>
+        <div class="act-text"><strong>Max (Orc)</strong> became the 🏆 Kind Soul at The Dragon's Den</div>
+        <span class="act-time">14m</span>
+      </div>
+      <div class="activity-item">
+        <div class="act-avatar" style="background: var(--race-human-bg); color: var(--race-human-text);">A</div>
+        <div class="act-text"><strong>Andriy (Human)</strong> created a Raid — <strong>Friday Night Fellowship</strong></div>
+        <span class="act-time">1h</span>
+      </div>
+      <div class="activity-item">
+        <div class="act-avatar" style="background: var(--race-dwarf-bg); color: var(--race-dwarf-text);">K</div>
+        <div class="act-text"><strong>Kateryna (Dwarf)</strong> unlocked achievement: <strong>🍺 Century Drinker</strong></div>
+        <span class="act-time">3h</span>
+      </div>
+    </div>
+
+    <div style="height: 80px;"></div>
+  </div>
+
+  <!-- FAB -->
+  <div class="fab">⚔️</div>
+
+  <!-- Bottom nav -->
+  <div class="bottom-nav">
+    <div class="nav-item">
+      <div class="nav-icon active">🏠</div>
+      <div class="nav-label active">Home</div>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon">🍺</div>
+      <div class="nav-label">Bars</div>
+    </div>
+    <div class="nav-item nav-badge">
+      <div class="nav-icon">👥</div>
+      <div class="nav-badge-dot"></div>
+      <div class="nav-label">Friends</div>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon">⚔️</div>
+      <div class="nav-label">Profile</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

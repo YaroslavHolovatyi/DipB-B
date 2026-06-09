@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<title>Рис. 3.1 — ER-діаграма головних сутностей</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #ffffff; font-family: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif; color: #1f2937; }
+  .wrap { width: 1500px; margin: 24px auto; padding: 24px; }
+  h1 { font-size: 18px; font-weight: 600; text-align: center; margin: 0 0 24px; color: #111827; }
+  svg { display: block; margin: 0 auto; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; }
+  .caption { text-align: center; margin-top: 12px; font-size: 14px; font-style: italic; color: #4b5563; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Рис. 3.1 — ER-діаграма головних сутностей бази даних Beers&amp;Beverages</h1>
+  <svg viewBox="0 0 1500 980" width="1500" height="980" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <!-- Crow's foot "many" -->
+      <marker id="many" viewBox="0 0 16 16" refX="14" refY="8" markerWidth="14" markerHeight="14" orient="auto">
+        <path d="M14,8 L2,2 M14,8 L2,8 M14,8 L2,14" stroke="#334155" stroke-width="1.4" fill="none"/>
+      </marker>
+      <!-- "one" notation -->
+      <marker id="one" viewBox="0 0 16 16" refX="14" refY="8" markerWidth="14" markerHeight="14" orient="auto">
+        <line x1="6" y1="2" x2="6" y2="14" stroke="#334155" stroke-width="1.6"/>
+      </marker>
+    </defs>
+
+    <!-- ===== Zone backgrounds (4 logical groups) ===== -->
+    <!-- "Особистість" — top-left -->
+    <rect x="30" y="60" width="380" height="420" rx="14" fill="#eff6ff" stroke="#bfdbfe" stroke-width="2" stroke-dasharray="6 4"/>
+    <text x="50" y="88" font-size="14" font-weight="700" fill="#1d4ed8">Група «Особистість»</text>
+    <text x="50" y="106" font-size="11" fill="#3b82f6">users · refresh_tokens · favorites</text>
+
+    <!-- "Заклади" — top-right -->
+    <rect x="430" y="60" width="430" height="420" rx="14" fill="#ecfdf5" stroke="#a7f3d0" stroke-width="2" stroke-dasharray="6 4"/>
+    <text x="450" y="88" font-size="14" font-weight="700" fill="#047857">Група «Заклади»</text>
+    <text x="450" y="106" font-size="11" fill="#10b981">venues · venue_photos · venue_categories · venue_reviews</text>
+
+    <!-- "Візит" — bottom-left -->
+    <rect x="30" y="500" width="640" height="450" rx="14" fill="#fff7ed" stroke="#fed7aa" stroke-width="2" stroke-dasharray="6 4"/>
+    <text x="50" y="528" font-size="14" font-weight="700" fill="#c2410c">Група «Візит»</text>
+    <text x="50" y="546" font-size="11" fill="#ea580c">checkins · receipts · receipt_items</text>
+
+    <!-- "Історія" — bottom-right + right column -->
+    <rect x="690" y="500" width="780" height="450" rx="14" fill="#f5f3ff" stroke="#ddd6fe" stroke-width="2" stroke-dasharray="6 4"/>
+    <text x="710" y="528" font-size="14" font-weight="700" fill="#6d28d9">Група «Історія»</text>
+    <text x="710" y="546" font-size="11" fill="#8b5cf6">tales · tale_likes · tale_share_links</text>
+
+    <!-- Right column: services -->
+    <rect x="880" y="60" width="590" height="420" rx="14" fill="#fafaf9" stroke="#d6d3d1" stroke-width="2" stroke-dasharray="6 4"/>
+    <text x="900" y="88" font-size="14" font-weight="700" fill="#44403c">Інфраструктура зберігання</text>
+    <text x="900" y="106" font-size="11" fill="#78716c">PostgreSQL 16 · PostGIS 3.4 · Redis 7</text>
+
+    <!-- ===== ENTITIES ===== -->
+
+    <!-- users -->
+    <g>
+      <rect x="70" y="130" width="220" height="120" rx="6" fill="#ffffff" stroke="#1e3a8a" stroke-width="1.8"/>
+      <rect x="70" y="130" width="220" height="28" rx="6" fill="#1d4ed8"/>
+      <text x="180" y="150" text-anchor="middle" fill="#ffffff" font-size="14" font-weight="700">users</text>
+      <text x="82" y="178" font-size="11" font-family="monospace" fill="#b91c1c" font-weight="700">PK id : UUID</text>
+      <text x="82" y="196" font-size="11" font-family="monospace" fill="#1f2937">email : citext</text>
+      <text x="82" y="214" font-size="11" font-family="monospace" fill="#1f2937">display_name : text</text>
+      <text x="82" y="232" font-size="11" font-family="monospace" fill="#1f2937">role : enum</text>
+    </g>
+
+    <!-- refresh_tokens -->
+    <g>
+      <rect x="70" y="280" width="220" height="90" rx="6" fill="#ffffff" stroke="#1e3a8a" stroke-width="1.8"/>
+      <rect x="70" y="280" width="220" height="28" rx="6" fill="#1d4ed8"/>
+      <text x="180" y="300" text-anchor="middle" fill="#ffffff" font-size="14" font-weight="700">refresh_tokens</text>
+      <text x="82" y="328" font-size="11" font-family="monospace" fill="#b91c1c" font-weight="700">PK id</text>
+      <text x="82" y="346" font-size="11" font-family="monospace" fill="#1d4ed8" font-style="italic">FK user_id</text>
+      <text x="82" y="364" font-size="11" font-family="monospace" fill="#1f2937">expires_at, device</text>
+    </g>
+
+    <!-- favorites -->
+    <g>
+      <rect x="70" y="395" width="220" height="70" rx="6" fill="#ffffff" stroke="#1e3a8a" stroke-width="1.8"/>
+      <rect x="70" y="395" width="220" height="28" rx="6" fill="#1d4ed8"/>
+      <text x="180" y="415" text-anchor="middle" fill="#ffffff" font-size="14" font-weight="700">favorites</text>
+      <text x="82" y="443" font-size="11" font-family="monospace" fill="#1d4ed8" font-style="italic">PK,FK user_id · venue_id</text>
+      <text x="82" y="459" font-size="11" font-family="monospace" fill="#1f2937">created_at</text>
+    </g>
+
+    <!-- venues -->
+    <g>
+      <rect x="470" y="130" width="260" height="140" rx="6" fill="#ffffff" stroke="#064e3b" stroke-width="1.8"/>
+      <rect x="470" y="130" width="260" height="28" rx="6" fill="#047857"/>
+      <text x="600" y="150" text-anchor="middle" fill="#ffffff" font-size="14" font-weight="700">venues</text>
+      <text x="482" y="178" font-size="11" font-family="monospace" fill="#b91c1c" font-weight="700">PK id : UUID</text>
+      <text x="482" y="196" font-size="11" font-family="monospace" fill="#1f2937">name, slug, category</text>
+      <text x="482" y="214" font-size="11" font-family="monospace" fill="#047857" font-weight="700">geom : GEOGRAPHY(POINT)</text>
+      <text x="482" y="232" font-size="11" font-family="monospace" fill="#1f2937">address, avg_check</text>
+      <text x="482" y="250" font-size="11" font-family="monospace" fill="#1f2937">opening_hours : jsonb</text>
+    </g>
+
+    <!-- venue_photos -->
+    <g>
+      <rect x="470" y="300" width="180" height="70" rx="6" fill="#ffffff" stroke="#064e3b" stroke-width="1.8"/>
+      <rect x="470" y="300" width="180" height="28" rx="6" fill="#047857"/>
+      <text x="560" y="320" text-anchor="middle" fill="#ffffff" font-size="13" font-weight="700">venue_photos</text>
+      <text x="482" y="348" font-size="11" font-family="monospace" fill="#1d4ed8" font-style="italic">FK venue_id</text>
+      <text x="482" y="364" font-size="11" font-family="monospace" fill="#1f2937">url, alt_text</text>
+    </g>
+
+    <!-- venue_categories -->
+    <g>
+      <rect x="670" y="300" width="180" height="70" rx="6" fill="#ffffff" stroke="#064e3b" stroke-width="1.8"/>
+      <rect x="670" y="300" width="180" height="28" rx="6" fill="#047857"/>
+      <text x="760" y="320" text-anchor="middle" fill="#ffffff" font-size="13" font-weight="700">venue_categories</text>
+      <text x="682" y="348" font-size="11" font-family="monospace" fill="#b91c1c" font-weight="700">PK code</text>
+      <text x="682" y="364" font-size="11" font-family="monospace" fill="#1f2937">label, icon</text>
+    </g>
+
+    <!-- venue_reviews -->
+    <g>
+      <rect x="470" y="395" width="380" height="70" rx="6" fill="#ffffff" stroke="#064e3b" stroke-width="1.8"/>
+      <rect x="470" y="395" width="380" height="28" rx="6" fill="#047857"/>
+      <text x="660" y="415" text-anchor="middle" fill="#ffffff" font-size="14" font-weight="700">venue_reviews</text>
+      <text x="482" y="443" font-size="11" font-family="monospace" fill="#1d4ed8" font-style="italic">PK,FK user_id · venue_id</text>
+      <text x="482" y="459" font-size="11" font-family="monospace" fill="#1f2937">rating : int · comment : text</text>
+    </g>
+
+    <!-- checkins -->
+    <g>
+      <rect x="80" y="580" width="260" height="140" rx="6" fill="#ffffff" stroke="#7c2d12" stroke-width="1.8"/>
+      <rect x="80" y="580" width="260" height="28" rx="6" fill="#c2410c"/>
+      <text x="210" y="600" text-anchor="middle" fill="#ffffff" font-size="14" font-weight="700">checkins</text>
+      <text x="92" y="628" font-size="11" font-family="monospace" fill="#b91c1c" font-weight="700">PK id : UUID</text>
+      <text x="92" y="646" font-size="11" font-family="monospace" fill="#1d4ed8" font-style="italic">FK user_id → users</text>
+      <text x="92" y="664" font-size="11" font-family="monospace" fill="#1d4ed8" font-style="italic">FK venue_id → venues</text>
+      <text x="92" y="682" font-size="11" font-family="monospace" fill="#1f2937">checked_in_at : ts</text>
+      <text x="92" y="700" font-size="11" font-family="monospace" fill="#047857" font-weight="700">geom : GEOGRAPHY(POINT)</text>
+    </g>
+
+    <!-- receipts -->
+    <g>
+      <rect x="370" y="580" width="270" height="140" rx="6" fill="#ffffff" stroke="#7c2d12" stroke-width="1.8"/>
+      <rect x="370" y="580" width="270" height="28" rx="6" fill="#c2410c"/>
+      <text x="505" y="600" text-anchor="middle" fill="#ffffff" font-size="14" font-weight="700">receipts</text>
+      <text x="382" y="628" font-size="11" font-family="monospace" fill="#b91c1c" font-weight="700">PK id : UUID</text>
+      <text x="382" y="646" font-size="11" font-family="monospace" fill="#1d4ed8" font-style="italic">FK user_id · venue_id</text>
+      <text x="382" y="664" font-size="11" font-family="monospace" fill="#1f2937">total_amount, currency</text>
+      <text x="382" y="682" font-size="11" font-family="monospace" fill="#1f2937">image_url : text</text>
+      <text x="382" y="700" font-size="11" font-family="monospace" fill="#1f2937">parsed_items : jsonb</text>
+    </g>
+
+    <!-- receipt_items -->
+    <g>
+      <rect x="370" y="760" width="270" height="120" rx="6" fill="#ffffff" stroke="#7c2d12" stroke-width="1.8"/>
+      <rect x="370" y="760" width="270" height="28" rx="6" fill="#c2410c"/>
+      <text x="505" y="780" text-anchor="middle" fill="#ffffff" font-size="14" font-weight="700">receipt_items</text>
+      <text x="382" y="808" font-size="11" font-family="monospace" fill="#b91c1c" font-weight="700">PK id : UUID</text>
+      <text x="382" y="826" font-size="11" font-family="monospace" fill="#1d4ed8" font-style="italic">FK receipt_id → receipts</text>
+      <text x="382" y="844" font-size="11" font-family="monospace" fill="#1f2937">name, qty</text>
+      <text x="382" y="862" font-size="11" font-family="monospace" fill="#1f2937">unit_price : numeric</text>
+    </g>
+
+    <!-- tales -->
+    <g>
+      <rect x="730" y="580" width="270" height="160" rx="6" fill="#ffffff" stroke="#4c1d95" stroke-width="1.8"/>
+      <rect x="730" y="580" width="270" height="28" rx="6" fill="#6d28d9"/>
+      <text x="865" y="600" text-anchor="middle" fill="#ffffff" font-size="14" font-weight="700">tales</text>
+      <text x="742" y="628" font-size="11" font-family="monospace" fill="#b91c1c" font-weight="700">PK id : UUID</text>
+      <text x="742" y="646" font-size="11" font-family="monospace" fill="#1d4ed8" font-style="italic">FK user_id → users</text>
+      <text x="742" y="664" font-size="11" font-family="monospace" fill="#1d4ed8" font-style="italic">FK checkin_id → checkins</text>
+      <text x="742" y="682" font-size="11" font-family="monospace" fill="#1f2937">content : text (120–180 слів)</text>
+      <text x="742" y="700" font-size="11" font-family="monospace" fill="#1f2937">model_used : text</text>
+      <text x="742" y="718" font-size="11" font-family="monospace" fill="#1f2937">created_at : ts</text>
+    </g>
+
+    <!-- tale_likes -->
+    <g>
+      <rect x="1030" y="580" width="200" height="90" rx="6" fill="#ffffff" stroke="#4c1d95" stroke-width="1.8"/>
+      <rect x="1030" y="580" width="200" height="28" rx="6" fill="#6d28d9"/>
+      <text x="1130" y="600" text-anchor="middle" fill="#ffffff" font-size="14" font-weight="700">tale_likes</text>
+      <text x="1042" y="628" font-size="11" font-family="monospace" fill="#1d4ed8" font-style="italic">PK,FK tale_id</text>
+      <text x="1042" y="646" font-size="11" font-family="monospace" fill="#1d4ed8" font-style="italic">PK,FK user_id</text>
+      <text x="1042" y="664" font-size="11" font-family="monospace" fill="#1f2937">liked_at : ts</text>
+    </g>
+
+    <!-- tale_share_links -->
+    <g>
+      <rect x="1260" y="580" width="200" height="110" rx="6" fill="#ffffff" stroke="#4c1d95" stroke-width="1.8"/>
+      <rect x="1260" y="580" width="200" height="28" rx="6" fill="#6d28d9"/>
+      <text x="1360" y="600" text-anchor="middle" fill="#ffffff" font-size="14" font-weight="700">tale_share_links</text>
+      <text x="1272" y="628" font-size="11" font-family="monospace" fill="#b91c1c" font-weight="700">PK token</text>
+      <text x="1272" y="646" font-size="11" font-family="monospace" fill="#1d4ed8" font-style="italic">FK tale_id</text>
+      <text x="1272" y="664" font-size="11" font-family="monospace" fill="#1f2937">created_at</text>
+      <text x="1272" y="682" font-size="11" font-family="monospace" fill="#1f2937">expires_at</text>
+    </g>
+
+    <!-- Infrastructure boxes -->
+    <g>
+      <rect x="910" y="130" width="240" height="80" rx="8" fill="#0f172a" stroke="#000000"/>
+      <text x="1030" y="158" text-anchor="middle" fill="#ffffff" font-size="14" font-weight="700">PostgreSQL 16 + PostGIS 3.4</text>
+      <text x="1030" y="180" text-anchor="middle" fill="#94a3b8" font-size="11">GIST-індекси, ACID, JSONB</text>
+      <text x="1030" y="198" text-anchor="middle" fill="#94a3b8" font-size="11">pg_trgm для нечіткого пошуку</text>
+
+      <rect x="1170" y="130" width="280" height="80" rx="8" fill="#7f1d1d" stroke="#450a0a"/>
+      <text x="1310" y="158" text-anchor="middle" fill="#ffffff" font-size="14" font-weight="700">Redis 7</text>
+      <text x="1310" y="180" text-anchor="middle" fill="#fecaca" font-size="11">кеш геозапитів · ARQ-черги</text>
+      <text x="1310" y="198" text-anchor="middle" fill="#fecaca" font-size="11">blacklist refresh-токенів</text>
+
+      <rect x="910" y="230" width="540" height="80" rx="8" fill="#1e3a5f" stroke="#0f172a"/>
+      <text x="1180" y="258" text-anchor="middle" fill="#ffffff" font-size="14" font-weight="700">Alembic — версіонування схеми</text>
+      <text x="1180" y="280" text-anchor="middle" fill="#bfdbfe" font-size="11">міграції під контролем системи версій</text>
+
+      <rect x="910" y="330" width="540" height="140" rx="8" fill="#fef3c7" stroke="#b45309"/>
+      <text x="1180" y="358" text-anchor="middle" fill="#0f172a" font-size="14" font-weight="700">Логічні групи (за зонами)</text>
+      <text x="930" y="382" font-size="12" fill="#1d4ed8">● «Особистість» — облікові дані, токени, обране</text>
+      <text x="930" y="402" font-size="12" fill="#047857">● «Заклади» — каталог, фото, категорії, відгуки</text>
+      <text x="930" y="422" font-size="12" fill="#c2410c">● «Візит» — чекіни, чеки, позиції чеку</text>
+      <text x="930" y="442" font-size="12" fill="#6d28d9">● «Історія» — Tavern Tales, лайки, посилання</text>
+      <text x="930" y="462" font-size="11" font-style="italic" fill="#78716c">кольори у легенді відповідають фону зон вище</text>
+    </g>
+
+    <!-- ===== Relationships ===== -->
+    <g stroke="#334155" stroke-width="1.4" fill="none">
+      <!-- users (1) — (N) refresh_tokens -->
+      <path d="M 180 250 L 180 280" marker-start="url(#one)" marker-end="url(#many)"/>
+
+      <!-- users (1) — (N) favorites -->
+      <path d="M 180 370 L 180 395" marker-start="url(#one)" marker-end="url(#many)"/>
+
+      <!-- venues (1) — (N) venue_photos -->
+      <path d="M 560 270 L 560 300" marker-start="url(#one)" marker-end="url(#many)"/>
+
+      <!-- venues (1) — (N) venue_categories (M:N via category code) -->
+      <path d="M 670 200 C 720 200, 740 250, 760 300" marker-end="url(#many)"/>
+
+      <!-- venues (1) — (N) venue_reviews -->
+      <path d="M 600 270 L 600 395" marker-start="url(#one)" marker-end="url(#many)"/>
+
+      <!-- favorites (N) — (1) venues -->
+      <path d="M 290 430 C 380 430, 420 410, 470 410" marker-start="url(#many)" marker-end="url(#one)"/>
+
+      <!-- users → checkins (1..N) -->
+      <path d="M 200 250 C 200 470, 180 540, 200 580" marker-start="url(#one)" marker-end="url(#many)"/>
+
+      <!-- users → receipts -->
+      <path d="M 220 250 C 280 470, 400 540, 440 580" marker-start="url(#one)" marker-end="url(#many)"/>
+
+      <!-- venues → checkins -->
+      <path d="M 500 270 C 420 410, 320 510, 280 580" marker-start="url(#one)" marker-end="url(#many)"/>
+
+      <!-- venues → receipts -->
+      <path d="M 580 270 C 560 410, 500 510, 480 580" marker-start="url(#one)" marker-end="url(#many)"/>
+
+      <!-- receipts → receipt_items -->
+      <path d="M 505 720 L 505 760" marker-start="url(#one)" marker-end="url(#many)"/>
+
+      <!-- checkins → tales (1..1) -->
+      <path d="M 340 660 C 540 660, 640 660, 730 660" marker-start="url(#one)" marker-end="url(#one)"/>
+
+      <!-- users → tales -->
+      <path d="M 290 200 C 700 200, 820 540, 820 580" marker-start="url(#one)" marker-end="url(#many)"/>
+
+      <!-- tales → tale_likes -->
+      <path d="M 1000 630 L 1030 630" marker-start="url(#one)" marker-end="url(#many)"/>
+
+      <!-- tales → tale_share_links -->
+      <path d="M 1000 680 C 1130 680, 1200 640, 1260 640" marker-start="url(#one)" marker-end="url(#many)"/>
+
+      <!-- users → tale_likes -->
+      <path d="M 290 210 C 900 210, 1140 540, 1140 580" marker-start="url(#one)" marker-end="url(#many)"/>
+    </g>
+
+    <!-- ===== Legend ===== -->
+    <g transform="translate(40,910)">
+      <rect x="0" y="0" width="1420" height="50" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+      <text x="20" y="22" font-size="13" font-weight="700" fill="#0f172a">Позначення:</text>
+
+      <text x="120" y="22" font-size="12" fill="#b91c1c" font-weight="700">PK</text>
+      <text x="148" y="22" font-size="12" fill="#334155">— первинний ключ</text>
+
+      <text x="290" y="22" font-size="12" fill="#1d4ed8" font-style="italic" font-weight="700">FK</text>
+      <text x="316" y="22" font-size="12" fill="#334155">— зовнішній ключ</text>
+
+      <text x="460" y="22" font-size="12" fill="#047857" font-weight="700">geom</text>
+      <text x="498" y="22" font-size="12" fill="#334155">— геопросторове поле PostGIS</text>
+
+      <g transform="translate(720,12)" stroke="#334155" stroke-width="1.4" fill="none">
+        <line x1="0" y1="10" x2="40" y2="10" marker-start="url(#one)" marker-end="url(#many)"/>
+      </g>
+      <text x="780" y="22" font-size="12" fill="#334155">— зв’язок «один до багатьох» (1 ⟶ N)</text>
+
+      <g transform="translate(1080,12)" stroke="#334155" stroke-width="1.4" fill="none">
+        <line x1="0" y1="10" x2="40" y2="10" marker-start="url(#one)" marker-end="url(#one)"/>
+      </g>
+      <text x="1140" y="22" font-size="12" fill="#334155">— зв’язок «один до одного»</text>
+
+      <text x="20" y="40" font-size="11" font-style="italic" fill="#64748b">
+        Стрілки використовують спрощену crow's foot нотацію: вертикальна риска — «один», три «лапки» — «багато».
+      </text>
+    </g>
+  </svg>
+  <div class="caption">10 сутностей у 4 логічних групах: «Особистість», «Заклади», «Візит», «Історія» (PostgreSQL 16 + PostGIS 3.4 + Redis 7)</div>
+</div>
+</body>
+</html>

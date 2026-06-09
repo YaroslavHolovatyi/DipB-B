@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<title>Рис. 2.7 — Шари серверної архітектури</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #ffffff; font-family: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif; color: #1f2937; }
+  .wrap { width: 1000px; margin: 24px auto; padding: 24px; }
+  h1 { font-size: 18px; font-weight: 600; text-align: center; margin: 0 0 24px; color: #111827; }
+  svg { display: block; margin: 0 auto; background: #fafafa; border: 1px solid #e5e7eb; border-radius: 8px; }
+  .caption { text-align: center; margin-top: 12px; font-size: 14px; font-style: italic; color: #4b5563; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Рис. 2.7 — Шари серверної архітектури FastAPI</h1>
+  <svg viewBox="0 0 1000 620" width="1000" height="620" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="arrDown" viewBox="0 0 10 10" refX="5" refY="9" markerWidth="10" markerHeight="10" orient="auto">
+        <path d="M0,0 L10,0 L5,10 z" fill="#0f172a"/>
+      </marker>
+      <marker id="arrUp" viewBox="0 0 10 10" refX="5" refY="1" markerWidth="10" markerHeight="10" orient="auto">
+        <path d="M0,10 L10,10 L5,0 z" fill="#0f172a"/>
+      </marker>
+    </defs>
+
+    <!-- Client -->
+    <rect x="100" y="30" width="800" height="56" rx="8" fill="#1e3a5f" stroke="#0f172a" stroke-width="1.5"/>
+    <text x="500" y="64" text-anchor="middle" fill="#ffffff" font-size="14" font-weight="700">Мобільний клієнт (Expo / React Native) — HTTPS / JSON</text>
+
+    <!-- Arrows down -->
+    <line x1="500" y1="90" x2="500" y2="118" stroke="#0f172a" stroke-width="2" marker-end="url(#arrDown)"/>
+
+    <!-- Layer 1: API -->
+    <rect x="100" y="122" width="800" height="100" rx="10" fill="#0f766e" stroke="#064e3b" stroke-width="1.5"/>
+    <text x="500" y="152" text-anchor="middle" fill="#ffffff" font-size="16" font-weight="700">1. API layer — FastAPI routers</text>
+    <text x="500" y="178" text-anchor="middle" fill="#d1fae5" font-size="12">/auth · /venues · /checkins · /receipts · /tales · /admin</text>
+    <text x="500" y="200" text-anchor="middle" fill="#d1fae5" font-size="12">валідація через Pydantic v2 · OpenAPI / Swagger UI</text>
+
+    <line x1="500" y1="225" x2="500" y2="252" stroke="#0f172a" stroke-width="2" marker-end="url(#arrDown)"/>
+
+    <!-- Layer 2: Services -->
+    <rect x="100" y="256" width="800" height="100" rx="10" fill="#7c2d12" stroke="#431407" stroke-width="1.5"/>
+    <text x="500" y="286" text-anchor="middle" fill="#ffffff" font-size="16" font-weight="700">2. Services layer — бізнес-логіка</text>
+    <text x="500" y="312" text-anchor="middle" fill="#fed7aa" font-size="12">VenueSearchService · CheckInService · ReceiptOCRService · TaleService</text>
+    <text x="500" y="334" text-anchor="middle" fill="#fed7aa" font-size="12">не залежить ні від HTTP, ні від конкретної БД</text>
+
+    <line x1="380" y1="359" x2="380" y2="386" stroke="#0f172a" stroke-width="2" marker-end="url(#arrDown)"/>
+    <line x1="620" y1="359" x2="620" y2="386" stroke="#0f172a" stroke-width="2" marker-end="url(#arrDown)"/>
+
+    <!-- Layer 3a: Repositories -->
+    <rect x="100" y="390" width="390" height="100" rx="10" fill="#5b21b6" stroke="#2e1065" stroke-width="1.5"/>
+    <text x="295" y="420" text-anchor="middle" fill="#ffffff" font-size="16" font-weight="700">3a. Repositories</text>
+    <text x="295" y="446" text-anchor="middle" fill="#ddd6fe" font-size="12">SQLAlchemy 2.0 (async)</text>
+    <text x="295" y="468" text-anchor="middle" fill="#ddd6fe" font-size="12">PostgreSQL + PostGIS, Alembic</text>
+
+    <!-- Layer 3b: Integrations -->
+    <rect x="510" y="390" width="390" height="100" rx="10" fill="#5b21b6" stroke="#2e1065" stroke-width="1.5"/>
+    <text x="705" y="420" text-anchor="middle" fill="#ffffff" font-size="16" font-weight="700">3b. Integrations</text>
+    <text x="705" y="446" text-anchor="middle" fill="#ddd6fe" font-size="12">OpenAI Vision · GPT-4o · S3-сумісне сховище</text>
+    <text x="705" y="468" text-anchor="middle" fill="#ddd6fe" font-size="12">push-сервіс Expo Notifications</text>
+
+    <!-- bottom -->
+    <line x1="295" y1="493" x2="295" y2="522" stroke="#0f172a" stroke-width="2" marker-end="url(#arrDown)"/>
+    <line x1="705" y1="493" x2="705" y2="522" stroke="#0f172a" stroke-width="2" marker-end="url(#arrDown)"/>
+
+    <rect x="100" y="526" width="390" height="64" rx="10" fill="#111827" stroke="#000000" stroke-width="1.5"/>
+    <text x="295" y="554" text-anchor="middle" fill="#ffffff" font-size="14" font-weight="700">PostgreSQL 16 + PostGIS 3.4</text>
+    <text x="295" y="576" text-anchor="middle" fill="#9ca3af" font-size="11">+ Redis 7 (кеш, черги, blacklist токенів)</text>
+
+    <rect x="510" y="526" width="390" height="64" rx="10" fill="#111827" stroke="#000000" stroke-width="1.5"/>
+    <text x="705" y="554" text-anchor="middle" fill="#ffffff" font-size="14" font-weight="700">Зовнішні сервіси</text>
+    <text x="705" y="576" text-anchor="middle" fill="#9ca3af" font-size="11">api.openai.com · MinIO/S3</text>
+  </svg>
+  <div class="caption">Чотиришарова чиста архітектура: API → Services → Repositories / Integrations → інфраструктура</div>
+</div>
+</body>
+</html>

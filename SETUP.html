@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Local Setup — Ubuntu / Debian — Beer & Beverages</title>
+  <style>
+
+  :root {
+    --bg: #fbfaf7;
+    --panel: #ffffff;
+    --ink: #1c1917;
+    --muted: #6b6660;
+    --accent: #0f9d8f;
+    --accent-dim: #0f9d8f22;
+    --border: #e6e1d8;
+    --code-bg: #f6f2ea;
+    --code-ink: #2a241e;
+    --kbd-bg: #ebe6dc;
+    --table-stripe: #fafaf6;
+    font-synthesis: none;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14110e;
+      --panel: #1c1916;
+      --ink: #ece6d8;
+      --muted: #9b9388;
+      --accent: #4cd3c2;
+      --accent-dim: #4cd3c233;
+      --border: #2a2520;
+      --code-bg: #221d18;
+      --code-ink: #ece6d8;
+      --kbd-bg: #2a2520;
+      --table-stripe: #1f1a16;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: saturate(140%) blur(8px);
+  }
+  .topbar-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+  .brand {
+    font-weight: 700;
+    color: var(--ink);
+    text-decoration: none;
+    letter-spacing: -0.01em;
+    font-size: 16px;
+  }
+  .topnav { display: flex; gap: 20px; }
+  .topnav a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    padding: 4px 0;
+    border-bottom: 2px solid transparent;
+  }
+  .topnav a:hover { color: var(--ink); }
+  .topnav a.active { color: var(--ink); border-bottom-color: var(--accent); }
+
+  .layout {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 32px 24px 64px;
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 48px;
+  }
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { position: static !important; max-height: none !important; }
+  }
+
+  .sidebar {
+    position: sticky;
+    top: 80px;
+    align-self: start;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+  }
+  .toc-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .toc ul { list-style: none; padding: 0; margin: 0; }
+  .toc li { margin: 0; padding: 0; }
+  .toc a {
+    display: block;
+    padding: 4px 8px;
+    border-left: 2px solid transparent;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+  .toc a:hover { color: var(--ink); background: var(--accent-dim); }
+  .toc-level-1 a { padding-left: 20px; font-size: 12.5px; }
+  .toc-level-2 a { padding-left: 32px; font-size: 12px; color: var(--muted); }
+
+  .content {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 40px 48px;
+    min-width: 0;
+  }
+  @media (max-width: 700px) {
+    .content { padding: 24px; }
+  }
+
+  .content h1, .content h2, .content h3, .content h4 {
+    line-height: 1.25;
+    letter-spacing: -0.012em;
+    margin-top: 1.8em;
+    margin-bottom: 0.5em;
+    color: var(--ink);
+    scroll-margin-top: 80px;
+    font-weight: 700;
+  }
+  .content h1 {
+    font-size: 2.0em;
+    margin-top: 0;
+    padding-bottom: 0.3em;
+    border-bottom: 1px solid var(--border);
+  }
+  .content h2 {
+    font-size: 1.45em;
+    padding-top: 0.4em;
+    border-top: 1px solid var(--border);
+    padding-top: 1.2em;
+    margin-top: 2em;
+  }
+  .content h3 { font-size: 1.15em; }
+  .content h4 { font-size: 1.0em; color: var(--muted); text-transform: none; }
+
+  .anchor {
+    color: var(--muted);
+    text-decoration: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+    margin-right: 4px;
+    font-weight: 400;
+  }
+  h1:hover .anchor, h2:hover .anchor, h3:hover .anchor, h4:hover .anchor {
+    opacity: 1;
+  }
+
+  .content p { margin: 1em 0; }
+  .content a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; }
+  .content a:hover { border-bottom-color: var(--accent); }
+
+  .content ul, .content ol { margin: 1em 0; padding-left: 1.4em; }
+  .content li { margin: 0.3em 0; }
+  .content li > p { margin: 0.3em 0; }
+
+  .content code {
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    font-size: 0.88em;
+    background: var(--code-bg);
+    color: var(--code-ink);
+    padding: 0.12em 0.36em;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+  .content pre {
+    background: var(--code-bg);
+    color: var(--code-ink);
+    padding: 16px 18px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .content pre code {
+    background: transparent;
+    border: none;
+    padding: 0;
+    font-size: inherit;
+  }
+
+  .content blockquote {
+    border-left: 3px solid var(--accent);
+    background: var(--accent-dim);
+    margin: 1.4em 0;
+    padding: 0.6em 1em;
+    border-radius: 0 6px 6px 0;
+    color: var(--ink);
+  }
+  .content blockquote p:first-child { margin-top: 0; }
+  .content blockquote p:last-child { margin-bottom: 0; }
+
+  .content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.4em 0;
+    font-size: 0.94em;
+    overflow-x: auto;
+    display: block;
+  }
+  .content thead { background: var(--code-bg); }
+  .content th, .content td {
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    text-align: left;
+    vertical-align: top;
+  }
+  .content th { font-weight: 700; }
+  .content tbody tr:nth-child(even) { background: var(--table-stripe); }
+
+  .content hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 2.4em 0;
+  }
+
+  .content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+  }
+
+  .footer {
+    border-top: 1px solid var(--border);
+    background: var(--panel);
+    margin-top: 32px;
+  }
+  .footer-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 16px 24px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  /* highlight.js minimal token theme using the document palette */
+  .hljs { color: var(--code-ink); background: transparent; }
+  .hljs-keyword, .hljs-built_in, .hljs-type { color: #b4540a; font-weight: 600; }
+  @media (prefers-color-scheme: dark) {
+    .hljs-keyword, .hljs-built_in, .hljs-type { color: #f0a35a; }
+  }
+  .hljs-string, .hljs-attr, .hljs-meta-string { color: #2c8a3e; }
+  @media (prefers-color-scheme: dark) {
+    .hljs-string, .hljs-attr, .hljs-meta-string { color: #79c98a; }
+  }
+  .hljs-number, .hljs-literal { color: #6b3fa0; }
+  @media (prefers-color-scheme: dark) {
+    .hljs-number, .hljs-literal { color: #c4a4f4; }
+  }
+  .hljs-comment, .hljs-meta { color: var(--muted); font-style: italic; }
+  .hljs-name, .hljs-title, .hljs-section, .hljs-selector-tag { color: #0f6997; font-weight: 600; }
+  @media (prefers-color-scheme: dark) {
+    .hljs-name, .hljs-title, .hljs-section, .hljs-selector-tag { color: #6cb8e6; }
+  }
+  .hljs-symbol, .hljs-attribute { color: #b4540a; }
+
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="index.html">Beer &amp; Beverages</a>
+      <nav class="topnav"><a href="index.html" class="">Home</a><a href="PROJECT.html" class="">Project Overview</a><a href="SETUP.html" class="active">Setup Guide</a><a href="database/SCHEMA.html" class="">Database Schema</a></nav>
+    </div>
+  </header>
+  <div class="layout">
+    <aside class="sidebar">
+      <nav class="toc" aria-label="Table of contents">
+    <div class="toc-title">Contents</div>
+    <ul><li class="toc-level-0"><a href="#local-setup-ubuntu-debian">Local Setup — Ubuntu / Debian</a></li>
+<li class="toc-level-1"><a href="#what-youre-installing-and-why">What you're installing and why</a></li>
+<li class="toc-level-1"><a href="#1-system-packages">1. System packages</a></li>
+<li class="toc-level-1"><a href="#2-docker-engine-compose">2. Docker Engine + Compose</a></li>
+<li class="toc-level-1"><a href="#3-python-312-via-uv">3. Python 3.12 via uv</a></li>
+<li class="toc-level-1"><a href="#4-nodejs-22-lts-via-nvm">4. Node.js 22 LTS via nvm</a></li>
+<li class="toc-level-1"><a href="#5-expo-go-on-your-phone">5. Expo Go on your phone</a></li>
+<li class="toc-level-1"><a href="#6-vs-code-extensions">6. VS Code + extensions</a></li>
+<li class="toc-level-1"><a href="#7-git-config-github-ssh-key">7. Git config + GitHub SSH key</a></li>
+<li class="toc-level-1"><a href="#8-openai-account-api-key">8. OpenAI account + API key</a></li>
+<li class="toc-level-1"><a href="#9-optional-but-useful">9. Optional but useful</a></li>
+<li class="toc-level-1"><a href="#10-project-directory-docker-compose">10. Project directory & docker-compose</a></li>
+<li class="toc-level-1"><a href="#11-verify-everything-is-installed">11. Verify everything is installed</a></li>
+<li class="toc-level-1"><a href="#12-next-steps-after-setup">12. Next steps after setup</a></li></ul>
+  </nav>
+    </aside>
+    <main class="content">
+      <h1 id="local-setup-ubuntu-debian"><a class="anchor" href="#local-setup-ubuntu-debian" aria-hidden="true">#</a> Local Setup — Ubuntu / Debian</h1>
+<p>Everything you need to install on your Linux laptop before writing code for Beer &amp; Beverages. Walk through it top to bottom; the order matters because later steps depend on earlier ones.</p>
+<h2 id="what-youre-installing-and-why"><a class="anchor" href="#what-youre-installing-and-why" aria-hidden="true">#</a> What you&#39;re installing and why</h2>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Why we need it</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Build tools, git, openssl headers</td>
+<td>Required for building Python wheels and native deps</td>
+</tr>
+<tr>
+<td>Docker + Compose</td>
+<td>Runs PostgreSQL (with PostGIS) and Redis in containers — keeps your laptop clean</td>
+</tr>
+<tr>
+<td>Python 3.12 + uv</td>
+<td>FastAPI backend runtime + the fastest Python package manager</td>
+</tr>
+<tr>
+<td>PostgreSQL client (<code>psql</code>)</td>
+<td>Inspect the database directly from the terminal</td>
+</tr>
+<tr>
+<td>Node.js 22 LTS via nvm</td>
+<td>Runs the Expo dev server and the build tooling</td>
+</tr>
+<tr>
+<td>EAS CLI</td>
+<td>Builds installable <code>.apk</code> / <code>.ipa</code> artefacts for the demo</td>
+</tr>
+<tr>
+<td>Expo Go (on your phone)</td>
+<td>Loads the dev build over the QR code without a native build</td>
+</tr>
+<tr>
+<td>VS Code</td>
+<td>Editor with Python + ESLint + Prettier support</td>
+</tr>
+<tr>
+<td>GitHub CLI / SSH key</td>
+<td>Pull / push to GitHub</td>
+</tr>
+<tr>
+<td>OpenAI account + API key</td>
+<td>Powers the receipt OCR (Vision) and Tavern Tales (GPT-4o)</td>
+</tr>
+<tr>
+<td>DBeaver (optional)</td>
+<td>GUI for inspecting the database visually</td>
+</tr>
+<tr>
+<td>HTTPie (optional)</td>
+<td>Friendly curl alternative for hitting the API</td>
+</tr>
+<tr>
+<td>direnv (optional)</td>
+<td>Auto-loads <code>.env</code> when you <code>cd</code> into the project</td>
+</tr>
+</tbody></table>
+<p>The total install time on a fresh Ubuntu is roughly 30–45 minutes including downloads.</p>
+<h2 id="1-system-packages"><a class="anchor" href="#1-system-packages" aria-hidden="true">#</a> 1. System packages</h2>
+<p>Bring the system up to date and install the build essentials, network tools, and library headers that the rest of the stack depends on.</p>
+<pre><code class="hljs language-bash"><span class="hljs-built_in">sudo</span> apt update &amp;&amp; <span class="hljs-built_in">sudo</span> apt upgrade -y
+<span class="hljs-built_in">sudo</span> apt install -y \
+    build-essential \
+    git \
+    curl \
+    wget \
+    ca-certificates \
+    gnupg \
+    lsb-release \
+    pkg-config \
+    libssl-dev \
+    libffi-dev \
+    libpq-dev \
+    postgresql-client \
+    jq \
+    unzip \
+    zip</code></pre>
+<p><code>postgresql-client</code> gives you <code>psql</code> so you can connect to the dockerised database without installing the full Postgres server on your laptop. <code>libpq-dev</code> is there in case you ever need to compile a Python driver that needs it (asyncpg doesn&#39;t, but it&#39;s harmless).</p>
+<h2 id="2-docker-engine-compose"><a class="anchor" href="#2-docker-engine-compose" aria-hidden="true">#</a> 2. Docker Engine + Compose</h2>
+<p>We use Docker to run PostgreSQL (with PostGIS) and Redis locally — no system pollution, easy to reset, identical to what we&#39;ll deploy. Install the official Docker repo (the version in Ubuntu&#39;s main repo is usually old).</p>
+<pre><code class="hljs language-bash"><span class="hljs-comment"># Add Docker&#x27;s official GPG key and repo</span>
+<span class="hljs-built_in">sudo</span> install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
+    <span class="hljs-built_in">sudo</span> gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+<span class="hljs-built_in">sudo</span> <span class="hljs-built_in">chmod</span> a+r /etc/apt/keyrings/docker.gpg
+
+<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;deb [arch=<span class="hljs-subst">$(dpkg --print-architecture)</span> signed-by=/etc/apt/keyrings/docker.gpg] \
+    https://download.docker.com/linux/ubuntu <span class="hljs-subst">$(. /etc/os-release &amp;&amp; echo <span class="hljs-string">&quot;<span class="hljs-variable">$VERSION_CODENAME</span>&quot;</span>)</span> stable&quot;</span> | \
+    <span class="hljs-built_in">sudo</span> <span class="hljs-built_in">tee</span> /etc/apt/sources.list.d/docker.list &gt; /dev/null
+
+<span class="hljs-built_in">sudo</span> apt update
+<span class="hljs-built_in">sudo</span> apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+<span class="hljs-comment"># Run docker without sudo</span>
+<span class="hljs-built_in">sudo</span> usermod -aG docker <span class="hljs-variable">$USER</span>
+<span class="hljs-comment"># Apply the new group right now without logging out:</span>
+newgrp docker
+
+<span class="hljs-comment"># Sanity check</span>
+docker run --<span class="hljs-built_in">rm</span> hello-world
+docker compose version</code></pre>
+<p>If you&#39;re on Debian (not Ubuntu), swap <code>linux/ubuntu</code> for <code>linux/debian</code> in both URLs.</p>
+<h2 id="3-python-312-via-uv"><a class="anchor" href="#3-python-312-via-uv" aria-hidden="true">#</a> 3. Python 3.12 via uv</h2>
+<p><code>uv</code> is a modern Python package manager (built by Astral, written in Rust). It handles virtualenvs, lockfiles, and can even install Python itself for you. Much faster than pip / poetry.</p>
+<pre><code class="hljs language-bash"><span class="hljs-comment"># Install uv to ~/.local/bin</span>
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+<span class="hljs-comment"># Reload your shell so ~/.local/bin is on PATH</span>
+<span class="hljs-built_in">source</span> ~/.bashrc            <span class="hljs-comment"># or ~/.zshrc</span>
+
+<span class="hljs-comment"># Verify</span>
+uv --version
+
+<span class="hljs-comment"># Install Python 3.12 (uv keeps it under ~/.local/share/uv/python/)</span>
+uv python install 3.12
+uv python list</code></pre>
+<p>You don&#39;t need to install Python with <code>apt</code> if you go this route — uv manages the runtime. Later, inside the <code>backend/</code> folder we&#39;ll run <code>uv sync</code> and it creates a virtualenv with Python 3.12 and all dependencies in one command.</p>
+<h2 id="4-nodejs-22-lts-via-nvm"><a class="anchor" href="#4-nodejs-22-lts-via-nvm" aria-hidden="true">#</a> 4. Node.js 22 LTS via nvm</h2>
+<p>We use nvm so you can switch Node versions later without <code>sudo</code>. Don&#39;t <code>apt install nodejs</code> — Ubuntu&#39;s version is too old and globally installed packages will be a mess.</p>
+<pre><code class="hljs language-bash"><span class="hljs-comment"># Install nvm</span>
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+
+<span class="hljs-comment"># Reload shell so nvm is available</span>
+<span class="hljs-built_in">source</span> ~/.bashrc            <span class="hljs-comment"># or ~/.zshrc</span>
+
+<span class="hljs-comment"># Install Node 22 LTS and make it the default</span>
+nvm install --lts
+nvm <span class="hljs-built_in">alias</span> default <span class="hljs-string">&#x27;lts/*&#x27;</span>
+
+<span class="hljs-comment"># Verify</span>
+node --version    <span class="hljs-comment"># v22.x</span>
+npm --version     <span class="hljs-comment"># 10.x or 11.x</span></code></pre>
+<p>While you&#39;re here, install <code>pnpm</code> (faster than npm for the Expo monorepo) and the EAS CLI for builds:</p>
+<pre><code class="hljs language-bash">npm install -g pnpm
+npm install -g eas-cli
+
+pnpm --version
+eas --version</code></pre>
+<h2 id="5-expo-go-on-your-phone"><a class="anchor" href="#5-expo-go-on-your-phone" aria-hidden="true">#</a> 5. Expo Go on your phone</h2>
+<p>You&#39;ll run the React Native app on your real phone — fastest dev loop, no emulator needed for the day-to-day.</p>
+<ol>
+<li>On your Android phone: open Play Store, install <strong>Expo Go</strong>.</li>
+<li>Make sure your phone and laptop are on the <strong>same Wi-Fi network</strong>.</li>
+<li>Later, when you run <code>npx expo start</code> from the <code>mobile/</code> folder, scan the QR code with Expo Go and the app loads.</li>
+</ol>
+<p>No Android SDK install required for this flow. If you want an emulator later, install Android Studio (~10 GB) and create an AVD; we&#39;ll cross that bridge when we need it.</p>
+<h2 id="6-vs-code-extensions"><a class="anchor" href="#6-vs-code-extensions" aria-hidden="true">#</a> 6. VS Code + extensions</h2>
+<p>The whole project is editable in VS Code. Install via Microsoft&#39;s repo (the snap is fine but the deb gets updates faster):</p>
+<pre><code class="hljs language-bash">wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor &gt; packages.microsoft.gpg
+<span class="hljs-built_in">sudo</span> install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
+<span class="hljs-built_in">sudo</span> sh -c <span class="hljs-string">&#x27;echo &quot;deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main&quot; &gt; /etc/apt/sources.list.d/vscode.list&#x27;</span>
+<span class="hljs-built_in">rm</span> -f packages.microsoft.gpg
+
+<span class="hljs-built_in">sudo</span> apt update
+<span class="hljs-built_in">sudo</span> apt install -y code</code></pre>
+<p>Then install these extensions (open VS Code → Extensions panel, or run from the terminal):</p>
+<pre><code class="hljs language-bash">code --install-extension ms-python.python
+code --install-extension ms-python.vscode-pylance
+code --install-extension charliermarsh.ruff
+code --install-extension dbaeumer.vscode-eslint
+code --install-extension esbenp.prettier-vscode
+code --install-extension bradlc.vscode-tailwindcss
+code --install-extension ms-azuretools.vscode-docker
+code --install-extension cweijan.vscode-postgresql-client2
+code --install-extension christian-kohler.path-intellisense
+code --install-extension expo.vscode-expo-tools</code></pre>
+<h2 id="7-git-config-github-ssh-key"><a class="anchor" href="#7-git-config-github-ssh-key" aria-hidden="true">#</a> 7. Git config + GitHub SSH key</h2>
+<p>Set your identity (used in every commit):</p>
+<pre><code class="hljs language-bash">git config --global user.name  <span class="hljs-string">&quot;Yaroslav Holovatyi&quot;</span>
+git config --global user.email <span class="hljs-string">&quot;yaroslavgolovatyy@gmail.com&quot;</span>
+git config --global init.defaultBranch main
+git config --global pull.rebase <span class="hljs-literal">false</span></code></pre>
+<p>Generate an SSH key and add it to GitHub so <code>git push</code> doesn&#39;t ask for a password every time:</p>
+<pre><code class="hljs language-bash">ssh-keygen -t ed25519 -C <span class="hljs-string">&quot;yaroslavgolovatyy@gmail.com&quot;</span>
+<span class="hljs-comment"># Accept defaults, optionally set a passphrase</span>
+
+<span class="hljs-comment"># Print the public key — copy this to GitHub</span>
+<span class="hljs-built_in">cat</span> ~/.ssh/id_ed25519.pub</code></pre>
+<p>Then open <a href="https://github.com/settings/keys">https://github.com/settings/keys</a>, click &quot;New SSH key&quot;, paste the public key, save.</p>
+<p>Optionally install GitHub&#39;s CLI for <code>gh repo create</code>, <code>gh pr</code>, etc.:</p>
+<pre><code class="hljs language-bash"><span class="hljs-built_in">type</span> -p curl &gt;/dev/null || <span class="hljs-built_in">sudo</span> apt install -y curl
+curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | \
+    <span class="hljs-built_in">sudo</span> <span class="hljs-built_in">dd</span> of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+<span class="hljs-built_in">sudo</span> <span class="hljs-built_in">chmod</span> go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;deb [arch=<span class="hljs-subst">$(dpkg --print-architecture)</span> signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main&quot;</span> | \
+    <span class="hljs-built_in">sudo</span> <span class="hljs-built_in">tee</span> /etc/apt/sources.list.d/github-cli.list &gt; /dev/null
+<span class="hljs-built_in">sudo</span> apt update
+<span class="hljs-built_in">sudo</span> apt install -y gh
+gh auth login</code></pre>
+<h2 id="8-openai-account-api-key"><a class="anchor" href="#8-openai-account-api-key" aria-hidden="true">#</a> 8. OpenAI account + API key</h2>
+<p>Tavern Tales (GPT-4o) and receipt OCR (Vision) both call OpenAI. You need an account with billing.</p>
+<ol>
+<li>Go to <a href="https://platform.openai.com/signup">https://platform.openai.com/signup</a> and create an account.</li>
+<li>Add a payment method at <a href="https://platform.openai.com/settings/organization/billing/overview">https://platform.openai.com/settings/organization/billing/overview</a> — you need to top up at least $5.</li>
+<li>Create an API key at <a href="https://platform.openai.com/api-keys">https://platform.openai.com/api-keys</a>. Copy it somewhere safe — it&#39;s shown once.</li>
+<li>Set a monthly hard cap on the billing page (start with $10–20) so a runaway loop can&#39;t drain your wallet.</li>
+<li>Later, in <code>backend/.env</code>, set <code>OPENAI_API_KEY=sk-...</code>.</li>
+</ol>
+<p>For development the cost is small. A typical Tavern Tales turn is ~1500 tokens in + 400 tokens out ≈ $0.01. Receipt OCR is ~$0.005 per receipt. The per-user quota in <code>dnd_usage_quota</code> caps individual abuse.</p>
+<h2 id="9-optional-but-useful"><a class="anchor" href="#9-optional-but-useful" aria-hidden="true">#</a> 9. Optional but useful</h2>
+<p>A database GUI — DBeaver Community Edition. Useful for poking around the schema when something looks off:</p>
+<pre><code class="hljs language-bash"><span class="hljs-built_in">sudo</span> snap install dbeaver-ce</code></pre>
+<p>HTTPie — much friendlier than curl for hitting the API while you build endpoints:</p>
+<pre><code class="hljs language-bash"><span class="hljs-built_in">sudo</span> apt install -y httpie
+<span class="hljs-comment"># usage: http POST localhost:8000/api/auth/login email=foo@bar.com password=secret</span></code></pre>
+<p>direnv — auto-loads <code>.envrc</code> per directory so you never accidentally commit a key:</p>
+<pre><code class="hljs language-bash"><span class="hljs-built_in">sudo</span> apt install -y direnv
+<span class="hljs-comment"># Add to ~/.bashrc:</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;eval &quot;$(direnv hook bash)&quot;&#x27;</span> &gt;&gt; ~/.bashrc
+<span class="hljs-built_in">source</span> ~/.bashrc</code></pre>
+<h2 id="10-project-directory-docker-compose"><a class="anchor" href="#10-project-directory-docker-compose" aria-hidden="true">#</a> 10. Project directory &amp; docker-compose</h2>
+<p>The repo lives at <code>~/Desktop/DiplomaProject</code>. The <code>docker-compose.yml</code> in the repo root brings up PostgreSQL (with PostGIS) and Redis on the standard ports. The first time you run it, the Postgres container creates the empty database; you then apply the schema.</p>
+<pre><code class="hljs language-bash"><span class="hljs-built_in">cd</span> ~/Desktop/DiplomaProject
+
+<span class="hljs-comment"># Start the services in the background</span>
+docker compose up -d
+
+<span class="hljs-comment"># Watch them boot</span>
+docker compose logs -f postgres
+
+<span class="hljs-comment"># Connect with psql to confirm</span>
+psql <span class="hljs-string">&quot;postgres://app:app@localhost:5432/beer_and_beverages&quot;</span> -c <span class="hljs-string">&quot;select version();&quot;</span>
+
+<span class="hljs-comment"># Apply the schema (one-shot for now; Alembic migrations come in Phase 1)</span>
+psql <span class="hljs-string">&quot;postgres://app:app@localhost:5432/beer_and_beverages&quot;</span> -f database/schema.sql
+
+<span class="hljs-comment"># Confirm: should print 44</span>
+psql <span class="hljs-string">&quot;postgres://app:app@localhost:5432/beer_and_beverages&quot;</span> -c <span class="hljs-string">&quot;\dt&quot;</span> | <span class="hljs-built_in">wc</span> -l</code></pre>
+<p>To wipe everything and start over:</p>
+<pre><code class="hljs language-bash">docker compose down -v
+docker compose up -d</code></pre>
+<h2 id="11-verify-everything-is-installed"><a class="anchor" href="#11-verify-everything-is-installed" aria-hidden="true">#</a> 11. Verify everything is installed</h2>
+<p>Run the verification script from the repo root. It prints the version of each tool and fails loudly if anything is missing:</p>
+<pre><code class="hljs language-bash">bash scripts/verify-setup.sh</code></pre>
+<p>Expected output is something like:</p>
+<pre><code class="hljs language-plain">✓ git           <span class="hljs-number">2.43</span>.<span class="hljs-number">0</span>
+✓ docker        <span class="hljs-number">27</span><span class="hljs-selector-class">.x</span>
+✓ docker compose v2<span class="hljs-selector-class">.x</span>
+✓ uv            <span class="hljs-number">0.5</span><span class="hljs-selector-class">.x</span>
+✓ Python        <span class="hljs-number">3.12</span><span class="hljs-selector-class">.x</span>
+✓ node          v22<span class="hljs-selector-class">.x</span>
+✓ npm           <span class="hljs-number">10</span><span class="hljs-selector-class">.x</span>
+✓ pnpm          <span class="hljs-number">9</span><span class="hljs-selector-class">.x</span>
+✓ eas-cli       <span class="hljs-number">14</span><span class="hljs-selector-class">.x</span>
+✓ psql          <span class="hljs-number">16</span><span class="hljs-selector-class">.x</span>
+✓ <span class="hljs-selector-tag">code</span>          <span class="hljs-number">1.95</span>.<span class="hljs-attribute">x</span></code></pre>
+<p>If any line is missing, scroll back to the step that installs that tool.</p>
+<h2 id="12-next-steps-after-setup"><a class="anchor" href="#12-next-steps-after-setup" aria-hidden="true">#</a> 12. Next steps after setup</h2>
+<p>Once the verify script is clean, you&#39;re ready to start Phase 1.</p>
+<ol>
+<li>Initialise the backend: <code>cd backend &amp;&amp; uv init &amp;&amp; uv add fastapi uvicorn[standard] sqlalchemy[asyncio] asyncpg alembic pydantic-settings python-jose[cryptography] passlib[argon2] redis openai</code>.</li>
+<li>Initialise the mobile app: <code>cd mobile &amp;&amp; pnpm create expo-app . --template</code>. Then add Tamagui, Redux Toolkit, RTK Query, and the WebSocket client.</li>
+<li>Run <code>alembic init alembic</code> inside <code>backend/</code>, point it at <code>database/schema.sql</code>, and generate the first migration.</li>
+<li>Start the dev servers: <code>uv run uvicorn app.main:app --reload</code> in one terminal, <code>cd mobile &amp;&amp; npx expo start --tunnel</code> in another.</li>
+<li>Open Expo Go on your phone, scan the QR code, log in.</li>
+</ol>
+<p>That&#39;s Phase 1 of the roadmap. From there each phase ends with something demoable.</p>
+
+    </main>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      Diploma project &middot; Lviv Polytechnic &middot; Mobile rebuild of "Довідка пабів м. Львів"
+    </div>
+  </footer>
+</body>
+</html>

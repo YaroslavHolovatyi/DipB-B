@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Beer & Beverages — Project Documentation</title>
+  <style>
+
+  :root {
+    --bg: #fbfaf7;
+    --panel: #ffffff;
+    --ink: #1c1917;
+    --muted: #6b6660;
+    --accent: #0f9d8f;
+    --accent-dim: #0f9d8f22;
+    --border: #e6e1d8;
+    --code-bg: #f6f2ea;
+    --code-ink: #2a241e;
+    --kbd-bg: #ebe6dc;
+    --table-stripe: #fafaf6;
+    font-synthesis: none;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14110e;
+      --panel: #1c1916;
+      --ink: #ece6d8;
+      --muted: #9b9388;
+      --accent: #4cd3c2;
+      --accent-dim: #4cd3c233;
+      --border: #2a2520;
+      --code-bg: #221d18;
+      --code-ink: #ece6d8;
+      --kbd-bg: #2a2520;
+      --table-stripe: #1f1a16;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: saturate(140%) blur(8px);
+  }
+  .topbar-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+  .brand {
+    font-weight: 700;
+    color: var(--ink);
+    text-decoration: none;
+    letter-spacing: -0.01em;
+    font-size: 16px;
+  }
+  .topnav { display: flex; gap: 20px; }
+  .topnav a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    padding: 4px 0;
+    border-bottom: 2px solid transparent;
+  }
+  .topnav a:hover { color: var(--ink); }
+  .topnav a.active { color: var(--ink); border-bottom-color: var(--accent); }
+
+  .layout {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 32px 24px 64px;
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 48px;
+  }
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { position: static !important; max-height: none !important; }
+  }
+
+  .sidebar {
+    position: sticky;
+    top: 80px;
+    align-self: start;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+  }
+  .toc-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .toc ul { list-style: none; padding: 0; margin: 0; }
+  .toc li { margin: 0; padding: 0; }
+  .toc a {
+    display: block;
+    padding: 4px 8px;
+    border-left: 2px solid transparent;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+  .toc a:hover { color: var(--ink); background: var(--accent-dim); }
+  .toc-level-1 a { padding-left: 20px; font-size: 12.5px; }
+  .toc-level-2 a { padding-left: 32px; font-size: 12px; color: var(--muted); }
+
+  .content {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 40px 48px;
+    min-width: 0;
+  }
+  @media (max-width: 700px) {
+    .content { padding: 24px; }
+  }
+
+  .content h1, .content h2, .content h3, .content h4 {
+    line-height: 1.25;
+    letter-spacing: -0.012em;
+    margin-top: 1.8em;
+    margin-bottom: 0.5em;
+    color: var(--ink);
+    scroll-margin-top: 80px;
+    font-weight: 700;
+  }
+  .content h1 {
+    font-size: 2.0em;
+    margin-top: 0;
+    padding-bottom: 0.3em;
+    border-bottom: 1px solid var(--border);
+  }
+  .content h2 {
+    font-size: 1.45em;
+    padding-top: 0.4em;
+    border-top: 1px solid var(--border);
+    padding-top: 1.2em;
+    margin-top: 2em;
+  }
+  .content h3 { font-size: 1.15em; }
+  .content h4 { font-size: 1.0em; color: var(--muted); text-transform: none; }
+
+  .anchor {
+    color: var(--muted);
+    text-decoration: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+    margin-right: 4px;
+    font-weight: 400;
+  }
+  h1:hover .anchor, h2:hover .anchor, h3:hover .anchor, h4:hover .anchor {
+    opacity: 1;
+  }
+
+  .content p { margin: 1em 0; }
+  .content a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; }
+  .content a:hover { border-bottom-color: var(--accent); }
+
+  .content ul, .content ol { margin: 1em 0; padding-left: 1.4em; }
+  .content li { margin: 0.3em 0; }
+  .content li > p { margin: 0.3em 0; }
+
+  .content code {
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    font-size: 0.88em;
+    background: var(--code-bg);
+    color: var(--code-ink);
+    padding: 0.12em 0.36em;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+  .content pre {
+    background: var(--code-bg);
+    color: var(--code-ink);
+    padding: 16px 18px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .content pre code {
+    background: transparent;
+    border: none;
+    padding: 0;
+    font-size: inherit;
+  }
+
+  .content blockquote {
+    border-left: 3px solid var(--accent);
+    background: var(--accent-dim);
+    margin: 1.4em 0;
+    padding: 0.6em 1em;
+    border-radius: 0 6px 6px 0;
+    color: var(--ink);
+  }
+  .content blockquote p:first-child { margin-top: 0; }
+  .content blockquote p:last-child { margin-bottom: 0; }
+
+  .content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.4em 0;
+    font-size: 0.94em;
+    overflow-x: auto;
+    display: block;
+  }
+  .content thead { background: var(--code-bg); }
+  .content th, .content td {
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    text-align: left;
+    vertical-align: top;
+  }
+  .content th { font-weight: 700; }
+  .content tbody tr:nth-child(even) { background: var(--table-stripe); }
+
+  .content hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 2.4em 0;
+  }
+
+  .content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+  }
+
+  .footer {
+    border-top: 1px solid var(--border);
+    background: var(--panel);
+    margin-top: 32px;
+  }
+  .footer-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 16px 24px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  /* highlight.js minimal token theme using the document palette */
+  .hljs { color: var(--code-ink); background: transparent; }
+  .hljs-keyword, .hljs-built_in, .hljs-type { color: #b4540a; font-weight: 600; }
+  @media (prefers-color-scheme: dark) {
+    .hljs-keyword, .hljs-built_in, .hljs-type { color: #f0a35a; }
+  }
+  .hljs-string, .hljs-attr, .hljs-meta-string { color: #2c8a3e; }
+  @media (prefers-color-scheme: dark) {
+    .hljs-string, .hljs-attr, .hljs-meta-string { color: #79c98a; }
+  }
+  .hljs-number, .hljs-literal { color: #6b3fa0; }
+  @media (prefers-color-scheme: dark) {
+    .hljs-number, .hljs-literal { color: #c4a4f4; }
+  }
+  .hljs-comment, .hljs-meta { color: var(--muted); font-style: italic; }
+  .hljs-name, .hljs-title, .hljs-section, .hljs-selector-tag { color: #0f6997; font-weight: 600; }
+  @media (prefers-color-scheme: dark) {
+    .hljs-name, .hljs-title, .hljs-section, .hljs-selector-tag { color: #6cb8e6; }
+  }
+  .hljs-symbol, .hljs-attribute { color: #b4540a; }
+
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="index.html">Beer &amp; Beverages</a>
+      <nav class="topnav"><a href="index.html" class="">Home</a><a href="PROJECT.html" class="active">Project Overview</a><a href="SETUP.html" class="">Setup Guide</a><a href="database/SCHEMA.html" class="">Database Schema</a></nav>
+    </div>
+  </header>
+  <div class="layout">
+    <aside class="sidebar">
+      <nav class="toc" aria-label="Table of contents">
+    <div class="toc-title">Contents</div>
+    <ul><li class="toc-level-0"><a href="#beer-beverages-project-documentation">Beer & Beverages — Project Documentation</a></li>
+<li class="toc-level-1"><a href="#vision">Vision</a></li>
+<li class="toc-level-1"><a href="#scope-changes-from-the-original">Scope changes from the original</a></li>
+<li class="toc-level-1"><a href="#technology-stack">Technology stack</a></li>
+<li class="toc-level-1"><a href="#high-level-architecture">High-level architecture</a></li>
+<li class="toc-level-1"><a href="#feature-catalogue">Feature catalogue</a></li>
+<li class="toc-level-1"><a href="#collaborative-split-room">Collaborative split room</a></li>
+<li class="toc-level-1"><a href="#choose-one-to-pay-for-all-unanimous-consent">"Choose One to Pay for All" — unanimous consent</a></li>
+<li class="toc-level-1"><a href="#raid-chat">Raid chat</a></li>
+<li class="toc-level-1"><a href="#message-states-sent-delivered-read">Message states: sent, delivered, read</a></li>
+<li class="toc-level-1"><a href="#tavern-tales-ai-dungeon-master">Tavern Tales — AI Dungeon Master</a></li>
+<li class="toc-level-2"><a href="#three-modes">Three modes</a></li>
+<li class="toc-level-2"><a href="#conversation-flow-and-streaming">Conversation flow and streaming</a></li>
+<li class="toc-level-2"><a href="#usage-quota-and-cost-control">Usage quota and cost control</a></li>
+<li class="toc-level-2"><a href="#endpoints-and-events">Endpoints and events</a></li>
+<li class="toc-level-2"><a href="#mobile-screens">Mobile screens</a></li>
+<li class="toc-level-2"><a href="#tie-ins-with-the-rest-of-the-app">Tie-ins with the rest of the app</a></li>
+<li class="toc-level-1"><a href="#database-schema-summary">Database schema (summary)</a></li>
+<li class="toc-level-1"><a href="#rest-api-surface-planned">REST API surface (planned)</a></li>
+<li class="toc-level-1"><a href="#real-time-websocket-protocol">Real-time / WebSocket protocol</a></li>
+<li class="toc-level-1"><a href="#mobile-app-structure">Mobile app structure</a></li>
+<li class="toc-level-1"><a href="#demo-plan-two-phones">Demo plan (two phones)</a></li>
+<li class="toc-level-1"><a href="#security-posture">Security posture</a></li>
+<li class="toc-level-1"><a href="#project-structure">Project structure</a></li>
+<li class="toc-level-1"><a href="#roadmap">Roadmap</a></li>
+<li class="toc-level-1"><a href="#open-questions">Open questions</a></li>
+<li class="toc-level-1"><a href="#references">References</a></li></ul>
+  </nav>
+    </aside>
+    <main class="content">
+      <h1 id="beer-beverages-project-documentation"><a class="anchor" href="#beer-beverages-project-documentation" aria-hidden="true">#</a> Beer &amp; Beverages — Project Documentation</h1>
+<p>A mobile rebuild of the diploma project &quot;Довідка пабів м. Львів&quot; (Lviv pubs directory) on a new technology stack. The original was an Angular + Spring Boot + MySQL web SPA; this version is a cross-platform mobile app with a Python backend and a PostgreSQL database, and it adds real-time multi-device features (chat and live activity) so the system can be demonstrated convincingly from two phones at once.</p>
+<h2 id="vision"><a class="anchor" href="#vision" aria-hidden="true">#</a> Vision</h2>
+<p>Beer &amp; Beverages is a social mobile app that combines a directory of bars and pubs with light gamification and group-coordination features. A user opens the app, finds bars near them, marks favorites, plans a &quot;raid&quot; (a planned visit), brings friends along through a &quot;Party for Dungeon&quot; group, chats with them in real time, splits the bill from a photo of the receipt, and lets a D20 dice roll decide who pays for everyone — generating a &quot;Добра Душа&quot; (Kind Soul) score that feeds a leaderboard. Along the way the user takes a quiz that assigns them a fantasy race, unlocks achievements, and receives notifications about friends&#39; activity. The fantasy/tavern theme of the original product is preserved throughout — bars are &quot;taverns&quot;, group plans are &quot;raids&quot;, friend groups are &quot;parties&quot;.</p>
+<h2 id="scope-changes-from-the-original"><a class="anchor" href="#scope-changes-from-the-original" aria-hidden="true">#</a> Scope changes from the original</h2>
+<p>The original project, as described in the coursework documentation, was a desktop-first web app. The new version pivots to mobile and adds a real-time layer. Most features carry over with parity; a handful are reframed for mobile or expanded.</p>
+<p>The receipt-split flow becomes camera-driven instead of file-upload. &quot;Raids near you&quot; uses real device geolocation instead of a city dropdown. Notifications are now both in-app and push (Expo / APNs / FCM). The biggest functional addition is a chat module — direct messages and group chats — so two users can communicate inside the app, with messages delivered live over a WebSocket. Activity that other users care about (friend requests, raid RSVPs, new check shares) is also pushed live over the same socket so the other device updates without polling.</p>
+<h2 id="technology-stack"><a class="anchor" href="#technology-stack" aria-hidden="true">#</a> Technology stack</h2>
+<p>The frontend is React Native on Expo, written in TypeScript. Navigation uses Expo Router (file-based routing). Styling and components come from Tamagui, which gives a single themeable component library and good performance on native. Server state is handled by Redux Toolkit with RTK Query — this stays close to the NgRx pattern from the original project, gives us a familiar <code>slice + selectors + queries</code> story, and provides automatic cache invalidation and re-fetch. WebSocket live events are bridged into the Redux store so RTK Query caches stay fresh without manual refetches.</p>
+<p>The backend is FastAPI on Python 3.12, served by Uvicorn behind a process manager. The ORM is SQLAlchemy 2.0 with the async API and <code>asyncpg</code> driver; schema migrations are managed by Alembic. Authentication uses short-lived JWT access tokens (signed with HS256) and rotating refresh tokens stored as hashes. Password hashing is Argon2 via <code>passlib</code>. Real-time messaging uses FastAPI&#39;s native WebSocket support, with a small connection manager and Redis Pub/Sub fan-out so the system works correctly when multiple Uvicorn workers are running. Receipt OCR is handled by calling OpenAI&#39;s vision API on the server; raw payloads are stored as JSONB for audit and re-parse.</p>
+<p>The database is PostgreSQL 16 with the PostGIS, citext, pg_trgm, and uuid-ossp extensions. PostGIS handles geo queries for &quot;bars near me&quot; and &quot;raids near me&quot;. JSONB columns store OCR payloads, push-notification data, achievement requirements, and quiz score breakdowns. A <code>tsvector</code> column with a GIN index powers full-text search across the bar catalog. The full schema is in <code>database/schema.sql</code> with a detailed overview in <code>database/SCHEMA.md</code>.</p>
+<p>Supporting infrastructure is Redis (for Pub/Sub between WebSocket workers and as a short-TTL cache for hot queries), S3-compatible object storage (e.g. Cloudflare R2 or AWS S3) for user-uploaded images — avatars, receipt photos, bar photos — and Expo Push for delivering notifications to devices that aren&#39;t currently connected over WebSocket.</p>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Choice</th>
+<th>Why this and not something else</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Mobile UI</td>
+<td>React Native + Expo</td>
+<td>Single codebase for iOS and Android; Expo&#39;s managed workflow ships faster than bare RN for a solo diploma project; works on a real device over LAN out of the box, which matters for the two-phone demo.</td>
+</tr>
+<tr>
+<td>Navigation</td>
+<td>Expo Router</td>
+<td>File-based routing matches modern React conventions and avoids a separate route config.</td>
+</tr>
+<tr>
+<td>Component library</td>
+<td>Tamagui</td>
+<td>Performant, themeable, native + web. Spiritually fills the Angular Material slot from the old project.</td>
+</tr>
+<tr>
+<td>Client state</td>
+<td>Redux Toolkit + RTK Query</td>
+<td>Familiar to anyone who used the original NgRx setup; RTK Query gives automatic cache + invalidation, which keeps the WebSocket-driven live updates simple.</td>
+</tr>
+<tr>
+<td>Real-time client</td>
+<td>Native browser WebSocket</td>
+<td>First-class in React Native; no Socket.IO dependency unless we need rooms semantics.</td>
+</tr>
+<tr>
+<td>API</td>
+<td>FastAPI (Python 3.12)</td>
+<td>Async, fast, automatic OpenAPI schema generation, native WebSocket support, big community.</td>
+</tr>
+<tr>
+<td>ORM</td>
+<td>SQLAlchemy 2.0 + asyncpg</td>
+<td>First-class async, mature, plays well with FastAPI&#39;s dependency injection.</td>
+</tr>
+<tr>
+<td>Migrations</td>
+<td>Alembic</td>
+<td>Pairs with SQLAlchemy; revision-based, reviewable.</td>
+</tr>
+<tr>
+<td>Auth</td>
+<td>JWT (access + refresh)</td>
+<td>Stateless access tokens, rotating refresh tokens stored hashed.</td>
+</tr>
+<tr>
+<td>Realtime backplane</td>
+<td>Redis Pub/Sub</td>
+<td>Lets multiple Uvicorn workers fan out the same event to all connected clients.</td>
+</tr>
+<tr>
+<td>Storage</td>
+<td>PostgreSQL 16 + PostGIS</td>
+<td>Heavy relational data + geo + JSONB + FTS in one engine.</td>
+</tr>
+<tr>
+<td>Object storage</td>
+<td>S3-compatible (R2 or S3)</td>
+<td>Cheap, signed-URL uploads from the phone, decoupled from the DB.</td>
+</tr>
+<tr>
+<td>Push</td>
+<td>Expo Push Notifications</td>
+<td>One API for both iOS and Android, no native cert juggling during the diploma.</td>
+</tr>
+<tr>
+<td>LLM (AI DM)</td>
+<td>OpenAI GPT-4o (streaming)</td>
+<td>Strong creative writing, function-calling for structured dice / state updates, mature SSE streaming SDK. Used by the Tavern Tales feature only; never exposed to the client.</td>
+</tr>
+</tbody></table>
+<h2 id="high-level-architecture"><a class="anchor" href="#high-level-architecture" aria-hidden="true">#</a> High-level architecture</h2>
+<p>The system is a classic client-server architecture with a real-time side-channel. Both phones run the same Expo app, authenticate against the FastAPI server, and hold an open WebSocket connection for the duration of the session. REST endpoints are used for everything that&#39;s a normal CRUD operation: list bars, fetch a profile, post a review, create a raid, upload a receipt for OCR. The WebSocket carries only ephemeral or push-style traffic: incoming messages, typing indicators, presence updates, and &quot;live activity&quot; events such as &quot;your friend just RSVP&#39;d to a raid&quot; or &quot;a new check was shared with you.&quot;</p>
+<p>Data flow for a chat message from device D1 to device D2 looks like this. D1 sends an HTTP POST to <code>/api/conversations/{id}/messages</code> with the message body. The handler validates the sender is a participant, inserts a row into <code>messages</code>, which fires a trigger that updates <code>conversations.last_message_at</code>. The handler then publishes an event onto Redis Pub/Sub on a channel keyed by conversation id. Every Uvicorn worker subscribed to that channel — whichever worker happens to host D2&#39;s WebSocket — receives the event and writes the message JSON to D2&#39;s open socket. D2&#39;s React Native code receives the frame, dispatches an action that inserts the message into the RTK Query cache for that conversation, and the chat screen re-renders. If D2 is offline (no WebSocket), the same publish step queues a push notification through Expo Push instead, so D2&#39;s device wakes up with a banner. When D2 reopens the app, the conversation is already up to date from the next <code>getMessages</code> query, which the cache invalidation forces.</p>
+<p>The same pattern applies to non-chat live updates. When D1 marks a bar as a favorite, the REST handler publishes a <code>favorite.added</code> event to a user-scoped channel. Any other device the user has logged in on receives the event and patches the favorites cache. This avoids stale UIs across devices without resorting to aggressive polling.</p>
+<pre><code class="hljs language-plain">┌──────────────┐   HTTP/JSON   ┌──────────────┐   SQL   ┌──────────────┐
+│  Expo app <span class="hljs-built_in">D1</span> │──────────────▶│  FastAPI     │────────▶│ PostgreSQL   │
+│  (RN)        │◀──WebSocket───│  (Uvicorn)   │         │ + PostGIS    │
+└──────────────┘               │              │         └──────────────┘
+                               │              │   pub/<span class="hljs-keyword">sub</span>   ┌────────┐
+┌──────────────┐   HTTP/JSON   │              │◀───────────▶│ Redis  │
+│  Expo app <span class="hljs-built_in">D2</span> │──────────────▶│              │             └────────┘
+│  (RN)        │◀──WebSocket───│              │
+└──────────────┘               └──────────────┘   ┌────────┐   ┌──────────────┐
+                                                  │ <span class="hljs-built_in">S3</span>/<span class="hljs-built_in">R2</span>  │   │ Expo <span class="hljs-keyword">Push</span>    │
+                                                  └────────┘   └──────────────┘</code></pre>
+<h2 id="feature-catalogue"><a class="anchor" href="#feature-catalogue" aria-hidden="true">#</a> Feature catalogue</h2>
+<p>A user signs up with first name, email, username, and password, and picks a main city. The server creates the account, hashes the password with Argon2, and returns an access token plus a refresh token. The mobile app stores the refresh token in <code>expo-secure-store</code> (which writes to iOS Keychain or Android EncryptedSharedPreferences) and keeps the access token in memory. On a 401 the client transparently calls <code>/auth/refresh</code> to rotate tokens; if that fails, the user is sent to the login screen.</p>
+<p>Once logged in, the user lands on a tab navigator with four primary tabs: Home, Bars, Friends, Profile. Home shows recommended bars, upcoming raids the user is going to, and a feed of friends&#39; recent activity. Bars opens the catalog, where the user can search by name (full-text), filter by city, price category, and rating, and tap into a detail page with photos, work hours, vibes, reviews, and an &quot;Add to favorites&quot; heart. From the detail page the user can also start a raid at that bar. Friends opens the social hub: friends list, incoming friend requests, friend groups (&quot;parties&quot;), and the chat inbox. Profile shows the user&#39;s avatar, race, achievements, favorite bars, check history, and an edit form for personal information.</p>
+<p>Receipt splitting works as a collaborative &quot;split room&quot; rather than a single-user form. The flow is described in detail in the next section because it is the most multi-device part of the app.</p>
+<p>Quiz works as a one-shot screen accessible from the Profile tab. The user answers each question, the server sums per-race scores from <code>quiz_answer_races</code>, picks the race with the highest score (with a deterministic tiebreaker), updates <code>users.race_id</code>, and inserts a row into <code>user_quiz_results</code> with the full breakdown for transparency. Races affect the visual theme on the user&#39;s profile, sort their recommended drinks, and gate certain race-specific achievements.</p>
+<p>Raids are events. Any user can create a raid at a bar (or freeform location), set a scheduled time, optionally cap participants, and invite friends. Invitees see the raid in their Home feed and in the Notifications screen; they can RSVP &quot;going&quot;, &quot;maybe&quot;, or &quot;declined.&quot; A raid that&#39;s about to start triggers a push notification. The &quot;Raids near you&quot; surface on the Home tab queries <code>raids</code> by <code>ST_DWithin(location, $user_location, $radius_m)</code> and filters by scheduled time and status.</p>
+<p>Chat supports both direct messages between two friends and group chats. A direct chat is created lazily the first time one user messages another — the server looks for an existing <code>conversations</code> row of type <code>direct</code> with exactly those two participants, and creates one if missing. A group chat can either be ad-hoc (no <code>friend_group_id</code>) or tied to a <code>friend_group</code> (so editing the group&#39;s membership automatically reshapes the chat&#39;s participants). Messages can carry text, image attachments (stored on S3, referenced as JSONB), and an optional <code>reply_to_id</code>. Reactions are a simple <code>(message_id, user_id, emoji)</code> composite primary key. Read receipts are computed from <code>conversation_participants.last_read_at</code> versus message <code>created_at</code>.</p>
+<p>Achievements are coded as rows in the <code>achievements</code> table with a JSONB <code>requirement</code> describing the unlock condition (for example <code>{&quot;type&quot;: &quot;check_count&quot;, &quot;threshold&quot;: 10}</code>). When a relevant event happens — a receipt is created, a quiz is finished, a raid completes — the backend evaluates which achievements apply and either bumps <code>user_achievements.progress</code> or inserts a fully-awarded row. Race-specific achievements (<code>achievements.race_id IS NOT NULL</code>) only count for users of that race.</p>
+<p>Notifications cover everything that needs to surface even when the user isn&#39;t on the relevant screen: friend requests, raid invites, raid reminders, achievement unlocks, &quot;you were chosen to pay&quot; events, and system messages. They live in the <code>notifications</code> table with a JSONB <code>data</code> payload, a <code>type</code> enum that routes display logic, and a partial index on <code>read_at IS NULL</code> for the badge count. Chat messages do <em>not</em> create notification rows on the server (that would create heavy churn); instead, when a message arrives and the recipient is offline, the server sends a single Expo Push notification with a &quot;tap to open chat&quot; deep link.</p>
+<h2 id="collaborative-split-room"><a class="anchor" href="#collaborative-split-room" aria-hidden="true">#</a> Collaborative split room</h2>
+<p>The split room is the multi-device flow that the rest of the app is designed around. It starts when a user — the &quot;host&quot; — takes a photo of a receipt on their phone. The image goes through a presigned upload to S3, then the URL is posted to <code>POST /api/checks</code>. The server stores the header row in <code>checks</code>, calls the OpenAI Vision API to extract line items, persists the raw response in <code>checks.ocr_payload</code> for audit, and writes a row per item into <code>check_items</code>. The host is then redirected into the split-room screen for that check.</p>
+<p>From inside the room, the host invites participants. Each invitee is either an existing friend (registered user — selected from a list of party members), or a freeform guest (the host types a display name). For each registered invitee the server inserts a <code>check_participants</code> row with <code>status=&#39;invited&#39;</code>, a <code>notifications</code> row of type <code>check_invite</code>, and a push notification through Expo Push so the device wakes up even if the app is closed. Guests are inserted with <code>status=&#39;joined&#39;</code> directly because they don&#39;t have an account to vote with.</p>
+<p>When an invitee taps the notification, the app opens the same split-room screen, the server flips their <code>check_participants.status</code> to <code>joined</code>, fills in <code>joined_at</code>, and broadcasts a <code>participant.joined</code> event on the <code>check:{id}</code> WebSocket channel. Every participant currently in the room sees the new person appear in the participant list in real time.</p>
+<p>Inside the room every participant sees the same item list and the same participant list. To claim an item, a participant taps the row and selects how many units they had — one beer out of two, half of the appetiser, all of their cocktail. The action goes through <code>PUT /api/checks/{id}/items/{itemId}/assignments</code> with a body containing the calling user&#39;s participant id and a quantity. The server upserts a row into <code>check_item_assignments</code>, computes the amount as <code>quantity × unit_price</code>, and re-computes each participant&#39;s running subtotal. It then publishes two events to <code>check:{id}</code>: an <code>assignment.updated</code> event with the changed row, and a <code>totals.updated</code> event with the new per-participant subtotals. Every device updates its UI in the same frame — the marked item shows the claimant&#39;s avatar/colour chip beside it, and the personal subtotal at the top of every participant&#39;s screen ticks up.</p>
+<p>When a participant has marked all the items they had during the night, they tap &quot;Ready&quot;. The server sets their <code>status=&#39;ready&#39;</code> and <code>ready_at=now()</code>, broadcasts <code>participant.ready</code>, and shows the participant a read-only summary of what they&#39;re paying. They can still un-ready themselves if they realise they forgot something — that flips status back to <code>joined</code> and broadcasts <code>participant.unready</code>. The room is &quot;closed&quot; automatically when two conditions are both true: every participant with <code>status IN (&#39;joined&#39;,&#39;ready&#39;)</code> is in fact <code>ready</code>, and the sum of assigned quantities equals the original quantity for every item (no orphan items left unclaimed). On that transition the server emits <code>split.completed</code> and the app navigates to the final breakdown screen.</p>
+<p>The final breakdown shows the total, every participant&#39;s amount with the items behind it expanded, and the option to either confirm &quot;we paid like this&quot; — which persists the result and writes a <code>check_split_completed</code> notification to each participant — or to propose the D20 &quot;Choose One to Pay for All&quot; game.</p>
+<h2 id="choose-one-to-pay-for-all-unanimous-consent"><a class="anchor" href="#choose-one-to-pay-for-all-unanimous-consent" aria-hidden="true">#</a> &quot;Choose One to Pay for All&quot; — unanimous consent</h2>
+<p>The dice game is gated behind unanimous consent from every registered participant. Proposing it does not roll the dice; it opens a vote.</p>
+<p>A participant proposes the game by tapping the button on the split-summary screen. The server creates a <code>dice_proposals</code> row with <code>status=&#39;pending&#39;</code> and <code>proposed_by</code> set to that user. For every other registered participant of the check it inserts a <code>dice_proposal_votes</code> row with <code>vote=&#39;pending&#39;</code>. The proposer&#39;s own vote is set to <code>accept</code> automatically. A partial unique index <code>dice_proposals(check_id) WHERE status=&#39;pending&#39;</code> ensures only one proposal can exist at a time per check.</p>
+<p>Every other participant receives a <code>dice_proposal_created</code> notification with two action buttons — &quot;I&#39;m in&quot; and &quot;No thanks&quot; — and an in-room banner that says &quot;Anna proposes the dice. 3 of 5 voted.&quot; Their vote goes through <code>POST /api/dice-proposals/{id}/vote</code> with body <code>{&quot;vote&quot;: &quot;accept&quot;}</code> or <code>{&quot;vote&quot;: &quot;decline&quot;}</code>, which updates their <code>dice_proposal_votes</code> row and broadcasts <code>dice_proposal.voted</code> on the <code>check:{id}</code> channel so every device sees the tally update.</p>
+<p>The proposal resolves automatically the moment its fate is decided. If any single vote is <code>decline</code>, the server transitions the proposal to <code>status=&#39;declined&#39;</code>, broadcasts <code>dice_proposal.resolved</code> with <code>outcome=&#39;declined&#39;</code>, and sends each participant a <code>dice_proposal_resolved</code> notification — the game is off, the split goes through normally. If every vote is <code>accept</code>, the server transitions the proposal to <code>status=&#39;accepted&#39;</code>, broadcasts <code>dice.rollStarting</code>, and rolls the dice server-side. The server is the source of truth for the random numbers, so all phones see exactly the same rolls. Roll-per-participant events <code>dice.rolled</code> stream out in sequence with a deliberate delay so each device can animate the D20 dropping; the highest number wins. A <code>kind_soul_events</code> row is written with <code>proposal_id</code> linking back to the proposal, the proposal flips to <code>status=&#39;completed&#39;</code>, and the winner receives a <code>kind_soul_awarded</code> notification. The &quot;Добра Душа&quot; leaderboard counts this user&#39;s <code>total_paid_for_others</code> from the new row.</p>
+<p>A pending proposal can also be cancelled. If any voter leaves the room before voting (<code>check_participants.status</code> transitions to <code>left</code>), their vote is treated as <code>decline</code> and the proposal is auto-cancelled with <code>cancel_reason=&#39;participant_left&#39;</code>. If the proposer themselves cancel, the proposal moves to <code>status=&#39;cancelled&#39;</code>. In both cases the <code>check:{id}</code> channel emits <code>dice_proposal.resolved</code> so every device updates its UI.</p>
+<h2 id="raid-chat"><a class="anchor" href="#raid-chat" aria-hidden="true">#</a> Raid chat</h2>
+<p>Every raid gets a dedicated group chat automatically. When a raid is created via <code>POST /api/raids</code>, the server inserts a <code>conversations</code> row with <code>type=&#39;group&#39;</code> and <code>raid_id</code> set to the new raid, and adds the organizer as the first <code>conversation_participants</code> row with <code>role=&#39;admin&#39;</code>. The conversation&#39;s <code>title</code> defaults to the raid&#39;s title; the conversation&#39;s <code>image_url</code> defaults to the raid&#39;s cover image. Because <code>conversations.raid_id</code> is <code>UNIQUE</code>, there is exactly one chat per raid.</p>
+<p>Chat membership is kept in sync with raid membership by the application layer. On every <code>raid_participants</code> row inserted or updated with <code>status IN (&#39;going&#39;,&#39;maybe&#39;)</code>, the same user is added to <code>conversation_participants</code> for the raid&#39;s conversation if they aren&#39;t already there. On a row deleted (or status transitioned to <code>declined</code>), the participant is soft-removed from the conversation by setting <code>left_at=now()</code> so they retain history but stop receiving new messages. Membership changes broadcast <code>conversation.participant.added</code> and <code>conversation.participant.removed</code> on the conversation channel so other members see the roster update live.</p>
+<p>In the mobile app the raid detail screen has a prominent &quot;Open chat&quot; button alongside the RSVP buttons; from inside the chat there&#39;s a header chip that links back to the raid detail. This is where members coordinate before the raid (&quot;on my way&quot;, &quot;running late by 20&quot;), share photos during, and recap afterwards. Push notifications for new messages in a raid chat carry the raid context, so tapping the notification deep-links straight to that chat screen.</p>
+<p>Without this, raid members would have no way to communicate inside the app: friend-list direct messages don&#39;t include guests-of-guests, and ad-hoc group chats would require manually replicating the raid&#39;s roster. The auto-attached raid chat keeps everything in one place.</p>
+<p>There are now four shapes of <code>conversations</code> rows the app needs to handle: <code>type=&#39;direct&#39;</code> (exactly two participants — a 1-on-1 DM), <code>type=&#39;group&#39;</code> with <code>friend_group_id</code> set (chat for a saved friend group / &quot;Party for Dungeon&quot;), <code>type=&#39;group&#39;</code> with <code>raid_id</code> set (a raid chat), and <code>type=&#39;group&#39;</code> with neither (an ad-hoc group chat created by picking some friends). The same UI renders all four; only the title, image, and the &quot;linked entity&quot; header chip differ.</p>
+<h2 id="message-states-sent-delivered-read"><a class="anchor" href="#message-states-sent-delivered-read" aria-hidden="true">#</a> Message states: sent, delivered, read</h2>
+<p>Every outgoing message goes through four states on the sender&#39;s side, rendered as a tick icon next to the message:</p>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Icon</th>
+<th>Condition</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Pending</td>
+<td>grey clock</td>
+<td>The user pressed send; HTTP request is in flight. Optimistic — the message is already in the chat list, faded slightly.</td>
+</tr>
+<tr>
+<td>Sent</td>
+<td>single grey check</td>
+<td>The server returned 201 with the persisted message id. The clock flips to a check.</td>
+</tr>
+<tr>
+<td>Delivered</td>
+<td>double grey check</td>
+<td>Every other participant&#39;s device has acknowledged receipt — either over an open WebSocket or via a confirmed push delivery receipt.</td>
+</tr>
+<tr>
+<td>Read</td>
+<td>double accent check</td>
+<td>Every other participant&#39;s <code>last_read_at</code> is at or after the message&#39;s <code>created_at</code>.</td>
+</tr>
+</tbody></table>
+<p>For 1-on-1 chats the comparison is against the single other participant. For group chats the rules quantify across all other participants — a message is only &quot;Read&quot; once <em>everyone</em> read past it. The API returns a <code>delivered_to_count</code> and <code>read_by_count</code> on each message so the client can also render &quot;Read by 3 of 5&quot; inline if the user taps a message in a group chat, without changing the headline tick state.</p>
+<p>The two watermarks that drive everything live on <code>conversation_participants</code>: <code>last_delivered_at</code> (set when the user&#39;s device receives a message) and <code>last_read_at</code> (set when the user opens the conversation past that message). Both are monotonically increasing.</p>
+<p>The lifecycle plays out like this. The sender&#39;s client POSTs to <code>/api/conversations/{id}/messages</code>. The server inserts the <code>messages</code> row, fires the existing trigger that bumps <code>conversations.last_message_at</code>, and replies 201 to the sender — at this point the sender&#39;s tick goes to &quot;sent.&quot; The server then publishes <code>message.new</code> on <code>conversation:{id}</code>. Every connected recipient&#39;s WebSocket forwards the frame; the recipient&#39;s client immediately acknowledges by sending a <code>delivery.ack</code> frame back over the same socket. The server bumps that recipient&#39;s <code>last_delivered_at</code> and broadcasts <code>delivery.update</code> to the conversation channel. The sender&#39;s client patches its cache, sees the message is now &quot;delivered to N&quot; — if N equals the count of other participants, the tick becomes double-check.</p>
+<p>When a recipient opens the conversation screen, the client calls <code>POST /api/conversations/{id}/read</code> with the timestamp of the newest visible message. The server clamps <code>last_read_at = greatest(last_read_at, body.timestamp)</code> and broadcasts <code>read.update</code>. The sender&#39;s client patches its cache and the tick flips to the accent colour.</p>
+<p>For offline recipients (no open WebSocket), delivery is confirmed differently. The server enqueues an Expo Push notification with the message preview and a <code>data.messageId</code> payload. Expo&#39;s push receipts endpoint returns success/failure once the device&#39;s APNs or FCM has accepted the notification. The push worker treats a successful receipt as a delivery and bumps <code>last_delivered_at</code> accordingly, then broadcasts <code>delivery.update</code> on the WebSocket so any <em>other</em> participants who are online (including the sender on another device) see the tick update without polling.</p>
+<p>Edits and deletes are out of scope for the initial chat MVP but the column layout supports them: <code>messages.edited_at</code> and <code>messages.deleted_at</code> are already in the schema, and <code>message.edited</code> / <code>message.deleted</code> events on the conversation channel are reserved.</p>
+<h2 id="tavern-tales-ai-dungeon-master"><a class="anchor" href="#tavern-tales-ai-dungeon-master" aria-hidden="true">#</a> Tavern Tales — AI Dungeon Master</h2>
+<p>Tavern Tales is an in-app, AI-powered D&amp;D experience for solo play, designed to fill 5–15 minutes of waiting time at the bar with a real interactive quest. It uses the fantasy race the user already earned from the quiz, lets them pick a class, and lets them play short adventures in one of three modes that vary the AI&#39;s tone and rules-strictness. The feature lives in a dedicated fifth tab in the mobile app.</p>
+<p>The first time a user opens Tavern Tales they go through a one-screen character creation wizard. Race is fixed — it&#39;s whatever <code>users.race_id</code> resolved to from the quiz. The user picks a class from the twelve standard 5e options (Barbarian, Bard, Cleric, Druid, Fighter, Monk, Paladin, Ranger, Rogue, Sorcerer, Warlock, Wizard, surfaced from the <code>dnd_class_info</code> reference table with descriptions and primary abilities), gives the character a name, and optionally an alignment. The server inserts a <code>dnd_characters</code> row, rolls initial ability scores using the standard array (15 / 14 / 13 / 12 / 10 / 8 with class-appropriate placement) into <code>stats JSONB</code>, computes starting HP and AC, and returns the character sheet.</p>
+<p>After that, a user can start a play session at any time. The session-start screen asks for a mode — described below — and creates a <code>dnd_sessions</code> row in <code>status=&#39;active&#39;</code> (the partial unique index <code>WHERE status IN (&#39;active&#39;,&#39;paused&#39;)</code> keeps a character to a single quest at a time, so the user can&#39;t accidentally fork their story). The AI then generates an opening scene — a quest hook, the setting, an inciting incident — and the rest is a turn-by-turn chat between the user and the AI dungeon master, persisted as rows in <code>dnd_messages</code> keyed by <code>(session_id, created_at)</code>.</p>
+<h3 id="three-modes"><a class="anchor" href="#three-modes" aria-hidden="true">#</a> Three modes</h3>
+<p>Munchkin is the quickest, silliest experience. The AI is told to lean into puns, broken builds, ridiculous loot, and 5-minute pacing. It does not enforce D&amp;D rules rigorously; if the player says &quot;I roll to seduce the dragon&quot; the AI just plays along. Responses are 2–4 sentences. This mode is the default for users who tap &quot;I just want something fun.&quot;</p>
+<p>Normal is the beginner-friendly mode. The AI runs a classic fantasy quest with simple rules, offers 2–3 clear choices each turn, and explains anything the player might not know. Responses are 3–5 sentences. It tracks HP and inventory but doesn&#39;t burden the player with bookkeeping. This is the recommended mode for first-time D&amp;D players.</p>
+<p>Dungeon Master Pro (Roll20-style) is the strict 5e experience. The AI calls for ability checks with explicit DCs, runs combat with attack rolls, saving throws, damage rolls, AC, and initiative, tracks resources properly, and uses dice notation (<code>roll a DC 15 Wisdom save</code>, <code>2d6 + 3 fire damage</code>). All rolls are server-side — the FastAPI service produces the random number, persists the result as a <code>dnd_messages</code> row with <code>role=&#39;dice_roll&#39;</code> and the <code>metadata</code> JSONB carrying the dice / modifier / DC / purpose, then forwards it to the AI as the next turn&#39;s input so the AI&#39;s narration matches the actual outcome. The mobile UI renders dice-roll messages distinctly (a die icon, the result big and highlighted, the purpose underneath). This mode is for users who want a real tabletop feel.</p>
+<h3 id="conversation-flow-and-streaming"><a class="anchor" href="#conversation-flow-and-streaming" aria-hidden="true">#</a> Conversation flow and streaming</h3>
+<p>A turn in any mode goes like this. The user types into the input box at the bottom of the session screen and hits send. The client POSTs to <code>POST /api/dnd/sessions/{id}/messages</code> with the body. The server inserts a <code>dnd_messages</code> row with <code>role=&#39;user&#39;</code>, then opens a streaming call to OpenAI&#39;s chat completions API for GPT-4o with three parts assembled into the prompt: a system message that encodes the mode&#39;s behaviour (different per mode), a compressed context block built from the session&#39;s <code>summary</code> plus the character sheet, and the most recent N message rows. As the model streams tokens back, the server forwards each chunk over the user&#39;s WebSocket as <code>dnd.message.partial</code> events; the mobile screen renders the text growing word by word. When the stream completes, the server inserts the final <code>role=&#39;assistant&#39;</code> row with the full content, an updated <code>tokens_in</code> and <code>tokens_out</code>, and any extracted <code>state_change</code> payload (HP delta, inventory diff, XP gain) it applied to the character. It bumps <code>dnd_sessions.turn_count</code>, <code>last_message_at</code>, <code>input_tokens_used</code>, <code>output_tokens_used</code>, and the user&#39;s <code>dnd_usage_quota.daily_tokens_used</code> and <code>monthly_tokens_used</code> counters. A final <code>dnd.message.complete</code> event closes the turn on the client.</p>
+<p>When the AI asks for a dice roll in DM Pro mode, its response includes a structured <code>request_roll</code> in the <code>metadata</code> JSONB (for example <code>{&quot;dice&quot;:&quot;d20&quot;,&quot;modifier&quot;:3,&quot;dc&quot;:15,&quot;purpose&quot;:&quot;sneak past the guard&quot;}</code>). The mobile UI renders a &quot;Roll&quot; button below the message; tapping it calls <code>POST /api/dnd/sessions/{id}/roll</code> with the request id, the server generates the random number, persists a <code>role=&#39;dice_roll&#39;</code> row, and feeds it to the next assistant turn automatically. A <code>dnd.dice_roll</code> event also fires over the WebSocket so the UI animates the die.</p>
+<p>When the rolling summary in <code>dnd_sessions.summary</code> is shorter than the cumulative message log by a configurable threshold (default: 20 turns), the server asks the model to extend the summary with the latest exchanges, and trims the oldest messages from the live context window. This keeps long sessions cheap without losing narrative continuity.</p>
+<h3 id="usage-quota-and-cost-control"><a class="anchor" href="#usage-quota-and-cost-control" aria-hidden="true">#</a> Usage quota and cost control</h3>
+<p>LLM cost is the one variable that matters for a real deployment. <code>dnd_usage_quota</code> holds a daily and monthly token cap per user (defaults: 30k / day, 500k / month — roughly 5–10 sessions per day, 100 per month). Every turn checks the cap before calling OpenAI; if exceeded, the API responds <code>429 Too Many Requests</code> with a structured payload describing the user&#39;s quota and reset time, and the mobile screen shows a friendly &quot;you&#39;ve used your quests for today&quot; message. A nightly cron resets daily counters; a monthly cron resets monthly. Admins can raise individual caps via direct row update if needed.</p>
+<h3 id="endpoints-and-events"><a class="anchor" href="#endpoints-and-events" aria-hidden="true">#</a> Endpoints and events</h3>
+<p>REST endpoints under <code>/api/dnd</code>: <code>GET /api/dnd/classes</code> (returns <code>dnd_class_info</code> for the picker), <code>GET /api/dnd/characters</code>, <code>POST /api/dnd/characters</code>, <code>GET /api/dnd/characters/{id}</code>, <code>PUT /api/dnd/characters/{id}</code> (manual level-up or sheet edit; AI also writes here through internal API), <code>DELETE /api/dnd/characters/{id}</code> (soft delete), <code>GET /api/dnd/sessions</code> (filter by status), <code>POST /api/dnd/sessions</code> (body: <code>character_id</code>, <code>mode</code>), <code>GET /api/dnd/sessions/{id}</code> (full session including messages), <code>POST /api/dnd/sessions/{id}/messages</code> (the streaming turn — see above), <code>POST /api/dnd/sessions/{id}/roll</code> (resolve an AI-requested dice roll), <code>POST /api/dnd/sessions/{id}/pause</code>, <code>POST /api/dnd/sessions/{id}/resume</code>, <code>POST /api/dnd/sessions/{id}/end</code>, <code>GET /api/dnd/usage</code> (current quota counters and limits).</p>
+<p>WebSocket events on the <code>user:{userId}</code> channel, all carrying a <code>session_id</code> in the payload: <code>dnd.message.partial</code> (streaming token chunk), <code>dnd.message.complete</code> (final assistant message with metadata), <code>dnd.dice_roll</code> (resolved roll), <code>dnd.state_change</code> (character/session state diff applied), <code>dnd.session.ended</code>.</p>
+<h3 id="mobile-screens"><a class="anchor" href="#mobile-screens" aria-hidden="true">#</a> Mobile screens</h3>
+<p>The fifth tab &quot;Tavern Tales&quot; opens to one of two screens depending on state: if the user has no character, it shows the character-creation wizard; if they do, it shows a quest selector. The quest selector is a small home that shows the current character at the top (avatar, race, class, level, current HP), a &quot;Continue quest&quot; card if a session is active or paused, and below it a mode picker that starts a brand-new quest with one tap. The active-session screen is a chat layout — assistant text in the centre, user input at the bottom, a small character HUD pinned to the top with HP and the current location pulled from <code>dnd_sessions.metadata</code>. Dice-roll messages get a distinct die-icon styling so they&#39;re easy to scan. A drawer from the right reveals the full character sheet, inventory, and quest log.</p>
+<h3 id="tie-ins-with-the-rest-of-the-app"><a class="anchor" href="#tie-ins-with-the-rest-of-the-app" aria-hidden="true">#</a> Tie-ins with the rest of the app</h3>
+<p>Tavern Tales is intentionally self-contained but a few touchpoints land naturally. The race the user got from the quiz drives the AI&#39;s flavour prompts and (in DM Pro mode) the character&#39;s traits. New achievements key off Tavern Tales activity: <code>first_quest_completed</code>, <code>reached_level_5</code>, <code>tried_all_three_modes</code>, <code>kind_dm</code> (completed a quest without losing HP), <code>chaos_munchkin</code> (completed five Munchkin runs). A push notification of type <code>dnd_session_reminder</code> re-engages users who paused a quest more than a day ago. Friends can see in each other&#39;s profile pages how many quests they&#39;ve completed and which class they&#39;re playing — without exposing the actual story content.</p>
+<h2 id="database-schema-summary"><a class="anchor" href="#database-schema-summary" aria-hidden="true">#</a> Database schema (summary)</h2>
+<p>The full DDL is in <code>database/schema.sql</code>; the design rationale is in <code>database/SCHEMA.md</code>. Here is the table inventory grouped by purpose.</p>
+<p>Reference and lookup data: <code>cities</code> (with <code>GEOGRAPHY</code> location), <code>vibes</code>, <code>drinks</code>, <code>races</code>, and the affinity join tables <code>race_drinks</code> and <code>race_vibes</code>. Users and auth: <code>users</code>, <code>refresh_tokens</code> (storing only SHA-256 hashes of the refresh value), <code>push_tokens</code> (Expo / APNs / FCM device tokens). Bars: <code>bars</code> (with <code>tsvector</code> search column, denormalized <code>rating_avg</code>/<code>rating_count</code>, and a <code>JSONB work_hours</code>), <code>bar_vibes</code>, <code>bar_photos</code>, <code>bar_reviews</code> (one per user per bar), <code>bar_favorites</code> (composite PK). Quiz: <code>quiz_questions</code>, <code>quiz_answers</code>, <code>quiz_answer_races</code> (with <code>score</code>), <code>user_quiz_results</code>. Social: <code>user_friends</code> (symmetric, two rows per accepted friendship), <code>friend_requests</code> (with a partial unique index on pending pairs), <code>friend_groups</code>, <code>friend_group_members</code>. Raids: <code>raids</code> (with optional override <code>GEOGRAPHY</code> location), <code>raid_participants</code>. Checks and the split room: <code>checks</code>, <code>check_items</code>, <code>check_participants</code> (with lifecycle <code>status</code>: invited → joined → ready → left), <code>check_item_assignments</code>, <code>dice_proposals</code> (one pending per check, partial unique index), <code>dice_proposal_votes</code> (one row per registered voter), <code>kind_soul_events</code> (one per check, linked back to its <code>dice_proposals</code> row). Gamification: <code>achievements</code>, <code>user_achievements</code>. Notifications: <code>notifications</code> (extended <code>type</code> enum now includes <code>check_invite</code>, <code>check_split_completed</code>, <code>dice_proposal_created</code>, <code>dice_proposal_resolved</code>, <code>dnd_session_reminder</code>). Chat: <code>conversations</code> (optionally linked 1:1 with a <code>friend_group</code> or with a <code>raid</code>), <code>conversation_participants</code> (with <code>last_delivered_at</code> and <code>last_read_at</code> watermarks driving the message-state ticks), <code>messages</code> (with <code>jsonb_array_length</code> check that body or attachments is non-empty), <code>message_reactions</code>, <code>user_presence</code>. Tavern Tales: <code>dnd_class_info</code> (reference), <code>dnd_characters</code> (linked to <code>users</code> and <code>races</code>, with HP/AC/stats and JSONB inventory and spells), <code>dnd_sessions</code> (one active or paused per character, partial unique index), <code>dnd_messages</code> (turn log with user / assistant / dice_roll / narration roles), <code>dnd_usage_quota</code> (per-user LLM token caps).</p>
+<p>Totals: 44 tables, 23 enum types, 54 indexes, 12 triggers, 68 foreign keys — all validated through <code>pgsql-parser</code>.</p>
+<h2 id="rest-api-surface-planned"><a class="anchor" href="#rest-api-surface-planned" aria-hidden="true">#</a> REST API surface (planned)</h2>
+<p>Auth lives under <code>/api/auth</code>: <code>POST /register</code>, <code>POST /login</code>, <code>POST /refresh</code>, <code>POST /logout</code>, <code>GET /me</code>. User profile is <code>/api/users/me</code> (GET, PUT) and <code>/api/users/{id}</code> (GET public profile). Cities, races, drinks, and vibes have read-only <code>GET</code> collection endpoints. Bars sit under <code>/api/bars</code> with list (filter and full-text), detail, and admin-only create/update. Reviews are nested: <code>/api/bars/{id}/reviews</code> (GET, POST), <code>DELETE /api/reviews/{id}</code>. Favorites: <code>POST /api/bars/{id}/favorite</code>, <code>DELETE /api/bars/{id}/favorite</code>, <code>GET /api/users/me/favorites</code>.</p>
+<p>Quiz is <code>GET /api/quiz</code> (returns questions + answers; the server does not reveal per-answer race scores), <code>POST /api/quiz/submit</code> (returns the assigned race). Friends and social: <code>GET /api/users/me/friends</code>, <code>GET /api/friend-requests</code> (incoming + outgoing), <code>POST /api/friend-requests</code> (send), <code>POST /api/friend-requests/{id}/accept</code>, <code>POST /api/friend-requests/{id}/decline</code>. Friend groups: <code>/api/friend-groups</code> CRUD plus <code>/api/friend-groups/{id}/members</code> for adding and removing. Raids: <code>/api/raids</code> CRUD, with a near-me query <code>GET /api/raids?near=lat,lon&amp;radius=km</code>, and <code>POST /api/raids/{id}/rsvp</code> for status changes.</p>
+<p>Checks and the split room: <code>POST /api/checks</code> (creates header + uploads image URL), <code>POST /api/checks/{id}/parse</code> (kicks off OCR; runs as a background task with status pollable on the check), <code>POST /api/checks/{id}/participants</code> (invite registered users or add guests — sends <code>check_invite</code> notifications), <code>POST /api/checks/{id}/participants/me/join</code> (accept invitation, transition <code>status</code> to <code>joined</code>), <code>POST /api/checks/{id}/participants/me/ready</code> and <code>/unready</code> (toggle <code>ready</code> status), <code>POST /api/checks/{id}/participants/me/leave</code> (set <code>status=&#39;left&#39;</code>), <code>PUT /api/checks/{id}/items/{itemId}/assignments</code> (claim or release a quantity of an item — caller can only edit their own assignments), <code>GET /api/checks/{id}</code> (the full check with items, participants, assignments, and computed totals). Dice: <code>POST /api/checks/{id}/dice-proposals</code> (open a proposal; returns 409 if one already pending), <code>POST /api/dice-proposals/{id}/vote</code> with body <code>{vote: &#39;accept&#39; | &#39;decline&#39;}</code>, <code>POST /api/dice-proposals/{id}/cancel</code> (proposer only). Notifications: <code>GET /api/notifications</code>, <code>POST /api/notifications/{id}/read</code>, <code>POST /api/notifications/read-all</code>. Chat: <code>GET /api/conversations</code> (inbox), <code>POST /api/conversations</code> (create direct or ad-hoc group), <code>GET /api/conversations/{id}/messages</code> (paginated, cursor-based), <code>POST /api/conversations/{id}/messages</code>, <code>POST /api/conversations/{id}/read</code> (updates <code>last_read_at</code>), <code>POST /api/conversations/{id}/delivery</code> (HTTP fallback for <code>last_delivered_at</code>; normally bumped via the WebSocket <code>delivery.ack</code> frame), <code>POST /api/messages/{id}/reactions</code>.</p>
+<p>Push token registration: <code>POST /api/push-tokens</code>, <code>DELETE /api/push-tokens/{token}</code>. Achievements: <code>GET /api/achievements</code>, <code>GET /api/users/me/achievements</code>. All write endpoints require a valid access token; admin endpoints additionally require <code>role = admin</code>.</p>
+<h2 id="real-time-websocket-protocol"><a class="anchor" href="#real-time-websocket-protocol" aria-hidden="true">#</a> Real-time / WebSocket protocol</h2>
+<p>A single WebSocket endpoint at <code>/ws</code> is the only socket the app keeps open. Authentication happens via a one-time ticket: the client calls <code>POST /api/auth/ws-ticket</code>, receives a short-lived (60 second) token, and connects to <code>wss://server/ws?ticket={token}</code>. The server validates the ticket, loads the user, registers the connection in its in-memory map keyed by user id, and subscribes the connection to the relevant Redis Pub/Sub channels.</p>
+<p>Channels are: <code>user:{userId}</code> (private, for events targeted at this user — friend requests, achievement unlocks, raid invites, presence updates of friends), <code>conversation:{conversationId}</code> (for chat messages, delivery and read receipts, reactions, and typing indicators in a conversation the user is a participant of), and <code>check:{checkId}</code> (for the split-room flow — participants joining, item assignments updating, totals re-computing, dice proposals voting, dice rolling). The client maintains a small dispatcher that routes each event type to an RTK Query cache patch — <code>message.new</code> appends to the messages query for that conversation; <code>friend.accepted</code> invalidates the friends query; <code>assignment.updated</code> patches the relevant check; and so on.</p>
+<p>Conversation channel events: <code>message.new</code> (new persisted message), <code>message.edited</code>, <code>message.deleted</code>, <code>delivery.update</code> (a participant&#39;s <code>last_delivered_at</code> advanced — sender&#39;s tick goes to double-check when this covers everyone), <code>read.update</code> (a participant&#39;s <code>last_read_at</code> advanced — sender&#39;s tick flips to accent colour when this covers everyone), <code>reaction.added</code>, <code>reaction.removed</code>, <code>typing.start</code>, <code>typing.stop</code>, <code>conversation.participant.added</code> (used by raid chats when a user RSVPs), <code>conversation.participant.removed</code>.</p>
+<p>Check channel events for the split room: <code>participant.joined</code>, <code>participant.ready</code>, <code>participant.unready</code>, <code>participant.left</code>, <code>assignment.updated</code> (an item assignment changed — body carries the patched row), <code>totals.updated</code> (carries the recomputed <code>per_participant: {participant_id: amount}</code> map), <code>split.completed</code> (every joined participant is ready and every item is fully assigned). Dice proposal events on the same channel: <code>dice_proposal.created</code>, <code>dice_proposal.voted</code> (carries the per-user tally), <code>dice_proposal.resolved</code> (<code>outcome: &#39;accepted&#39; | &#39;declined&#39; | &#39;cancelled&#39;</code>), <code>dice.rollStarting</code>, <code>dice.rolled</code> (per-participant, with the resolved D20 number), <code>kind_soul.awarded</code> (with the winning user).</p>
+<p>Client-to-server messages on the same socket: <code>presence.heartbeat</code> every 25 seconds (so the server knows the device is still alive and updates <code>user_presence</code>), <code>typing.start</code> and <code>typing.stop</code> (not persisted; the server simply re-broadcasts to the conversation channel), <code>read.mark</code> when the user scrolls a conversation (the server updates <code>last_read_at</code> and emits <code>read.update</code>), and <code>delivery.ack</code> immediately after the client renders a <code>message.new</code> (the server updates <code>last_delivered_at</code> and emits <code>delivery.update</code>).</p>
+<p>Disconnection is detected when the server&#39;s WebSocket loop raises; the connection is removed from the in-memory map, the user&#39;s <code>user_presence.status</code> is set to <code>offline</code> if no other connection for that user remains, and a <code>presence.update</code> is broadcast to that user&#39;s friends. The client side reconnects with exponential backoff on <code>onclose</code>, fetching a fresh ticket each time.</p>
+<h2 id="mobile-app-structure"><a class="anchor" href="#mobile-app-structure" aria-hidden="true">#</a> Mobile app structure</h2>
+<p>The Expo Router layout uses tabs at the root with stack navigation inside each tab. The folder structure under <code>app/</code> mirrors the routes: <code>app/(auth)/login.tsx</code> and <code>app/(auth)/register.tsx</code> for the unauthenticated stack, with a layout that redirects already-authenticated users to the main tabs; <code>app/(tabs)/_layout.tsx</code> defines the four-tab navigator; <code>app/(tabs)/index.tsx</code> is the Home feed; <code>app/(tabs)/bars/index.tsx</code> is the catalog and <code>app/(tabs)/bars/[id].tsx</code> is the detail page; <code>app/(tabs)/friends/index.tsx</code> is the friends list with chat inbox, with sub-screens for individual conversations under <code>app/(tabs)/friends/chat/[conversationId].tsx</code>; <code>app/(tabs)/profile/index.tsx</code> is the profile with edit and history under sub-routes. Modal flows (receipt scan, D20 dice, quiz) are pushed as modals from the relevant tab.</p>
+<p>State is organised in two layers. Server data goes through RTK Query — one API &quot;slice&quot; per resource group (<code>barsApi</code>, <code>chatApi</code>, <code>friendsApi</code>, <code>raidsApi</code>, <code>checksApi</code>, <code>quizApi</code>, <code>achievementsApi</code>). Local state — current theme, draft chat input, pending uploads, WebSocket connection status — lives in a small set of Redux Toolkit slices. A <code>socketMiddleware</code> listens for events arriving on the WebSocket and dispatches the corresponding RTK Query cache updates so that screens re-render automatically. Secure storage holds the refresh token; the in-memory access token is rotated transparently by an <code>axios</code> (or <code>fetch</code>) interceptor.</p>
+<p>The Tamagui theme defines two colour palettes — a warm &quot;tavern&quot; dark theme as the default, and a lighter alternative — plus typography ramps and the accent colour from the original project&#39;s design (a saturated teal for active elements). All screens use Tamagui components (<code>YStack</code>, <code>XStack</code>, <code>Button</code>, <code>Card</code>, <code>Sheet</code>, etc.) so the visual language stays consistent without manual styling per screen.</p>
+<h2 id="demo-plan-two-phones"><a class="anchor" href="#demo-plan-two-phones" aria-hidden="true">#</a> Demo plan (two phones)</h2>
+<p>For the demonstration the backend runs either on your laptop (with both phones connected to the same Wi-Fi network and the laptop&#39;s local IP baked into the app&#39;s <code>API_BASE_URL</code>) or on a free-tier deployment such as Fly.io or Railway. The laptop option is simpler and works without internet, which makes it the safer default. Concretely: start PostgreSQL and Redis with <code>docker-compose up</code>, start the FastAPI server with <code>uvicorn app.main:app --host 0.0.0.0 --port 8000</code>, find the laptop&#39;s LAN IP, and set <code>EXPO_PUBLIC_API_BASE_URL=http://192.168.x.x:8000</code> for both phones. Both phones install the Expo Go app and scan the QR code from <code>npx expo start</code>. Each phone registers a separate account, sends a friend request to the other, accepts it on the second device, then opens a chat. The first phone sends a message; the second phone sees it appear instantly. A receipt photo from one phone, OCR&#39;d, can be split with the second user as a participant, and the dice roll outcome shows simultaneously on both devices because the result is broadcast over the same WebSocket channel.</p>
+<p>For going beyond the local demo (so the examiners can use the app from their own phones at any time), the easiest path is Fly.io for the FastAPI + Redis containers and Neon or Supabase for the managed Postgres with PostGIS. The mobile app is built with <code>eas build --profile preview</code> to produce installable <code>.apk</code> / <code>.ipa</code> artefacts.</p>
+<h2 id="security-posture"><a class="anchor" href="#security-posture" aria-hidden="true">#</a> Security posture</h2>
+<p>Passwords are stored as Argon2 hashes via <code>passlib</code>. Access tokens are HS256-signed JWTs with a 15-minute TTL; refresh tokens are 64-byte random strings whose SHA-256 hash is stored in <code>refresh_tokens</code> (the raw value is only ever in the client&#39;s secure storage). Refresh-on-use rotates the refresh token — the old hash is revoked, a new one is issued — so a leaked refresh token has a small window of usefulness. The WebSocket ticket flow ensures we never put the JWT in a query string (which can be logged by proxies) and gives the server a chance to revoke a single connection without invalidating the user&#39;s session. All input is validated by Pydantic models on the FastAPI side; SQL is parameterised via SQLAlchemy. Foreign keys with explicit <code>ON DELETE</code> actions prevent orphaned rows. Soft-deleted users (<code>users.deleted_at IS NOT NULL</code>) are filtered out of queries via a session-level filter. Image uploads go through presigned S3 URLs scoped to a single object key, so the API server never proxies bytes. Rate limiting will be added at the edge (Nginx or a Cloudflare WAF rule) for the auth endpoints.</p>
+<h2 id="project-structure"><a class="anchor" href="#project-structure" aria-hidden="true">#</a> Project structure</h2>
+<p>The repository is a monorepo with two top-level packages and the database assets at the root.</p>
+<pre><code class="hljs language-plain">DiplomaProject<span class="hljs-symbol">/</span>
+├── PROJECT.md                 ← this file
+├── database<span class="hljs-symbol">/</span>
+│   ├── schema.sql             ← full DDL (PostgreSQL)
+│   └── SCHEMA.md              ← schema design rationale
+├── backend<span class="hljs-symbol">/</span>                   ← FastAPI app (to be scaffolded)
+│   ├── pyproject.toml
+│   ├── alembic<span class="hljs-symbol">/</span>
+│   └── app<span class="hljs-symbol">/</span>
+│       ├── main.py
+│       ├── core<span class="hljs-symbol">/</span>              ← config, security, deps
+│       ├── db<span class="hljs-symbol">/</span>                ← SQLAlchemy session <span class="hljs-operator">+</span> models
+│       ├── auth<span class="hljs-symbol">/</span>              ← register<span class="hljs-symbol">/login/refresh/ws-ticket</span>
+│       ├── bars<span class="hljs-symbol">/</span>              ← routers, services, schemas
+│       ├── checks<span class="hljs-symbol">/</span>
+│       ├── chat<span class="hljs-symbol">/</span>
+│       ├── friends<span class="hljs-symbol">/</span>
+│       ├── raids<span class="hljs-symbol">/</span>
+│       ├── quiz<span class="hljs-symbol">/</span>
+│       ├── achievements<span class="hljs-symbol">/</span>
+│       ├── notifications<span class="hljs-symbol">/</span>
+│       ├── realtime<span class="hljs-symbol">/</span>          ← WS endpoint, connection manager, Redis pub<span class="hljs-symbol">/sub</span>
+│       └── tasks<span class="hljs-symbol">/</span>             ← background workers (OCR, achievement evaluator)
+└── mobile<span class="hljs-symbol">/</span>                    ← Expo app (to be scaffolded)
+    ├── package.json
+    ├── app.config.ts
+    ├── tamagui.config.ts
+    ├── app<span class="hljs-symbol">/</span>                   ← Expo Router routes (see <span class="hljs-string">&quot;Mobile app structure&quot;</span>)
+    ├── src<span class="hljs-symbol">/</span>
+    │   ├── store<span class="hljs-symbol">/</span>             ← Redux store <span class="hljs-operator">+</span> slices
+    │   ├── api<span class="hljs-symbol">/</span>               ← RTK Query API definitions
+    │   ├── realtime<span class="hljs-symbol">/</span>          ← WebSocket client <span class="hljs-operator">+</span> middleware
+    │   ├── components<span class="hljs-symbol">/</span>        ← shared Tamagui components
+    │   ├── features<span class="hljs-symbol">/</span>          ← feature-grouped UI (bars, chat, checks, raids…)
+    │   └── theme<span class="hljs-symbol">/</span>             ← Tamagui theme tokens
+    └── assets<span class="hljs-operator">/</span></code></pre>
+<h2 id="roadmap"><a class="anchor" href="#roadmap" aria-hidden="true">#</a> Roadmap</h2>
+<p>The work is split into phases that each end with something demoable.</p>
+<p>Phase 1 — Foundation. Get PostgreSQL + Redis running locally via <code>docker-compose</code>. Apply the schema via Alembic migrations. Scaffold the FastAPI app, the auth endpoints (register, login, refresh, ws-ticket, me), and the WebSocket endpoint with a stub handler. Scaffold the Expo app with Tamagui, Expo Router, Redux Toolkit, and a login screen that talks to the backend. End state: a user can register and log in from a phone.</p>
+<p>Phase 2 — Bars. Implement the bar catalog endpoints, full-text search, reviews, favorites, and photos. Build the catalog screen, detail screen, favorites screen. Seed Lviv bars. End state: browse and favorite bars on the phone.</p>
+<p>Phase 3 — Social. Friends, friend requests, friend groups. Notifications table + screen. Push token registration via Expo Push. End state: two accounts can become friends and see each other&#39;s basic activity.</p>
+<p>Phase 4 — Chat. Conversations, messages, reactions. WebSocket message flow with Redis Pub/Sub fan-out. Mobile chat UI with optimistic sending, read receipts, typing indicators, offline push fallback. End state: two phones can chat in real time — this is the multi-device demo requirement.</p>
+<p>Phase 5 — Raids. Raid creation, RSVP, near-me geo queries, push reminders. End state: organise a meet-up at a bar with friends.</p>
+<p>Phase 6 — Receipts and D20. Image upload, OCR via OpenAI Vision, item parsing, participant assignment, totals, D20 dice screen, <code>kind_soul_events</code>, leaderboard. End state: split a real receipt with a friend on the second phone.</p>
+<p>Phase 7 — Quiz and achievements. Quiz delivery and scoring, race assignment, achievement evaluator running off domain events, achievement screen, race-themed profile decoration. End state: gamification loop closed.</p>
+<p>Phase 8 — Tavern Tales (AI DM). Character creation, the three-mode system prompt suite, GPT-4o streaming through the WebSocket, server-side dice rolling, rolling session summary, quota enforcement, the fifth tab UI, and the D&amp;D-specific achievements. End state: a user can finish a 10-minute solo quest from start to finish on the phone.</p>
+<p>Phase 9 — Polish and deploy. Animations, empty states, error boundaries, accessibility pass, EAS preview builds, server deploy. End state: shareable demo build.</p>
+<h2 id="open-questions"><a class="anchor" href="#open-questions" aria-hidden="true">#</a> Open questions</h2>
+<p>A few decisions are deferred until we hit them in code. Should the OCR call be synchronous (slow request, simple client) or asynchronous with a job + SSE updates (better UX, more moving parts)? Likely async, but we&#39;ll start sync and refactor. Do we need typing indicators in MVP? Probably not for Phase 4 — they&#39;re a Phase 9 polish item. Do reactions go in MVP? Yes, they&#39;re cheap. Will we host images on Cloudflare R2 or AWS S3? Either; R2 is cheaper but S3 has more mature SDKs — defer until deploy time. Should the FastAPI WebSocket layer migrate to <code>python-socketio</code> if rooms become awkward? We&#39;ll re-evaluate when the per-conversation channel count grows past a few thousand. For Tavern Tales: what&#39;s the right default LLM token cap per user, and do we want a paid tier later? Defaulting to 30k/day and 500k/month gives ~100 quests a month; we&#39;ll observe and tune.</p>
+<h2 id="references"><a class="anchor" href="#references" aria-hidden="true">#</a> References</h2>
+<p>The original coursework documentation (<code>Інтернет-проєкт КР.docx</code>) is the source of the functional requirements and the database entity list that this rebuild is faithful to. The full DDL is in <code>database/schema.sql</code>; the schema rationale is in <code>database/SCHEMA.md</code>.</p>
+
+    </main>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      Diploma project &middot; Lviv Polytechnic &middot; Mobile rebuild of "Довідка пабів м. Львів"
+    </div>
+  </footer>
+</body>
+</html>
