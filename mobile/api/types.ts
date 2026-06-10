@@ -175,6 +175,12 @@ export interface FriendGroupMember {
   joined_at: string;
 }
 
+export interface UserSearchResult {
+  user: FriendUser;
+  relationship: 'friend' | 'incoming' | 'outgoing' | 'none';
+  request_id: number | null;
+}
+
 // ──────────────────────────────────────────────────────────────────────────────
 // Quiz
 // ──────────────────────────────────────────────────────────────────────────────
@@ -194,6 +200,7 @@ export interface QuizResult {
   race_id: number;
   race_slug: string;
   race_name: string;
+  gender: 'm' | 'f' | null;
   score_breakdown: Record<string, number>;
   completed_at: string;
 }

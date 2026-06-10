@@ -6,6 +6,7 @@
  * interests, and a "Full" badge when capacity is reached. Tapping opens detail.
  */
 
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import {
   ActivityIndicator,
@@ -29,12 +30,14 @@ export default function PartyListScreen() {
   return (
     <SafeAreaView style={s.safe} edges={['top']}>
       <View style={s.header}>
-        <TouchableOpacity onPress={() => router.back()} hitSlop={8}>
-          <Text style={s.back}>← Back</Text>
+        <TouchableOpacity onPress={() => router.back()} hitSlop={8} style={s.backRow}>
+          <Ionicons name="chevron-back" size={18} color={C.textSecondary} />
+          <Text style={s.back}>Back</Text>
         </TouchableOpacity>
         <Text style={s.title}>Parties</Text>
-        <TouchableOpacity onPress={() => router.push('/party/new' as never)} hitSlop={8}>
-          <Text style={s.new}>＋ New</Text>
+        <TouchableOpacity onPress={() => router.push('/party/new' as never)} hitSlop={8} style={s.newRow}>
+          <Ionicons name="add" size={18} color={C.brandPrimary} />
+          <Text style={s.new}>New</Text>
         </TouchableOpacity>
       </View>
 
@@ -73,7 +76,10 @@ function PartyCard({ party }: { party: Party }) {
         {party.is_full ? (
           <Text style={s.full}>Full</Text>
         ) : (
-          <Text style={s.count}>{cap} 👥</Text>
+          <View style={s.countRow}>
+            <Text style={s.count}>{cap}</Text>
+            <Ionicons name="people" size={13} color={C.textSecondary} />
+          </View>
         )}
       </View>
       {party.description ? (
@@ -81,9 +87,17 @@ function PartyCard({ party }: { party: Party }) {
       ) : null}
       <View style={s.cardMeta}>
         {party.match_score > 0 && (
-          <Text style={s.match}>✨ Matches your vibe ({party.match_score})</Text>
+          <View style={s.metaRow}>
+            <Ionicons name="sparkles" size={12} color={C.brandPrimary} />
+            <Text style={s.match}>Matches your vibe ({party.match_score})</Text>
+          </View>
         )}
-        {party.drink_match > 0 && <Text style={s.taste}>🍻 Matches your taste</Text>}
+        {party.drink_match > 0 && (
+          <View style={s.metaRow}>
+            <Ionicons name="beer" size={12} color={C.accentGoldText} />
+            <Text style={s.taste}>Matches your taste</Text>
+          </View>
+        )}
         {party.visibility === 'friends_only' && <Text style={s.friends}>Friends only</Text>}
         {party.my_membership === 'joined' && <Text style={s.joined}>Joined</Text>}
       </View>
@@ -98,8 +112,10 @@ const s = StyleSheet.create({
     paddingHorizontal: 20, paddingVertical: 12,
     borderBottomWidth: 1, borderBottomColor: C.borderDefault,
   },
+  backRow: { flexDirection: 'row', alignItems: 'center', gap: 2 },
   back: { fontFamily: F.bodySemiBold, fontSize: 14, color: C.textSecondary },
   title: { fontFamily: F.headingBold, fontSize: 18, color: C.textPrimary },
+  newRow: { flexDirection: 'row', alignItems: 'center', gap: 2 },
   new: { fontFamily: F.bodyBold, fontSize: 14, color: C.brandPrimary },
 
   list: { padding: 16, gap: 12 },
@@ -113,6 +129,7 @@ const s = StyleSheet.create({
   },
   cardTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
   cardTitle: { flex: 1, fontFamily: F.headingSemi, fontSize: 16, color: C.textPrimary },
+  countRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   count: { fontFamily: F.bodyBold, fontSize: 13, color: C.textSecondary },
   full: {
     fontFamily: F.bodyBold, fontSize: 12, color: C.error,
@@ -120,6 +137,7 @@ const s = StyleSheet.create({
   },
   cardDesc: { fontFamily: F.bodyRegular, fontSize: 13, color: C.textSecondary, lineHeight: 19 },
   cardMeta: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  metaRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   match: { fontFamily: F.bodySemiBold, fontSize: 12, color: C.brandPrimary },
   taste: { fontFamily: F.bodySemiBold, fontSize: 12, color: C.brandPrimary },
   friends: { fontFamily: F.bodyRegular, fontSize: 12, color: C.textSecondary },

@@ -10,8 +10,9 @@
  * roster + requests (to start new direct chats).
  */
 
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { useMemo } from 'react';
+import { ComponentProps, useMemo } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -37,10 +38,12 @@ function kindOf(c: Conversation): Kind {
   return 'direct';
 }
 
-const KIND_META: Record<Kind, { icon: string; tag: string }> = {
-  raid: { icon: '🗡️', tag: 'Raid' },
-  group: { icon: '🛡️', tag: 'Party' },
-  direct: { icon: '💬', tag: 'Direct' },
+type IoniconName = ComponentProps<typeof Ionicons>['name'];
+
+const KIND_META: Record<Kind, { icon: IoniconName; tag: string }> = {
+  raid: { icon: 'flag', tag: 'Raid' },
+  group: { icon: 'shield-half', tag: 'Party' },
+  direct: { icon: 'chatbubble-ellipses', tag: 'Direct' },
 };
 
 function timeLabel(iso: string | null): string {
@@ -90,13 +93,18 @@ export default function MessagesScreen() {
   return (
     <SafeAreaView style={s.safe} edges={['top']}>
       <View style={s.headerRow}>
-        <Text style={s.title}>💬 Messages</Text>
+        <View style={s.titleRow}>
+          <Ionicons name="chatbubbles" size={20} color={C.textPrimary} />
+          <Text style={s.title}>Messages</Text>
+        </View>
         <TouchableOpacity
           onPress={() => router.push('/friends' as never)}
           activeOpacity={0.85}
           hitSlop={8}
+          style={s.actionRow}
         >
-          <Text style={s.action}>👥 Friends</Text>
+          <Ionicons name="people" size={15} color={C.brandPrimary} />
+          <Text style={s.action}>Friends</Text>
         </TouchableOpacity>
       </View>
 
@@ -114,7 +122,7 @@ export default function MessagesScreen() {
             <View style={s.empty}>
               <Text style={s.emptyText}>No conversations yet.</Text>
               <TouchableOpacity onPress={() => router.push('/friends' as never)} activeOpacity={0.85}>
-                <Text style={s.emptyAction}>Find friends to chat with →</Text>
+                <Text style={s.emptyAction}>Find friends to chat with</Text>
               </TouchableOpacity>
             </View>
           }
@@ -128,7 +136,7 @@ export default function MessagesScreen() {
                 onPress={() => router.push(`/chat/${item.id}` as never)}
               >
                 <View style={s.avatar}>
-                  <Text style={s.avatarEmoji}>{meta.icon}</Text>
+                  <Ionicons name={meta.icon} size={20} color={C.brandPrimaryHover} />
                 </View>
                 <View style={{ flex: 1 }}>
                   <View style={s.rowTop}>
@@ -165,7 +173,9 @@ const s = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: 20, paddingTop: 12, paddingBottom: 8,
   },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   title: { fontFamily: F.headingBold, fontSize: 22, color: C.textPrimary },
+  actionRow: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   action: { fontFamily: F.bodyBold, fontSize: 14, color: C.brandPrimary },
 
   list: { paddingHorizontal: 16, paddingTop: 4, paddingBottom: 100 },

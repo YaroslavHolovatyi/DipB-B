@@ -65,6 +65,9 @@ class User(Base):
     race_id: Mapped[int | None] = mapped_column(
         BigInteger, ForeignKey("races.id", ondelete="SET NULL")
     )
+    # 'm' / 'f' — set by the final quiz step; picks the male/female race avatar.
+    # Nullable: users who haven't answered yet fall back to the male art.
+    gender: Mapped[str | None] = mapped_column(enums.gender)
 
     # `user_role` enum on the DB side — we accept it as a string in ORM and let
     # the DB enforce the values. Mapping the enum properly is deferred until we

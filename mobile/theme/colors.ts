@@ -5,58 +5,58 @@
  */
 
 export const colors = {
-  // ── Backgrounds ──────────────────────────────────────────
-  bgBase:     '#F9FAFB',
-  bgCard:     '#FFFFFF',
-  bgElevated: '#FFFFFF',
-  bgInput:    '#F3F4F6',
+  // ── Backgrounds — parchment (light) / aged wood (dark) ───
+  bgBase:     '#F1E5C9',
+  bgCard:     '#FAF2DC',
+  bgElevated: '#FFF8E7',
+  bgInput:    '#E7D8B4',
 
-  bgBaseDark:     '#0D0D1A',
-  bgCardDark:     '#13132B',
-  bgElevatedDark: '#1A1A35',
-  bgInputDark:    '#1E1E38',
+  bgBaseDark:     '#1B130B',
+  bgCardDark:     '#2A1E11',
+  bgElevatedDark: '#352616',
+  bgInputDark:    '#2E2113',
 
-  // ── Brand / Primary ──────────────────────────────────────
-  brandPrimary:       '#6366F1',
-  brandPrimaryHover:  '#4F46E5',
-  brandPrimarySubtle: '#E0E7FF',
+  // ── Brand / Primary — tavern amber/bronze ────────────────
+  brandPrimary:       '#B4571C',
+  brandPrimaryHover:  '#8F4214',
+  brandPrimarySubtle: '#F3DDBE',
 
   // ── Fantasy Accent — Gold ────────────────────────────────
-  accentGold:       '#F59E0B',
-  accentGoldSubtle: '#FEF3C7',
-  accentGoldText:   '#B45309',
+  accentGold:       '#D99A1C',
+  accentGoldSubtle: '#F6E4BB',
+  accentGoldText:   '#825311',
 
-  // ── Secondary Accent — Emerald ───────────────────────────
-  accentSecondary:       '#10B981',
-  accentSecondarySubtle: '#D1FAE5',
+  // ── Secondary Accent — Herb / Dragon Green ───────────────
+  accentSecondary:       '#4E7A45',
+  accentSecondarySubtle: '#DCE7CB',
 
   // ── Semantic ─────────────────────────────────────────────
-  success:        '#059669',
-  successSubtle:  '#D1FAE5',
-  warning:        '#D97706',
-  warningSubtle:  '#FEF3C7',
-  error:          '#DC2626',
-  errorSubtle:    '#FEE2E2',
+  success:        '#3F7A3F',
+  successSubtle:  '#DCE7CB',
+  warning:        '#B5781A',
+  warningSubtle:  '#F6E4BB',
+  error:          '#9B2C20',
+  errorSubtle:    '#F0D9CF',
 
-  // ── Text ─────────────────────────────────────────────────
-  textPrimary:    '#111827',
-  textSecondary:  '#6B7280',
-  textDisabled:   '#9CA3AF',
-  textOnBrand:    '#FFFFFF',
-  textOnGold:     '#111827',
+  // ── Text — ink on parchment ──────────────────────────────
+  textPrimary:    '#3A2A18',
+  textSecondary:  '#6E5733',
+  textDisabled:   '#9C8A66',
+  textOnBrand:    '#FFF8E7',
+  textOnGold:     '#3A2A18',
 
-  // Text — Dark mode
-  textPrimaryDark:   '#F1F5F9',
-  textSecondaryDark: '#94A3B8',
-  textDisabledDark:  '#475569',
+  // Text — Dark mode (parchment on wood)
+  textPrimaryDark:   '#EFE2C6',
+  textSecondaryDark: '#BBA784',
+  textDisabledDark:  '#7C6B4C',
 
   // ── Borders ──────────────────────────────────────────────
-  borderDefault: '#E5E7EB',
-  borderStrong:  '#D1D5DB',
-  borderFocus:   '#6366F1',
+  borderDefault: '#D9C49A',
+  borderStrong:  '#C2A871',
+  borderFocus:   '#B4571C',
 
-  borderDefaultDark: '#2D2D4A',
-  borderStrongDark:  '#3D3D5A',
+  borderDefaultDark: '#4A3724',
+  borderStrongDark:  '#5E4730',
 
   // ── Gamification — Race colors ───────────────────────────
   raceHumanBg:    '#DBEAFE',  raceHumanText:    '#1E40AF',
@@ -71,11 +71,11 @@ export const colors = {
   tierSilver: '#94A3B8',
   tierBronze: '#C2763A',
 
-  // ── Welcome Screen (always dark) ─────────────────────────
-  welcomeBg:      '#0A0A1A',
-  welcomeGradientStart: '#0A0A1A',
-  welcomeGradientMid:   '#120E30',
-  welcomeGradientEnd:   '#1E0E3E',
+  // ── Welcome Screen (always dark tavern) ──────────────────
+  welcomeBg:      '#140D07',
+  welcomeGradientStart: '#140D07',
+  welcomeGradientMid:   '#241606',
+  welcomeGradientEnd:   '#3A2410',
 } as const;
 
 export type ColorToken = keyof typeof colors;

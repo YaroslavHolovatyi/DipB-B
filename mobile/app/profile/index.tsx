@@ -8,10 +8,12 @@
  * that clears the refresh token and bounces back to the welcome screen.
  */
 
+import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import {
   ActivityIndicator,
+  Image,
   Platform,
   ScrollView,
   StatusBar,
@@ -21,6 +23,8 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { raceImage } from '../../assets';
 
 import { useLogoutMutation } from '../../api/authApi';
 import { useListFavoriteBarsQuery } from '../../api/barsApi';
@@ -79,10 +83,11 @@ export default function ProfileScreen() {
 
       <SafeAreaView style={s.safe} edges={['top']}>
         <View style={s.navHeader}>
-          <TouchableOpacity onPress={() => router.back()} hitSlop={8}>
-            <Text style={s.navBack}>← Back</Text>
+          <TouchableOpacity onPress={() => router.back()} hitSlop={8} style={s.navBackRow}>
+            <Ionicons name="chevron-back" size={18} color={C.textSecondary} />
+            <Text style={s.navBack}>Back</Text>
           </TouchableOpacity>
-          <Text style={s.navTitle}>⚔️ Profile</Text>
+          <Text style={s.navTitle}>Profile</Text>
           <TouchableOpacity onPress={() => router.push('/profile/edit' as never)}>
             <Text style={s.navAction}>Edit</Text>
           </TouchableOpacity>
@@ -98,7 +103,15 @@ export default function ProfileScreen() {
           >
             <View style={s.avatarWrap}>
               <View style={[s.avatar, { borderColor: race?.primary_color ?? C.brandPrimary }]}>
-                <Text style={s.avatarInitial}>{user.first_name[0]?.toUpperCase()}</Text>
+                {raceImage(race?.slug, user.gender) ? (
+                  <Image
+                    source={raceImage(race?.slug, user.gender)}
+                    style={s.avatarImage}
+                    resizeMode="cover"
+                  />
+                ) : (
+                  <Text style={s.avatarInitial}>{user.first_name[0]?.toUpperCase()}</Text>
+                )}
               </View>
             </View>
             <Text style={s.displayName}>
@@ -131,7 +144,7 @@ export default function ProfileScreen() {
           </View>
 
           {/* Reputation — live from /users/me/stats */}
-          <Section title="⭐ Reputation">
+          <Section title="Reputation" icon="ribbon">
             <View style={s.repHeader}>
               <View>
                 <Text style={s.repRating}>
@@ -165,7 +178,7 @@ export default function ProfileScreen() {
           </Section>
 
           {/* Achievements */}
-          <Section title="🏆 Achievements">
+          <Section title="Achievements" icon="trophy">
             {achLoading ? (
               <ActivityIndicator />
             ) : achievements.length === 0 ? (
@@ -177,7 +190,7 @@ export default function ProfileScreen() {
                     key={ua.achievement.id}
                     item={{
                       id: String(ua.achievement.id),
-                      emoji: '🏆',
+                      icon: 'trophy',
                       name: ua.achievement.name,
                       state: 'unlocked',
                     }}
@@ -188,7 +201,7 @@ export default function ProfileScreen() {
           </Section>
 
           {/* Leaderboard */}
-          <Section title="🏅 Kind Soul Leaderboard">
+          <Section title="Kind Soul Leaderboard" icon="medal">
             {lbLoading ? (
               <ActivityIndicator />
             ) : leaderboard.length === 0 ? (
@@ -214,7 +227,7 @@ export default function ProfileScreen() {
 
           {/* Favourites */}
           {favorites.length > 0 && (
-            <Section title="♥ Favourite Taverns">
+            <Section title="Favourite Taverns" icon="heart">
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 <View style={s.favRow}>
                   {favorites.map((b) => (
@@ -230,7 +243,10 @@ export default function ProfileScreen() {
                       <Text style={s.favName} numberOfLines={1}>
                         {b.name}
                       </Text>
-                      <Text style={s.favSub}>★ {Number(b.rating_avg).toFixed(1)}</Text>
+                      <View style={s.favSubRow}>
+                        <Ionicons name="star" size={11} color={C.accentGold} />
+                        <Text style={s.favSub}>{Number(b.rating_avg).toFixed(1)}</Text>
+                      </View>
                     </TouchableOpacity>
                   ))}
                 </View>
@@ -243,7 +259,8 @@ export default function ProfileScreen() {
             activeOpacity={0.85}
             onPress={() => router.push('/quiz?retake=1' as never)}
           >
-            <Text style={s.retakeText}>🎲 Retake race quiz</Text>
+            <Ionicons name="dice" size={16} color={C.brandPrimaryHover} />
+            <Text style={s.retakeText}>Retake race quiz</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={s.signOut} activeOpacity={0.85} onPress={handleSignOut}>
@@ -266,10 +283,21 @@ function Stat({ label, value }: { label: string; value: string }) {
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({
+  title,
+  icon,
+  children,
+}: {
+  title: string;
+  icon?: React.ComponentProps<typeof Ionicons>['name'];
+  children: React.ReactNode;
+}) {
   return (
     <View style={s.section}>
-      <Text style={s.sectionTitle}>{title}</Text>
+      <View style={s.sectionTitleRow}>
+        {icon && <Ionicons name={icon} size={16} color={C.brandPrimary} />}
+        <Text style={s.sectionTitle}>{title}</Text>
+      </View>
       {children}
     </View>
   );
@@ -283,6 +311,7 @@ const s = StyleSheet.create({
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     paddingHorizontal: 20, paddingTop: 8, paddingBottom: 8,
   },
+  navBackRow: { flexDirection: 'row', alignItems: 'center', gap: 2 },
   navBack: { fontFamily: F.bodySemiBold, fontSize: 14, color: C.textSecondary },
   navTitle: { fontFamily: F.headingBold, fontSize: 22, color: C.textPrimary },
   navAction: { fontFamily: F.bodySemiBold, fontSize: 14, color: C.brandPrimary },
@@ -295,6 +324,7 @@ const s = StyleSheet.create({
     width: 90, height: 90, borderRadius: 45, borderWidth: 3,
     backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center',
   },
+  avatarImage: { width: '100%', height: '100%', borderRadius: 45 },
   avatarInitial: { fontFamily: F.headingBold, fontSize: 36, color: C.textPrimary },
   displayName: { fontFamily: F.headingBold, fontSize: 22, color: C.textPrimary },
   handle: { fontFamily: F.bodyRegular, fontSize: 13, color: C.textSecondary },
@@ -336,8 +366,9 @@ const s = StyleSheet.create({
   },
 
   section: { paddingHorizontal: 20, marginTop: 24 },
+  sectionTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 12 },
   sectionTitle: {
-    fontFamily: F.headingSemi, fontSize: 16, color: C.textPrimary, marginBottom: 12,
+    fontFamily: F.headingSemi, fontSize: 16, color: C.textPrimary,
   },
   muted: { fontFamily: F.bodyRegular, fontSize: 13, color: C.textSecondary },
 
@@ -354,12 +385,13 @@ const s = StyleSheet.create({
   },
   favInitial: { fontFamily: F.headingBold, fontSize: 24, color: C.accentGoldText },
   favName: { fontFamily: F.bodyBold, fontSize: 13, color: C.textPrimary, textAlign: 'center' },
+  favSubRow: { flexDirection: 'row', alignItems: 'center', gap: 3 },
   favSub: { fontFamily: F.bodyRegular, fontSize: 11, color: C.textSecondary },
 
   retakeBtn: {
     marginHorizontal: 20, marginTop: 28,
     backgroundColor: C.brandPrimarySubtle, paddingVertical: 14, borderRadius: 12,
-    alignItems: 'center',
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
   },
   retakeText: { fontFamily: F.bodyBold, fontSize: 15, color: C.brandPrimaryHover },
 

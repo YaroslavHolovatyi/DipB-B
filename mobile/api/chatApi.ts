@@ -71,8 +71,28 @@ export const chatApi = api.injectEndpoints({
         method: 'POST',
         body,
       }),
-      // Live cache update is driven by the WS `message.new` event, but we still
-      // invalidate the conversation list so the preview text + unread counter
+      // Push the created message into the thread cache as soon as the POST
+      // resolves so the sender sees it instantly even if the WS echo is slow
+      // or the socket is down. The WS `message.new` handler dedupes by id,
+      // so the echo is a no-op.
+      async onQueryStarted({ conversation_id }, { dispatch, queryFulfilled }) {
+        try {
+          const { data: created } = await queryFulfilled;
+          dispatch(
+            chatApi.util.updateQueryData(
+              'listMessages',
+              { conversation_id },
+              (draft) => {
+                if (draft.find((m) => m.id === created.id)) return;
+                draft.push(created);
+              },
+            ),
+          );
+        } catch {
+          // Send failed — the screen surfaces the error; nothing to patch.
+        }
+      },
+      // Invalidate the conversation list so the preview text + unread counter
       // re-fetch.
       invalidatesTags: ['Conversation'],
     }),

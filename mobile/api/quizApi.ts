@@ -9,7 +9,10 @@ export const quizApi = api.injectEndpoints({
       query: () => '/quiz/questions',
       providesTags: ['Quiz'],
     }),
-    submitQuiz: build.mutation<QuizResult, { answer_ids: number[] }>({
+    submitQuiz: build.mutation<
+      QuizResult,
+      { answer_ids: number[]; gender?: 'm' | 'f' | null }
+    >({
       query: (body) => ({ url: '/quiz/submit', method: 'POST', body }),
       invalidatesTags: ['QuizResult', 'User'],
     }),

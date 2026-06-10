@@ -13,6 +13,7 @@
  * The header avatar opens the Profile screen (Profile is no longer a tab).
  */
 
+import { Ionicons } from '@expo/vector-icons';
 import { skipToken } from '@reduxjs/toolkit/query';
 import * as Location from 'expo-location';
 import { router } from 'expo-router';
@@ -60,7 +61,10 @@ export default function SearchScreen() {
   return (
     <SafeAreaView style={s.safe} edges={['top']}>
       <View style={s.headerRow}>
-        <Text style={s.title}>⚔️ Taverns</Text>
+        <View style={s.titleRow}>
+          <Ionicons name="shield-half" size={20} color={C.accentGoldText} />
+          <Text style={s.title}>Taverns</Text>
+        </View>
         <View style={s.headerRight}>
           <View style={s.toggle}>
             <TouchableOpacity
@@ -84,9 +88,13 @@ export default function SearchScreen() {
             hitSlop={8}
           >
             <View style={s.avatar}>
-              <Text style={s.avatarInitial}>
-                {user?.first_name?.[0]?.toUpperCase() ?? '🙂'}
-              </Text>
+              {user?.first_name?.[0] ? (
+                <Text style={s.avatarInitial}>
+                  {user.first_name[0].toUpperCase()}
+                </Text>
+              ) : (
+                <Ionicons name="person" size={16} color={C.brandPrimaryHover} />
+              )}
             </View>
           </TouchableOpacity>
         </View>
@@ -138,7 +146,7 @@ function BarsList() {
   return (
     <>
       <View style={s.searchBox}>
-        <Text style={s.searchIcon}>🔎</Text>
+        <Ionicons name="search" size={16} color={C.textSecondary} style={s.searchIcon} />
         <TextInput
           placeholder="Search by name, address…"
           placeholderTextColor={C.textSecondary}
@@ -216,7 +224,10 @@ function BarRow({
           {item.address ?? '—'}
         </Text>
         <View style={s.rowMeta}>
-          <Text style={s.rating}>★ {Number(item.rating_avg ?? 0).toFixed(1)}</Text>
+          <View style={s.ratingRow}>
+            <Ionicons name="star" size={11} color={C.accentGoldText} />
+            <Text style={s.rating}>{Number(item.rating_avg ?? 0).toFixed(1)}</Text>
+          </View>
           <Text style={s.dot}>·</Text>
           <Text style={s.price}>
             {item.price_category === 'budget'
@@ -230,7 +241,11 @@ function BarRow({
         </View>
       </View>
       <TouchableOpacity onPress={onToggleFavorite} hitSlop={12} style={s.heart}>
-        <Text style={s.heartIcon}>{item.is_favorite ? '❤️' : '🤍'}</Text>
+        <Ionicons
+          name={item.is_favorite ? 'heart' : 'heart-outline'}
+          size={22}
+          color={item.is_favorite ? C.error : C.textSecondary}
+        />
       </TouchableOpacity>
     </TouchableOpacity>
   );
@@ -388,6 +403,7 @@ const s = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: 20, paddingTop: 12, paddingBottom: 8,
   },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   title: { fontFamily: F.headingBold, fontSize: 22, color: C.textPrimary },
   headerRight: { flexDirection: 'row', alignItems: 'center', gap: 12 },
 
@@ -445,6 +461,7 @@ const s = StyleSheet.create({
   rowName: { fontFamily: F.bodyBold, fontSize: 15, color: C.textPrimary },
   rowSub: { fontFamily: F.bodyRegular, fontSize: 12, color: C.textSecondary, marginTop: 1 },
   rowMeta: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 },
+  ratingRow: { flexDirection: 'row', alignItems: 'center', gap: 3 },
   rating: { fontFamily: F.bodySemiBold, fontSize: 12, color: C.accentGoldText },
   dot: { color: C.textSecondary },
   price: { fontFamily: F.bodySemiBold, fontSize: 12, color: C.textSecondary },

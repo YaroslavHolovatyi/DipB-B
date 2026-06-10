@@ -6,6 +6,8 @@
  * this bar's id.
  */
 
+import { Ionicons } from '@expo/vector-icons';
+import React from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
 import {
   ActivityIndicator,
@@ -43,7 +45,8 @@ export default function BarDetailScreen() {
     <SafeAreaView style={s.safe} edges={['top']}>
       <ScrollView contentContainerStyle={s.content}>
         <TouchableOpacity style={s.back} onPress={() => router.back()}>
-          <Text style={s.backText}>← Back</Text>
+          <Ionicons name="chevron-back" size={18} color={C.textSecondary} />
+          <Text style={s.backText}>Back</Text>
         </TouchableOpacity>
 
         <View style={s.hero}>
@@ -62,12 +65,16 @@ export default function BarDetailScreen() {
             style={s.heart}
             hitSlop={12}
           >
-            <Text style={s.heartIcon}>{bar.is_favorite ? '❤️' : '🤍'}</Text>
+            <Ionicons
+              name={bar.is_favorite ? 'heart' : 'heart-outline'}
+              size={26}
+              color={bar.is_favorite ? C.error : C.textSecondary}
+            />
           </TouchableOpacity>
         </View>
 
         <View style={s.metaRow}>
-          <MetaPill label={`★ ${bar.rating_avg.toFixed(1)}`} sub={`${bar.rating_count} reviews`} />
+          <MetaPill icon="star" label={bar.rating_avg.toFixed(1)} sub={`${bar.rating_count} reviews`} />
           <MetaPill
             label={
               bar.price_category === 'budget'
@@ -109,11 +116,15 @@ export default function BarDetailScreen() {
 
         <Text style={s.sectionTitle}>Recent reviews</Text>
         {bar.recent_reviews.length === 0 ? (
-          <Text style={s.muted}>No reviews yet — be the first ⚔️</Text>
+          <Text style={s.muted}>No reviews yet — be the first.</Text>
         ) : (
           bar.recent_reviews.map((r) => (
             <View key={r.id} style={s.reviewCard}>
-              <Text style={s.reviewRating}>{'★'.repeat(r.rating)}</Text>
+              <View style={s.reviewRating}>
+                {Array.from({ length: r.rating }).map((_, i) => (
+                  <Ionicons key={i} name="star" size={13} color={C.accentGoldText} />
+                ))}
+              </View>
               {r.text && <Text style={s.reviewText}>{r.text}</Text>}
               <Text style={s.muted}>{new Date(r.created_at).toLocaleDateString()}</Text>
             </View>
@@ -127,7 +138,8 @@ export default function BarDetailScreen() {
             router.push(`/raids/new?barId=${barId}` as never)
           }
         >
-          <Text style={s.ctaText}>🗡️ Start a raid here</Text>
+          <Ionicons name="flag" size={16} color="#FFFFFF" />
+          <Text style={s.ctaText}>Start a raid here</Text>
         </TouchableOpacity>
 
         <View style={{ height: 40 }} />
@@ -136,10 +148,21 @@ export default function BarDetailScreen() {
   );
 }
 
-function MetaPill({ label, sub }: { label: string; sub: string }) {
+function MetaPill({
+  label,
+  sub,
+  icon,
+}: {
+  label: string;
+  sub: string;
+  icon?: React.ComponentProps<typeof Ionicons>['name'];
+}) {
   return (
     <View style={s.meta}>
-      <Text style={s.metaLabel}>{label}</Text>
+      <View style={s.metaLabelRow}>
+        {icon && <Ionicons name={icon} size={13} color={C.accentGoldText} />}
+        <Text style={s.metaLabel}>{label}</Text>
+      </View>
       <Text style={s.metaSub}>{sub}</Text>
     </View>
   );
@@ -149,7 +172,7 @@ const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: C.bgBase },
   content: { paddingHorizontal: 20, paddingTop: 8, paddingBottom: 40 },
 
-  back: { paddingVertical: 8 },
+  back: { flexDirection: 'row', alignItems: 'center', gap: 2, paddingVertical: 8 },
   backText: { fontFamily: F.bodySemiBold, fontSize: 14, color: C.textSecondary },
 
   hero: {
@@ -171,6 +194,7 @@ const s = StyleSheet.create({
     flex: 1, alignItems: 'center', paddingVertical: 10,
     backgroundColor: C.bgCard, borderColor: C.borderDefault, borderWidth: 1, borderRadius: 12,
   },
+  metaLabelRow: { flexDirection: 'row', alignItems: 'center', gap: 3 },
   metaLabel: { fontFamily: F.bodyBold, fontSize: 15, color: C.textPrimary },
   metaSub: { fontFamily: F.bodyRegular, fontSize: 11, color: C.textSecondary, marginTop: 2 },
 
@@ -193,14 +217,14 @@ const s = StyleSheet.create({
     backgroundColor: C.bgCard, borderColor: C.borderDefault, borderWidth: 1,
     borderRadius: 12, padding: 12, marginBottom: 10,
   },
-  reviewRating: { fontFamily: F.bodyBold, color: C.accentGold, marginBottom: 4 },
+  reviewRating: { flexDirection: 'row', gap: 1, marginBottom: 4 },
   reviewText: { fontFamily: F.bodyRegular, fontSize: 14, color: C.textPrimary, marginBottom: 6 },
 
   muted: { fontFamily: F.bodyRegular, fontSize: 12, color: C.textSecondary },
 
   cta: {
-    backgroundColor: C.brandPrimary, borderRadius: 14,
-    paddingVertical: 14, alignItems: 'center', marginTop: 24,
+    backgroundColor: C.brandPrimary, borderRadius: 14, flexDirection: 'row', gap: 8,
+    paddingVertical: 14, alignItems: 'center', justifyContent: 'center', marginTop: 24,
   },
   ctaText: { fontFamily: F.bodyBold, fontSize: 15, color: '#FFFFFF' },
 });

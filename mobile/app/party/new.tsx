@@ -10,6 +10,7 @@
  * default, since you're usually looking for people who share them).
  */
 
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
@@ -105,11 +106,14 @@ export default function NewPartyScreen() {
           <TouchableOpacity onPress={() => router.back()}>
             <Text style={s.headerBtn}>Cancel</Text>
           </TouchableOpacity>
-          <Text style={s.headerTitle}>🎉 New Party</Text>
+          <View style={s.headerTitleRow}>
+            <Ionicons name="sparkles" size={16} color={C.textPrimary} />
+            <Text style={s.headerTitle}>New Party</Text>
+          </View>
           <View style={{ width: 52 }} />
         </View>
         <View style={s.gate}>
-          <Text style={s.gateEmoji}>📝</Text>
+          <Ionicons name="create-outline" size={44} color={C.brandPrimary} style={s.gateIcon} />
           <Text style={s.gateTitle}>Finish your profile first</Text>
           <Text style={s.gateBody}>
             Parties match people by interests, so you need
@@ -139,7 +143,10 @@ export default function NewPartyScreen() {
           <TouchableOpacity onPress={() => router.back()}>
             <Text style={s.headerBtn}>Cancel</Text>
           </TouchableOpacity>
-          <Text style={s.headerTitle}>🎉 New Party</Text>
+          <View style={s.headerTitleRow}>
+            <Ionicons name="sparkles" size={16} color={C.textPrimary} />
+            <Text style={s.headerTitle}>New Party</Text>
+          </View>
           <TouchableOpacity disabled={isLoading} onPress={submit}>
             <Text style={[s.headerBtn, s.headerCta]}>
               {isLoading ? 'Saving…' : 'Create'}
@@ -280,6 +287,7 @@ const s = StyleSheet.create({
     paddingHorizontal: 16, paddingVertical: 12,
     borderBottomWidth: 1, borderBottomColor: C.borderDefault,
   },
+  headerTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 7 },
   headerTitle: { fontFamily: F.headingBold, fontSize: 17, color: C.textPrimary },
   headerBtn: { fontFamily: F.bodySemiBold, fontSize: 14, color: C.textSecondary },
   headerCta: { color: C.brandPrimary },
@@ -319,7 +327,7 @@ const s = StyleSheet.create({
   chipTextActive: { color: '#FFFFFF' },
 
   gate: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32, gap: 12 },
-  gateEmoji: { fontSize: 44 },
+  gateIcon: { marginBottom: 4 },
   gateTitle: { fontFamily: F.headingBold, fontSize: 20, color: C.textPrimary },
   gateBody: { fontFamily: F.bodyRegular, fontSize: 14, color: C.textSecondary, textAlign: 'center', lineHeight: 21 },
   gateBtn: {

@@ -35,6 +35,7 @@ export const api = createApi({
     'FriendRequest',
     'FriendGroup',
     'FriendGroupMembers',
+    'UserSearch',
     'Raid',
     'RaidList',
     'RaidParticipants',

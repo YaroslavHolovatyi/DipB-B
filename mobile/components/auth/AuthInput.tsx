@@ -8,6 +8,7 @@
  *  • Password variant: eye toggle to show/hide
  *  • Fully controlled (value + onChangeText)
  */
+import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import {
   View,
@@ -86,9 +87,11 @@ export function AuthInput({
             activeOpacity={0.7}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
-            <Text style={[s.eyeIcon, showSecret && s.eyeIconActive]}>
-              {showSecret ? '👁️' : '🙈'}
-            </Text>
+            <Ionicons
+              name={showSecret ? 'eye' : 'eye-off'}
+              size={18}
+              color={showSecret ? DC.iconTintActive : DC.iconTint}
+            />
           </TouchableOpacity>
         )}
       </View>

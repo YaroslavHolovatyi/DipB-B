@@ -9,6 +9,7 @@
  * Route: /tavern/[sessionId]
  */
 
+import { Ionicons } from '@expo/vector-icons';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import {
@@ -156,7 +157,11 @@ export default function TavernPlayScreen() {
             disabled={busy}
             activeOpacity={0.85}
           >
-            <Text style={s.diceBtnText}>{rolling ? '…' : '🎲'}</Text>
+            {rolling ? (
+              <ActivityIndicator size="small" color={C.accentGoldText} />
+            ) : (
+              <Ionicons name="dice" size={22} color={C.accentGoldText} />
+            )}
           </TouchableOpacity>
           <TextInput
             style={s.input}
@@ -173,7 +178,11 @@ export default function TavernPlayScreen() {
             disabled={!draft.trim() || busy}
             activeOpacity={0.85}
           >
-            <Text style={s.sendBtnText}>{turning ? '…' : '➤'}</Text>
+            {turning ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (
+              <Ionicons name="send" size={18} color="#FFFFFF" />
+            )}
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -185,7 +194,10 @@ function MessageBubble({ message }: { message: DndMessage }) {
   if (message.role === 'dice_roll') {
     return (
       <View style={s.diceRow}>
-        <Text style={s.diceText}>🎲 {message.content}</Text>
+        <View style={s.dicePill}>
+          <Ionicons name="dice" size={13} color={C.accentGoldText} />
+          <Text style={s.diceText}>{message.content}</Text>
+        </View>
       </View>
     );
   }
@@ -234,11 +246,12 @@ const s = StyleSheet.create({
   bubbleTextMine: { color: '#FFFFFF' },
 
   diceRow: { alignItems: 'center', marginVertical: 2 },
-  diceText: {
-    fontFamily: F.monoBold, fontSize: 13, color: C.accentGoldText,
+  dicePill: {
+    flexDirection: 'row', alignItems: 'center', gap: 6,
     backgroundColor: C.accentGoldSubtle, paddingHorizontal: 12, paddingVertical: 6,
-    borderRadius: 999, overflow: 'hidden',
+    borderRadius: 999,
   },
+  diceText: { fontFamily: F.monoBold, fontSize: 13, color: C.accentGoldText },
   systemText: {
     fontFamily: F.bodyRegular, fontSize: 12, color: C.textSecondary,
     fontStyle: 'italic', textAlign: 'center',

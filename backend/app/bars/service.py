@@ -60,7 +60,9 @@ def _bar_summary_columns(
             ),
         )
         if near_lat is not None and near_lon is not None
-        else literal(None).label("distance_m")
+        # NULL must carry an explicit type: asyncpg can't infer the type of a
+        # bare `literal(None)` bind param and fails with a 500.
+        else literal(None, Float).label("distance_m")
     )
 
     is_favorite = (

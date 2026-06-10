@@ -150,6 +150,7 @@ export const {
   useDeleteCharacterMutation,
   useCreateSessionMutation,
   useListSessionsQuery,
+  useLazyListSessionsQuery,
   useListSessionMessagesQuery,
   useTakeTurnMutation,
   useRollDiceMutation,

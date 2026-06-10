@@ -6,6 +6,7 @@ import type {
   FriendGroup,
   FriendGroupMember,
   FriendRequest,
+  UserSearchResult,
 } from './types';
 
 interface SendRequestBody {
@@ -26,6 +27,10 @@ export const friendsApi = api.injectEndpoints({
       query: () => '/friends',
       providesTags: ['Friend'],
     }),
+    searchUsers: build.query<UserSearchResult[], string>({
+      query: (q) => ({ url: '/friends/search', params: { q } }),
+      providesTags: ['UserSearch'],
+    }),
     listIncomingRequests: build.query<FriendRequest[], void>({
       query: () => '/friends/requests/incoming',
       providesTags: ['FriendRequest'],
@@ -36,28 +41,28 @@ export const friendsApi = api.injectEndpoints({
     }),
     sendFriendRequest: build.mutation<FriendRequest, SendRequestBody>({
       query: (body) => ({ url: '/friends/requests', method: 'POST', body }),
-      invalidatesTags: ['FriendRequest'],
+      invalidatesTags: ['FriendRequest', 'UserSearch'],
     }),
     acceptFriendRequest: build.mutation<FriendRequest, number>({
       query: (id) => ({
         url: `/friends/requests/${id}/accept`,
         method: 'POST',
       }),
-      invalidatesTags: ['FriendRequest', 'Friend'],
+      invalidatesTags: ['FriendRequest', 'Friend', 'UserSearch'],
     }),
     declineFriendRequest: build.mutation<FriendRequest, number>({
       query: (id) => ({
         url: `/friends/requests/${id}/decline`,
         method: 'POST',
       }),
-      invalidatesTags: ['FriendRequest'],
+      invalidatesTags: ['FriendRequest', 'UserSearch'],
     }),
     cancelFriendRequest: build.mutation<FriendRequest, number>({
       query: (id) => ({
         url: `/friends/requests/${id}/cancel`,
         method: 'POST',
       }),
-      invalidatesTags: ['FriendRequest'],
+      invalidatesTags: ['FriendRequest', 'UserSearch'],
     }),
 
     // Friend groups
@@ -102,6 +107,7 @@ export const friendsApi = api.injectEndpoints({
 
 export const {
   useListFriendsQuery,
+  useSearchUsersQuery,
   useListIncomingRequestsQuery,
   useListOutgoingRequestsQuery,
   useSendFriendRequestMutation,

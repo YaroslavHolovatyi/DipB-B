@@ -6,6 +6,7 @@
  * Both open as modals registered in the root stack.
  */
 
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -16,7 +17,10 @@ export default function CreateScreen() {
   return (
     <SafeAreaView style={s.safe} edges={['top']}>
       <View style={s.header}>
-        <Text style={s.title}>➕ Create</Text>
+        <View style={s.titleRow}>
+          <Ionicons name="add-circle" size={24} color={C.textPrimary} />
+          <Text style={s.title}>Create</Text>
+        </View>
         <Text style={s.subtitle}>What are you rallying today?</Text>
       </View>
 
@@ -26,7 +30,7 @@ export default function CreateScreen() {
           onPress={() => router.push('/raids/new' as never)}
           activeOpacity={0.9}
         >
-          <Text style={s.cardEmoji}>🗡️</Text>
+          <Ionicons name="flag" size={36} color={C.brandPrimaryHover} style={s.cardIcon} />
           <Text style={s.cardTitle}>Host a Raid</Text>
           <Text style={s.cardBody}>
             Pick a tavern and a time. Friends and nearby adventurers RSVP and
@@ -39,7 +43,7 @@ export default function CreateScreen() {
           onPress={() => router.push('/party/new' as never)}
           activeOpacity={0.9}
         >
-          <Text style={s.cardEmoji}>🍻</Text>
+          <Ionicons name="beer" size={36} color={C.accentGoldText} style={s.cardIcon} />
           <Text style={s.cardTitle}>Start a Party</Text>
           <Text style={s.cardBody}>
             Gather people by shared interests and taste. Open to all or just
@@ -55,6 +59,7 @@ const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: C.bgBase },
 
   header: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 4 },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   title: { fontFamily: F.headingBold, fontSize: 24, color: C.textPrimary },
   subtitle: { fontFamily: F.bodyRegular, fontSize: 14, color: C.textSecondary, marginTop: 4 },
 
@@ -65,7 +70,7 @@ const s = StyleSheet.create({
   },
   raidCard: { backgroundColor: C.brandPrimarySubtle },
   partyCard: { backgroundColor: C.accentGoldSubtle },
-  cardEmoji: { fontSize: 40 },
+  cardIcon: { marginBottom: 2 },
   cardTitle: { fontFamily: F.headingBold, fontSize: 20, color: C.textPrimary },
   cardBody: { fontFamily: F.bodyRegular, fontSize: 14, color: C.textSecondary, lineHeight: 21 },
 });

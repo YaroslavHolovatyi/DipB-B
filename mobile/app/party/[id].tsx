@@ -6,6 +6,7 @@
  * get Leave. The host gets Cancel (and can't leave their own party).
  */
 
+import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import {
@@ -86,7 +87,8 @@ export default function PartyDetailScreen() {
     <SafeAreaView style={s.safe} edges={['top']}>
       <ScrollView contentContainerStyle={s.content}>
         <TouchableOpacity style={s.back} onPress={() => router.back()}>
-          <Text style={s.backText}>← Back</Text>
+          <Ionicons name="chevron-back" size={18} color={C.textSecondary} />
+          <Text style={s.backText}>Back</Text>
         </TouchableOpacity>
 
         <Text style={s.title}>{party.title}</Text>
@@ -124,7 +126,10 @@ export default function PartyDetailScreen() {
           </View>
         )}
         {party.drink_match > 0 && (
-          <Text style={s.taste}>🍻 Matches your taste</Text>
+          <View style={s.tasteRow}>
+            <Ionicons name="beer" size={13} color={C.accentGoldText} />
+            <Text style={s.taste}>Matches your taste</Text>
+          </View>
         )}
 
         {party.status === 'cancelled' && (
@@ -142,7 +147,8 @@ export default function PartyDetailScreen() {
             }
             activeOpacity={0.85}
           >
-            <Text style={s.splitText}>🧾 Split the shared bill</Text>
+            <Ionicons name="receipt-outline" size={16} color={C.textPrimary} />
+            <Text style={s.splitText}>Split the shared bill</Text>
           </TouchableOpacity>
         )}
 
@@ -219,7 +225,7 @@ const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: C.bgBase },
   content: { paddingHorizontal: 20, paddingTop: 8, paddingBottom: 40 },
 
-  back: { paddingVertical: 8 },
+  back: { flexDirection: 'row', alignItems: 'center', gap: 2, paddingVertical: 8 },
   backText: { fontFamily: F.bodySemiBold, fontSize: 14, color: C.textSecondary },
 
   title: { fontFamily: F.headingBold, fontSize: 24, color: C.textPrimary, marginTop: 4 },
@@ -239,7 +245,8 @@ const s = StyleSheet.create({
     paddingHorizontal: 14, paddingVertical: 7, borderRadius: 999,
   },
   tagText: { fontFamily: F.bodySemiBold, fontSize: 13, color: C.textSecondary },
-  taste: { fontFamily: F.bodySemiBold, fontSize: 13, color: C.brandPrimary, marginTop: 12 },
+  tasteRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 12 },
+  taste: { fontFamily: F.bodySemiBold, fontSize: 13, color: C.brandPrimary },
 
   banner: { fontFamily: F.bodyBold, color: C.error, textAlign: 'center', marginTop: 20 },
 
@@ -254,7 +261,8 @@ const s = StyleSheet.create({
   cancelText: { fontFamily: F.bodyBold, fontSize: 15, color: C.error },
 
   splitBtn: {
-    marginTop: 16, paddingVertical: 14, alignItems: 'center', borderRadius: 12,
+    marginTop: 16, paddingVertical: 14, flexDirection: 'row',
+    alignItems: 'center', justifyContent: 'center', gap: 8, borderRadius: 12,
     backgroundColor: C.accentGoldSubtle, borderWidth: 1, borderColor: C.borderDefault,
   },
   splitText: { fontFamily: F.bodyBold, fontSize: 15, color: C.textPrimary },

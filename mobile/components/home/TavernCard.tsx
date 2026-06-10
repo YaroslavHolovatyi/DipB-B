@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
   View,
@@ -39,7 +40,7 @@ export function TavernCard({ item, onPress }: Props) {
         />
         {/* Rating chip */}
         <View style={s.ratingChip}>
-          <Text style={s.ratingStar}>★</Text>
+          <Ionicons name="star" size={11} color={C.accentGold} />
           <Text style={s.ratingText}>{item.rating.toFixed(1)}</Text>
         </View>
       </View>

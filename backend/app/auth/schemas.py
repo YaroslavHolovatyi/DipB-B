@@ -35,6 +35,7 @@ class UserPublic(BaseModel):
     bio: str | None = None
     main_city_id: int
     race_id: int | None = None
+    gender: str | None = None
     role: str
     is_active: bool
     social_rating: int = 100

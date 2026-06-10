@@ -5,6 +5,7 @@
  * pre-selected since it's the only seeded city, but the picker is flexible.
  */
 
+import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -150,12 +151,12 @@ export default function SignUpScreen() {
               activeOpacity={0.7}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
-              <Text style={s.backArrow}>←</Text>
+              <Ionicons name="chevron-back" size={20} color="#94A3B8" />
               <Text style={s.backLabel}>Back</Text>
             </TouchableOpacity>
 
             <View style={s.header}>
-              <Text style={s.emoji}>🛡️</Text>
+              <Ionicons name="shield" size={40} color="#D99A1C" style={s.headerIcon} />
               <Text style={s.title}>Forge Your Legend</Text>
               <Text style={s.subtitle}>Join the order. Roll for friendship.</Text>
             </View>
@@ -212,7 +213,7 @@ export default function SignUpScreen() {
                   <ActivityIndicator color={DC.brandLight} style={{ marginTop: 8 }} />
                 ) : citiesError ? (
                   <Text style={s.cityUnavailable}>
-                    ⚠️ Could not load cities — make sure the backend is running.
+                    Could not load cities — make sure the backend is running.
                   </Text>
                 ) : cities.length === 0 ? (
                   <Text style={s.cityUnavailable}>
@@ -299,7 +300,7 @@ const s = StyleSheet.create({
   backLabel: { fontFamily: F.bodySemiBold, fontSize: 15, color: DC.textSecondary },
 
   header: { alignItems: 'center', paddingTop: 16, paddingBottom: 24, gap: 6 },
-  emoji: { fontSize: 40, marginBottom: 4 },
+  headerIcon: { marginBottom: 4 },
   title: {
     fontFamily: F.headingBold, fontSize: 28, color: DC.gold, textAlign: 'center', letterSpacing: -0.5,
     ...Platform.select({ ios: { textShadowColor: 'rgba(245,158,11,0.35)', textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 14 } }),

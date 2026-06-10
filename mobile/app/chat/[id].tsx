@@ -51,6 +51,7 @@ export default function ChatThreadScreen() {
   const [markRead] = useMarkConversationReadMutation();
 
   const [text, setText] = useState('');
+  const [sendError, setSendError] = useState(false);
   const listRef = useRef<FlatList>(null);
 
   // Mark up-to-newest as read whenever the message list changes.
@@ -65,14 +66,16 @@ export default function ChatThreadScreen() {
     const body = text.trim();
     if (!body) return;
     setText('');
+    setSendError(false);
     try {
       await sendMessage({
         conversation_id: conversationId,
         body: { body },
       }).unwrap();
     } catch {
-      // restore text so the user doesn't lose it
+      // restore text so the user doesn't lose it, and surface the failure
       setText(body);
+      setSendError(true);
     }
   }, [text, sendMessage, conversationId]);
 
@@ -130,6 +133,9 @@ export default function ChatThreadScreen() {
           />
         )}
 
+        {sendError && (
+          <Text style={s.sendError}>Couldn't send — check your connection and try again.</Text>
+        )}
         <View style={s.composer}>
           <TextInput
             value={text}
@@ -177,6 +183,10 @@ const s = StyleSheet.create({
   kav: { flex: 1 },
   listContent: { paddingVertical: 8 },
 
+  sendError: {
+    fontFamily: F.bodyRegular, fontSize: 12, color: '#D9534F',
+    textAlign: 'center', paddingVertical: 4, backgroundColor: C.bgCard,
+  },
   composer: {
     flexDirection: 'row', alignItems: 'flex-end', gap: 8,
     padding: 12, borderTopWidth: 1, borderTopColor: C.borderDefault, backgroundColor: C.bgCard,

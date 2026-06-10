@@ -6,8 +6,10 @@ export { colors as C } from './colors';
 
 /** Font family name constants — must match the keys passed to useFonts() */
 export const F = {
-  headingBold:     'Fraunces_700Bold',
-  headingSemi:     'Fraunces_600SemiBold',
+  // Headings use MedievalSharp to match the fantasy-tavern icon lettering.
+  // MedievalSharp ships a single weight, so bold/semi map to the same family.
+  headingBold:     'MedievalSharp_400Regular',
+  headingSemi:     'MedievalSharp_400Regular',
   bodyRegular:     'PlusJakartaSans_400Regular',
   bodySemiBold:    'PlusJakartaSans_600SemiBold',
   bodyBold:        'PlusJakartaSans_700Bold',

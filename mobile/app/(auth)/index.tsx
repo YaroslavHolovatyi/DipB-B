@@ -10,10 +10,12 @@
  *   2. Hero section (flex: 1) — glowing orb, app name, tagline, description
  *   3. CTA section — "Get Started" + "Sign In" + legal text
  */
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
   View,
   Text,
+  Image,
   TouchableOpacity,
   StyleSheet,
   Dimensions,
@@ -24,7 +26,17 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { router } from 'expo-router';
 
+import { logo } from '../../assets';
+
 const { width } = Dimensions.get('window');
+
+type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
+
+const FEATURE_CHIPS: { icon: IoniconName; label: string }[] = [
+  { icon: 'map', label: 'Bar finder' },
+  { icon: 'flag', label: 'Raid planner' },
+  { icon: 'dice', label: 'Bill splitter' },
+];
 
 // ── Decorative stars ─────────────────────────────────────────────────────────
 // Fixed layout so the pattern is always the same (no Math.random).
@@ -90,22 +102,22 @@ export default function WelcomeScreen() {
         {/* ── HERO SECTION ──────────────────────────────── */}
         <View style={s.hero}>
 
-          {/* Glowing orb — three concentric circles + emoji */}
+          {/* Glowing orb — three concentric circles + logo */}
           <View style={s.orbOuter}>
             <View style={s.orbMid}>
               <View style={s.orbInner}>
-                <Text style={s.orbEmoji}>🍺</Text>
+                <Image source={logo} style={s.orbLogo} resizeMode="contain" />
               </View>
             </View>
           </View>
 
-          {/* Decorative dice row */}
+          {/* Decorative icon row */}
           <View style={s.diceRow}>
-            <Text style={s.diceEmoji}>🎲</Text>
+            <Ionicons name="dice-outline" size={18} color="rgba(255,255,255,0.75)" />
             <View style={s.diceDivider} />
-            <Text style={s.diceEmoji}>⚔️</Text>
+            <Ionicons name="shield-half-outline" size={18} color="rgba(255,255,255,0.75)" />
             <View style={s.diceDivider} />
-            <Text style={s.diceEmoji}>🏰</Text>
+            <Ionicons name="home-outline" size={18} color="rgba(255,255,255,0.75)" />
           </View>
 
           {/* App name — Fraunces bold in gold */}
@@ -152,9 +164,10 @@ export default function WelcomeScreen() {
 
           {/* Feature chips */}
           <View style={s.chipRow}>
-            {['🗺️ Bar finder', '⚔️ Raid planner', '🎲 Bill splitter'].map((chip) => (
-              <View key={chip} style={s.chip}>
-                <Text style={s.chipText}>{chip}</Text>
+            {FEATURE_CHIPS.map((chip) => (
+              <View key={chip.label} style={s.chip}>
+                <Ionicons name={chip.icon} size={12} color="#94A3B8" />
+                <Text style={s.chipText}>{chip.label}</Text>
               </View>
             ))}
           </View>
@@ -256,8 +269,9 @@ const s = StyleSheet.create({
       },
     }),
   },
-  orbEmoji: {
-    fontSize: 44,
+  orbLogo: {
+    width: 72,
+    height: 72,
   },
 
   diceRow: {
@@ -277,7 +291,7 @@ const s = StyleSheet.create({
   },
 
   appName: {
-    fontFamily:      'Fraunces_700Bold',
+    fontFamily:      'MedievalSharp_400Regular',
     fontSize:        36,
     color:           '#F59E0B',
     textAlign:       'center',
@@ -294,7 +308,7 @@ const s = StyleSheet.create({
   },
 
   tagline: {
-    fontFamily:    'Fraunces_600SemiBold',
+    fontFamily:    'MedievalSharp_400Regular',
     fontSize:      26,
     color:         '#F1F5F9',
     textAlign:     'center',
@@ -363,6 +377,9 @@ const s = StyleSheet.create({
     flexWrap:       'wrap',
   },
   chip: {
+    flexDirection:   'row',
+    alignItems:      'center',
+    gap:             5,
     borderRadius:    999,
     borderWidth:     1,
     borderColor:     'rgba(255,255,255,0.12)',

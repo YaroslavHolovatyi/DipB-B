@@ -18,6 +18,7 @@
  * other devices appear without polling.
  */
 
+import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import {
   ActivityIndicator,
@@ -40,15 +41,18 @@ import {
   useVerifyRaidMutation,
 } from '../../api/raidsApi';
 import type { AttendanceVerdict, RaidParticipantDetail, RsvpChoice } from '../../api/types';
+import type { ComponentProps } from 'react';
 import { useState } from 'react';
 import { useAppSelector } from '../../store';
 import { drinkLabel } from '../../lib/drinkTypes';
 import { C, F } from '../../theme/styleHelpers';
 
-const RSVP_OPTIONS: { value: RsvpChoice; label: string; emoji: string }[] = [
-  { value: 'going', label: 'Going', emoji: '⚔️' },
-  { value: 'maybe', label: 'Maybe', emoji: '🤔' },
-  { value: 'declined', label: 'Decline', emoji: '🙅' },
+type IoniconName = ComponentProps<typeof Ionicons>['name'];
+
+const RSVP_OPTIONS: { value: RsvpChoice; label: string; icon: IoniconName }[] = [
+  { value: 'going', label: 'Going', icon: 'shield-checkmark' },
+  { value: 'maybe', label: 'Maybe', icon: 'help-circle' },
+  { value: 'declined', label: 'Decline', icon: 'close-circle' },
 ];
 
 const TERMINAL = ['completed', 'cancelled', 'aborted'] as const;
@@ -116,11 +120,17 @@ export default function RaidDetailScreen() {
     <SafeAreaView style={s.safe} edges={['top']}>
       <ScrollView contentContainerStyle={s.content}>
         <TouchableOpacity style={s.back} onPress={() => router.back()}>
-          <Text style={s.backText}>← Back</Text>
+          <Ionicons name="chevron-back" size={18} color={C.textSecondary} />
+          <Text style={s.backText}>Back</Text>
         </TouchableOpacity>
 
         <Text style={s.title}>{raid.title}</Text>
-        {raid.theme ? <Text style={s.theme}>🎲 {raid.theme}</Text> : null}
+        {raid.theme ? (
+          <View style={s.themeRow}>
+            <Ionicons name="dice" size={14} color={C.accentGoldText} />
+            <Text style={s.theme}>{raid.theme}</Text>
+          </View>
+        ) : null}
         {raid.description && <Text style={s.description}>{raid.description}</Text>}
 
         <View style={s.infoCard}>
@@ -146,7 +156,10 @@ export default function RaidDetailScreen() {
           </View>
         )}
         {raid.drink_match > 0 && (
-          <Text style={s.taste}>🍻 Matches your taste</Text>
+          <View style={s.tasteRow}>
+            <Ionicons name="beer" size={13} color={C.accentGoldText} />
+            <Text style={s.taste}>Matches your taste</Text>
+          </View>
         )}
 
         {raid.status === 'cancelled' && (
@@ -156,7 +169,7 @@ export default function RaidDetailScreen() {
           <Text style={s.banner}>This raid was called off.</Text>
         )}
         {raid.status === 'completed' && (
-          <Text style={[s.banner, s.bannerOk]}>This raid is complete. 🍻</Text>
+          <Text style={[s.banner, s.bannerOk]}>This raid is complete.</Text>
         )}
         {raid.status === 'completed' && isOrganizer && (
           <TouchableOpacity
@@ -166,7 +179,8 @@ export default function RaidDetailScreen() {
             }
             activeOpacity={0.85}
           >
-            <Text style={s.splitText}>🧾 Split the shared bill</Text>
+            <Ionicons name="receipt-outline" size={16} color={C.textPrimary} />
+            <Text style={s.splitText}>Split the shared bill</Text>
           </TouchableOpacity>
         )}
 
@@ -184,7 +198,11 @@ export default function RaidDetailScreen() {
                     disabled={rsvpLoading}
                     activeOpacity={0.85}
                   >
-                    <Text style={s.rsvpEmoji}>{opt.emoji}</Text>
+                    <Ionicons
+                      name={opt.icon}
+                      size={20}
+                      color={active ? '#FFFFFF' : C.textSecondary}
+                    />
                     <Text style={[s.rsvpLabel, active && s.rsvpLabelActive]}>
                       {opt.label}
                     </Text>
@@ -201,9 +219,14 @@ export default function RaidDetailScreen() {
                 disabled={checkpointLoading || checkedIn}
                 activeOpacity={0.85}
               >
-                <Text style={[s.checkinText, checkedIn && s.checkinDoneText]}>
-                  {checkedIn ? '✓ Checked in' : checkpointLoading ? 'Checking in…' : 'Check in on-site'}
-                </Text>
+                <View style={s.checkinInner}>
+                  {checkedIn && (
+                    <Ionicons name="checkmark" size={16} color="#34D399" />
+                  )}
+                  <Text style={[s.checkinText, checkedIn && s.checkinDoneText]}>
+                    {checkedIn ? 'Checked in' : checkpointLoading ? 'Checking in…' : 'Check in on-site'}
+                  </Text>
+                </View>
               </TouchableOpacity>
             )}
 
@@ -364,11 +387,12 @@ const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: C.bgBase },
   content: { paddingHorizontal: 20, paddingTop: 8, paddingBottom: 40 },
 
-  back: { paddingVertical: 8 },
+  back: { flexDirection: 'row', alignItems: 'center', gap: 2, paddingVertical: 8 },
   backText: { fontFamily: F.bodySemiBold, fontSize: 14, color: C.textSecondary },
 
   title: { fontFamily: F.headingBold, fontSize: 24, color: C.textPrimary, marginTop: 4 },
-  theme: { fontFamily: F.bodySemiBold, fontSize: 14, color: C.brandPrimary, marginTop: 6 },
+  themeRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 6 },
+  theme: { fontFamily: F.bodySemiBold, fontSize: 14, color: C.brandPrimary },
   description: { fontFamily: F.bodyRegular, fontSize: 14, color: C.textSecondary, marginTop: 8, lineHeight: 21 },
 
   chipWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 14 },
@@ -377,7 +401,8 @@ const s = StyleSheet.create({
     paddingHorizontal: 14, paddingVertical: 7, borderRadius: 999,
   },
   tagText: { fontFamily: F.bodySemiBold, fontSize: 13, color: C.textSecondary },
-  taste: { fontFamily: F.bodySemiBold, fontSize: 13, color: C.brandPrimary, marginTop: 12 },
+  tasteRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 12 },
+  taste: { fontFamily: F.bodySemiBold, fontSize: 13, color: C.brandPrimary },
 
   infoCard: {
     marginTop: 16, padding: 14,
@@ -402,12 +427,11 @@ const s = StyleSheet.create({
 
   rsvpRow: { flexDirection: 'row', gap: 10 },
   rsvpBtn: {
-    flex: 1, alignItems: 'center', paddingVertical: 14,
+    flex: 1, alignItems: 'center', gap: 4, paddingVertical: 14,
     borderRadius: 12, backgroundColor: C.bgCard,
     borderWidth: 1, borderColor: C.borderDefault,
   },
   rsvpBtnActive: { backgroundColor: C.brandPrimary, borderColor: C.brandPrimary },
-  rsvpEmoji: { fontSize: 22, marginBottom: 4 },
   rsvpLabel: { fontFamily: F.bodyBold, fontSize: 13, color: C.textPrimary },
   rsvpLabelActive: { color: '#FFFFFF' },
 
@@ -416,6 +440,7 @@ const s = StyleSheet.create({
     borderRadius: 12, backgroundColor: C.brandPrimary,
   },
   checkinDone: { backgroundColor: C.bgCard, borderWidth: 1, borderColor: C.borderDefault },
+  checkinInner: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   checkinText: { fontFamily: F.bodyBold, fontSize: 14, color: '#FFFFFF' },
   checkinDoneText: { color: C.textSecondary },
 
@@ -451,7 +476,8 @@ const s = StyleSheet.create({
   cancelText: { fontFamily: F.bodyBold, fontSize: 14, color: C.textSecondary },
 
   splitBtn: {
-    marginTop: 14, paddingVertical: 14, alignItems: 'center', borderRadius: 12,
+    marginTop: 14, paddingVertical: 14, flexDirection: 'row',
+    alignItems: 'center', justifyContent: 'center', gap: 8, borderRadius: 12,
     backgroundColor: C.accentGoldSubtle, borderWidth: 1, borderColor: C.borderDefault,
   },
   splitText: { fontFamily: F.bodyBold, fontSize: 14, color: C.textPrimary },

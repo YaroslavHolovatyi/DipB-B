@@ -5,6 +5,7 @@
  * tappable and route to their related entity. Unread rows have a left rail.
  */
 
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import {
   ActivityIndicator,
@@ -80,10 +81,14 @@ export default function NotificationsScreen() {
   return (
     <SafeAreaView style={s.safe} edges={['top']}>
       <View style={s.header}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <Text style={s.back}>← Back</Text>
+        <TouchableOpacity onPress={() => router.back()} style={s.backRow}>
+          <Ionicons name="chevron-back" size={18} color={C.textSecondary} />
+          <Text style={s.back}>Back</Text>
         </TouchableOpacity>
-        <Text style={s.headerTitle}>🔔 Inbox</Text>
+        <View style={s.headerTitleRow}>
+          <Ionicons name="notifications" size={16} color={C.textPrimary} />
+          <Text style={s.headerTitle}>Inbox</Text>
+        </View>
         <TouchableOpacity onPress={() => markAllRead()} disabled={!anyUnread}>
           <Text style={[s.action, !anyUnread && s.actionDisabled]}>
             Mark all
@@ -116,7 +121,9 @@ const s = StyleSheet.create({
     paddingHorizontal: 20, paddingVertical: 12,
     borderBottomWidth: 1, borderBottomColor: C.borderDefault,
   },
+  backRow: { flexDirection: 'row', alignItems: 'center', gap: 2 },
   back: { fontFamily: F.bodySemiBold, fontSize: 14, color: C.textSecondary },
+  headerTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 7 },
   headerTitle: { fontFamily: F.headingBold, fontSize: 17, color: C.textPrimary },
   action: { fontFamily: F.bodySemiBold, fontSize: 14, color: C.brandPrimary },
   actionDisabled: { color: C.textDisabled },

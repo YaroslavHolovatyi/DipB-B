@@ -6,6 +6,7 @@
  * to the new raid's detail page.
  */
 
+import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import {
@@ -101,7 +102,10 @@ export default function NewRaidScreen() {
           <TouchableOpacity onPress={() => router.back()}>
             <Text style={s.headerBtn}>Cancel</Text>
           </TouchableOpacity>
-          <Text style={s.headerTitle}>🗡️ New Raid</Text>
+          <View style={s.headerTitleRow}>
+            <Ionicons name="flag" size={16} color={C.textPrimary} />
+            <Text style={s.headerTitle}>New Raid</Text>
+          </View>
           <TouchableOpacity disabled={isLoading} onPress={submit}>
             <Text style={[s.headerBtn, s.headerCta]}>
               {isLoading ? 'Saving…' : 'Create'}
@@ -253,6 +257,7 @@ const s = StyleSheet.create({
     paddingHorizontal: 16, paddingVertical: 12,
     borderBottomWidth: 1, borderBottomColor: C.borderDefault,
   },
+  headerTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 7 },
   headerTitle: { fontFamily: F.headingBold, fontSize: 17, color: C.textPrimary },
   headerBtn: { fontFamily: F.bodySemiBold, fontSize: 14, color: C.textSecondary },
   headerCta: { color: C.brandPrimary },

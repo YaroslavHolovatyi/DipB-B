@@ -9,6 +9,7 @@
  * The play screen lives at /tavern/[sessionId].
  */
 
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
@@ -26,6 +27,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   useCreateCharacterMutation,
   useCreateSessionMutation,
+  useLazyListSessionsQuery,
   useListCharactersQuery,
   useListClassesQuery,
   useQuotaQuery,
@@ -40,6 +42,7 @@ export default function TavernHubScreen() {
 
   const [createCharacter, { isLoading: creating }] = useCreateCharacterMutation();
   const [createSession, { isLoading: starting }] = useCreateSessionMutation();
+  const [fetchSessions] = useLazyListSessionsQuery();
 
   const [name, setName] = useState('');
   const [classSlug, setClassSlug] = useState<string | null>(null);
@@ -57,6 +60,14 @@ export default function TavernHubScreen() {
 
   const beginTale = async (character: DndCharacter) => {
     try {
+      // Resume an in-progress tale if this hero already has one — creating a
+      // second session for the same character is rejected with 409.
+      const sessions = await fetchSessions(character.id, /* preferCache */ false).unwrap();
+      const open = sessions.find((x) => x.status === 'active' || x.status === 'paused');
+      if (open) {
+        router.push(`/tavern/${open.id}` as never);
+        return;
+      }
       const session = await createSession({
         character_id: character.id,
         mode: 'normal',
@@ -75,7 +86,10 @@ export default function TavernHubScreen() {
   return (
     <SafeAreaView style={s.safe} edges={['top']}>
       <ScrollView contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
-        <Text style={s.title}>🐉 Tavern Tales</Text>
+        <View style={s.titleRow}>
+          <Ionicons name="dice" size={22} color={C.accentGoldText} />
+          <Text style={s.title}>Tavern Tales</Text>
+        </View>
         <Text style={s.subtitle}>
           A solo adventure narrated by your AI Dungeon Master.
         </Text>
@@ -172,6 +186,7 @@ const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: C.bgBase },
   content: { paddingHorizontal: 20, paddingTop: 12 },
 
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   title: { fontFamily: F.headingBold, fontSize: 24, color: C.textPrimary },
   subtitle: {
     fontFamily: F.bodyRegular, fontSize: 14, color: C.textSecondary,

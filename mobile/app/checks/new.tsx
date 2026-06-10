@@ -16,6 +16,7 @@
  * because the stub OCR service ignores the image and returns a canned parse.
  */
 
+import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
@@ -158,7 +159,10 @@ export default function NewCheckScreen() {
       />
 
       <View style={s.body}>
-        <Text style={s.title}>🧾 {fromEvent ? 'Split the Bill' : 'Scan a Receipt'}</Text>
+        <View style={s.titleRow}>
+          <Ionicons name="receipt-outline" size={22} color={C.textPrimary} />
+          <Text style={s.title}>{fromEvent ? 'Split the Bill' : 'Scan a Receipt'}</Text>
+        </View>
         <Text style={s.subtitle}>
           {fromEvent
             ? "Snap the shared bill — everyone who showed up gets to pick what they ordered."
@@ -170,7 +174,7 @@ export default function NewCheckScreen() {
             <Image source={{ uri: imageUri }} style={s.previewImg} resizeMode="cover" />
           ) : (
             <View style={s.previewEmpty}>
-              <Text style={s.previewEmptyIcon}>📷</Text>
+              <Ionicons name="camera-outline" size={40} color={C.textSecondary} />
               <Text style={s.previewEmptyText}>No receipt yet</Text>
             </View>
           )}
@@ -178,11 +182,11 @@ export default function NewCheckScreen() {
 
         <View style={s.pickRow}>
           <TouchableOpacity style={s.pickBtn} onPress={pickFromCamera} activeOpacity={0.85}>
-            <Text style={s.pickIcon}>📸</Text>
+            <Ionicons name="camera" size={22} color={C.brandPrimary} />
             <Text style={s.pickLabel}>Take photo</Text>
           </TouchableOpacity>
           <TouchableOpacity style={s.pickBtn} onPress={pickFromLibrary} activeOpacity={0.85}>
-            <Text style={s.pickIcon}>🖼️</Text>
+            <Ionicons name="images" size={22} color={C.brandPrimary} />
             <Text style={s.pickLabel}>From library</Text>
           </TouchableOpacity>
         </View>
@@ -217,6 +221,7 @@ const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: C.bgBase },
   body: { flex: 1, paddingHorizontal: 20, paddingTop: 12 },
 
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   title: { fontFamily: F.headingBold, fontSize: 24, color: C.textPrimary },
   subtitle: {
     fontFamily: F.bodyRegular, fontSize: 14, color: C.textSecondary,

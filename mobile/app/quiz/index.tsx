@@ -17,10 +17,12 @@
  *     has a race, so on finish we just `router.back()` instead of replacing.
  */
 
+import { Ionicons } from '@expo/vector-icons';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
+  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -29,6 +31,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { raceImage } from '../../assets';
 import { useLazyMeQuery } from '../../api/authApi';
 import { useListQuestionsQuery, useSubmitQuizMutation } from '../../api/quizApi';
 import { useLazyGetRaceQuery } from '../../api/referenceApi';
@@ -36,6 +39,8 @@ import type { QuizResult, Race } from '../../api/types';
 import { useAppDispatch } from '../../store';
 import { userUpdated } from '../../store/authSlice';
 import { C, F } from '../../theme/styleHelpers';
+
+type Gender = 'm' | 'f';
 
 export default function QuizScreen() {
   const dispatch = useAppDispatch();
@@ -49,6 +54,7 @@ export default function QuizScreen() {
 
   const [step, setStep] = useState(0);
   const [picks, setPicks] = useState<Record<number, number>>({}); // questionId -> answerId
+  const [gender, setGender] = useState<Gender | null>(null);
   const [result, setResult] = useState<QuizResult | null>(null);
   const [resultRace, setResultRace] = useState<Race | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -58,10 +64,17 @@ export default function QuizScreen() {
     [questions],
   );
   const total = ordered.length;
-  const current = ordered[step];
-  const answeredCount = Object.keys(picks).length;
-  const isLast = step === total - 1;
-  const currentPicked = current ? picks[current.id] != null : false;
+  // A gender step is appended after the questions, so there are total + 1 steps.
+  const totalSteps = total + 1;
+  const onGenderStep = step === total;
+  const current = onGenderStep ? undefined : ordered[step];
+  const answeredCount = Object.keys(picks).length + (gender ? 1 : 0);
+  const isLast = step === total; // the gender step is the final one
+  const currentPicked = onGenderStep
+    ? gender != null
+    : current
+      ? picks[current.id] != null
+      : false;
 
   const pick = (answerId: number) => {
     if (!current) return;
@@ -70,7 +83,7 @@ export default function QuizScreen() {
 
   const goNext = () => {
     if (!isLast) {
-      setStep((s) => Math.min(s + 1, total - 1));
+      setStep((s) => Math.min(s + 1, total));
     } else {
       void finish();
     }
@@ -84,8 +97,12 @@ export default function QuizScreen() {
       setError('Please answer every question before finishing.');
       return;
     }
+    if (!gender) {
+      setError('Please choose your character before finishing.');
+      return;
+    }
     try {
-      const res = await submitQuiz({ answer_ids: answerIds }).unwrap();
+      const res = await submitQuiz({ answer_ids: answerIds, gender }).unwrap();
       setResult(res);
       // Pull the race row for color + description in the result card.
       try {
@@ -115,11 +132,19 @@ export default function QuizScreen() {
   // ─── Result card ──────────────────────────────────────────────────────────
   if (result) {
     const accent = resultRace?.primary_color ?? C.brandPrimary;
+    const avatar = raceImage(result.race_slug, result.gender ?? gender);
     return (
       <SafeAreaView style={s.safe} edges={['top', 'bottom']}>
         <Stack.Screen options={{ headerShown: false }} />
         <View style={s.resultWrap}>
           <Text style={s.resultKicker}>The dice have spoken…</Text>
+          {avatar && (
+            <Image
+              source={avatar}
+              style={[s.resultAvatar, { borderColor: accent }]}
+              resizeMode="cover"
+            />
+          )}
           <View style={[s.resultBadge, { borderColor: accent, backgroundColor: accent + '18' }]}>
             <Text style={[s.resultRace, { color: accent }]}>{result.race_name}</Text>
           </View>
@@ -133,7 +158,7 @@ export default function QuizScreen() {
             onPress={leave}
           >
             <Text style={s.primaryText}>
-              {isRetake ? 'Back to Profile' : 'Enter the Tavern ⚔️'}
+              {isRetake ? 'Back to Profile' : 'Enter the Tavern'}
             </Text>
           </TouchableOpacity>
         </View>
@@ -159,7 +184,7 @@ export default function QuizScreen() {
       <SafeAreaView style={s.safe}>
         <Stack.Screen options={{ headerShown: false }} />
         <View style={s.center}>
-          <Text style={s.emoji}>🎲</Text>
+          <Ionicons name="dice-outline" size={48} color={C.brandPrimary} />
           <Text style={s.errTitle}>The quiz scroll is blank</Text>
           <Text style={s.muted}>
             {isError
@@ -180,16 +205,19 @@ export default function QuizScreen() {
   }
 
   // ─── Question stepper ──────────────────────────────────────────────────────
-  const progress = total > 0 ? answeredCount / total : 0;
+  const progress = totalSteps > 0 ? answeredCount / totalSteps : 0;
   return (
     <SafeAreaView style={s.safe} edges={['top', 'bottom']}>
       <Stack.Screen options={{ headerShown: false }} />
 
       <View style={s.header}>
         <View style={s.headerTop}>
-          <Text style={s.kicker}>⚔️ Discover Your Race</Text>
+          <View style={s.kickerRow}>
+            <Ionicons name="sparkles" size={16} color={C.brandPrimary} />
+            <Text style={s.kicker}>{onGenderStep ? 'One last thing' : 'Discover Your Race'}</Text>
+          </View>
           <Text style={s.counter}>
-            {step + 1} / {total}
+            {step + 1} / {totalSteps}
           </Text>
         </View>
         <View style={s.progressTrack}>
@@ -202,29 +230,62 @@ export default function QuizScreen() {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        <Text style={s.question}>{current?.text}</Text>
+        {onGenderStep ? (
+          <>
+            <Text style={s.question}>How should your hero be depicted?</Text>
+            <View style={s.answers}>
+              {(
+                [
+                  { value: 'm' as Gender, label: 'Male', icon: 'man' as const },
+                  { value: 'f' as Gender, label: 'Female', icon: 'woman' as const },
+                ]
+              ).map((opt) => {
+                const active = gender === opt.value;
+                return (
+                  <TouchableOpacity
+                    key={opt.value}
+                    style={[s.answer, active && s.answerActive]}
+                    activeOpacity={0.85}
+                    onPress={() => setGender(opt.value)}
+                  >
+                    <Ionicons
+                      name={opt.icon}
+                      size={22}
+                      color={active ? C.brandPrimary : C.textSecondary}
+                    />
+                    <Text style={[s.answerText, active && s.answerTextActive]}>{opt.label}</Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </>
+        ) : (
+          <>
+            <Text style={s.question}>{current?.text}</Text>
 
-        <View style={s.answers}>
-          {current?.answers
-            .slice()
-            .sort((a, b) => a.position - b.position)
-            .map((ans) => {
-              const active = picks[current.id] === ans.id;
-              return (
-                <TouchableOpacity
-                  key={ans.id}
-                  style={[s.answer, active && s.answerActive]}
-                  activeOpacity={0.85}
-                  onPress={() => pick(ans.id)}
-                >
-                  <View style={[s.radio, active && s.radioActive]}>
-                    {active && <View style={s.radioDot} />}
-                  </View>
-                  <Text style={[s.answerText, active && s.answerTextActive]}>{ans.text}</Text>
-                </TouchableOpacity>
-              );
-            })}
-        </View>
+            <View style={s.answers}>
+              {current?.answers
+                .slice()
+                .sort((a, b) => a.position - b.position)
+                .map((ans) => {
+                  const active = picks[current.id] === ans.id;
+                  return (
+                    <TouchableOpacity
+                      key={ans.id}
+                      style={[s.answer, active && s.answerActive]}
+                      activeOpacity={0.85}
+                      onPress={() => pick(ans.id)}
+                    >
+                      <View style={[s.radio, active && s.radioActive]}>
+                        {active && <View style={s.radioDot} />}
+                      </View>
+                      <Text style={[s.answerText, active && s.answerTextActive]}>{ans.text}</Text>
+                    </TouchableOpacity>
+                  );
+                })}
+            </View>
+          </>
+        )}
 
         {error && <Text style={s.errorText}>{error}</Text>}
       </ScrollView>
@@ -265,6 +326,7 @@ const s = StyleSheet.create({
 
   header: { paddingHorizontal: 20, paddingTop: 8, paddingBottom: 12, gap: 10 },
   headerTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  kickerRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   kicker: { fontFamily: F.bodyBold, fontSize: 14, color: C.brandPrimary },
   counter: { fontFamily: F.monoMedium, fontSize: 13, color: C.textSecondary },
   progressTrack: { height: 6, borderRadius: 3, backgroundColor: C.bgInput, overflow: 'hidden' },
@@ -324,6 +386,7 @@ const s = StyleSheet.create({
   // Result
   resultWrap: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 28, gap: 16 },
   resultKicker: { fontFamily: F.bodySemiBold, fontSize: 14, color: C.textSecondary },
+  resultAvatar: { width: 160, height: 160, borderRadius: 80, borderWidth: 3 },
   resultBadge: {
     paddingHorizontal: 28, paddingVertical: 16, borderRadius: 999, borderWidth: 2,
   },

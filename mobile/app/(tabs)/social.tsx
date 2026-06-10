@@ -8,6 +8,7 @@
  * The header avatar opens the Profile screen (Profile is no longer a tab).
  */
 
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
@@ -48,16 +49,21 @@ export default function SocialScreen() {
   return (
     <SafeAreaView style={s.safe} edges={['top']}>
       <View style={s.headerRow}>
-        <Text style={s.title}>🎉 Social</Text>
+        <View style={s.titleRow}>
+          <Ionicons name="sparkles" size={20} color={C.textPrimary} />
+          <Text style={s.title}>Social</Text>
+        </View>
         <TouchableOpacity
           onPress={() => router.push('/profile' as never)}
           activeOpacity={0.85}
           hitSlop={8}
         >
           <View style={s.avatar}>
-            <Text style={s.avatarInitial}>
-              {user?.first_name?.[0]?.toUpperCase() ?? '🙂'}
-            </Text>
+            {user?.first_name?.[0] ? (
+              <Text style={s.avatarInitial}>{user.first_name[0].toUpperCase()}</Text>
+            ) : (
+              <Ionicons name="person" size={16} color={C.brandPrimaryHover} />
+            )}
           </View>
         </TouchableOpacity>
       </View>
@@ -72,8 +78,13 @@ export default function SocialScreen() {
               style={[s.segment, active && s.segmentActive]}
               activeOpacity={0.85}
             >
+              <Ionicons
+                name={f === 'raids' ? 'flag' : 'beer'}
+                size={15}
+                color={active ? '#FFFFFF' : C.textSecondary}
+              />
               <Text style={[s.segmentText, active && s.segmentTextActive]}>
-                {f === 'raids' ? '🗡️ Raids' : '🍻 Parties'}
+                {f === 'raids' ? 'Raids' : 'Parties'}
               </Text>
             </TouchableOpacity>
           );
@@ -128,13 +139,24 @@ function RaidCard({ raid }: { raid: Raid }) {
         {isFull ? (
           <Text style={s.full}>Full</Text>
         ) : (
-          <Text style={s.count}>{cap} 👥</Text>
+          <View style={s.countRow}>
+            <Text style={s.count}>{cap}</Text>
+            <Ionicons name="people" size={13} color={C.textSecondary} />
+          </View>
         )}
       </View>
-      <Text style={s.cardWhen}>🕑 {whenLabel(raid.scheduled_at)}</Text>
+      <View style={s.whenRow}>
+        <Ionicons name="time-outline" size={13} color={C.textSecondary} />
+        <Text style={s.cardWhen}>{whenLabel(raid.scheduled_at)}</Text>
+      </View>
       {raid.theme ? <Text style={s.cardDesc} numberOfLines={1}>{raid.theme}</Text> : null}
       <View style={s.cardMeta}>
-        {raid.drink_match > 0 && <Text style={s.taste}>🍻 Matches your taste</Text>}
+        {raid.drink_match > 0 && (
+          <View style={s.metaRow}>
+            <Ionicons name="beer" size={12} color={C.accentGoldText} />
+            <Text style={s.taste}>Matches your taste</Text>
+          </View>
+        )}
         {raid.visibility === 'friends_only' && <Text style={s.friends}>Friends only</Text>}
         {raid.my_rsvp === 'going' && <Text style={s.joined}>Going</Text>}
         <Text style={s.statusPill}>{raid.status}</Text>
@@ -183,7 +205,10 @@ function PartyCard({ party }: { party: Party }) {
         {party.is_full ? (
           <Text style={s.full}>Full</Text>
         ) : (
-          <Text style={s.count}>{cap} 👥</Text>
+          <View style={s.countRow}>
+            <Text style={s.count}>{cap}</Text>
+            <Ionicons name="people" size={13} color={C.textSecondary} />
+          </View>
         )}
       </View>
       {party.description ? (
@@ -191,9 +216,17 @@ function PartyCard({ party }: { party: Party }) {
       ) : null}
       <View style={s.cardMeta}>
         {party.match_score > 0 && (
-          <Text style={s.match}>✨ Matches your vibe ({party.match_score})</Text>
+          <View style={s.metaRow}>
+            <Ionicons name="sparkles" size={12} color={C.brandPrimary} />
+            <Text style={s.match}>Matches your vibe ({party.match_score})</Text>
+          </View>
         )}
-        {party.drink_match > 0 && <Text style={s.taste}>🍻 Matches your taste</Text>}
+        {party.drink_match > 0 && (
+          <View style={s.metaRow}>
+            <Ionicons name="beer" size={12} color={C.accentGoldText} />
+            <Text style={s.taste}>Matches your taste</Text>
+          </View>
+        )}
         {party.visibility === 'friends_only' && <Text style={s.friends}>Friends only</Text>}
         {party.my_membership === 'joined' && <Text style={s.joined}>Joined</Text>}
       </View>
@@ -208,6 +241,7 @@ const s = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: 20, paddingTop: 12, paddingBottom: 8,
   },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   title: { fontFamily: F.headingBold, fontSize: 22, color: C.textPrimary },
   avatar: {
     width: 34, height: 34, borderRadius: 17,
@@ -218,7 +252,8 @@ const s = StyleSheet.create({
 
   segmentRow: { flexDirection: 'row', gap: 10, paddingHorizontal: 20, paddingBottom: 8 },
   segment: {
-    flex: 1, paddingVertical: 9, borderRadius: 10, alignItems: 'center',
+    flex: 1, paddingVertical: 9, borderRadius: 10,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
     backgroundColor: C.bgCard, borderWidth: 1, borderColor: C.borderDefault,
   },
   segmentActive: { backgroundColor: C.brandPrimary, borderColor: C.brandPrimary },
@@ -236,7 +271,9 @@ const s = StyleSheet.create({
   },
   cardTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
   cardTitle: { flex: 1, fontFamily: F.headingSemi, fontSize: 16, color: C.textPrimary },
+  whenRow: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   cardWhen: { fontFamily: F.bodySemiBold, fontSize: 12, color: C.textSecondary },
+  countRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   count: { fontFamily: F.bodyBold, fontSize: 13, color: C.textSecondary },
   full: {
     fontFamily: F.bodyBold, fontSize: 12, color: C.error,
@@ -244,6 +281,7 @@ const s = StyleSheet.create({
   },
   cardDesc: { fontFamily: F.bodyRegular, fontSize: 13, color: C.textSecondary, lineHeight: 19 },
   cardMeta: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 10 },
+  metaRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   match: { fontFamily: F.bodySemiBold, fontSize: 12, color: C.brandPrimary },
   taste: { fontFamily: F.bodySemiBold, fontSize: 12, color: C.brandPrimary },
   friends: { fontFamily: F.bodyRegular, fontSize: 12, color: C.textSecondary },

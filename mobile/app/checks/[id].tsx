@@ -8,6 +8,7 @@
  * Bottom action bar handles Ready / Unready and the D20 dice proposal.
  */
 
+import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
 import {
@@ -100,10 +101,14 @@ export default function SplitRoomScreen() {
   return (
     <SafeAreaView style={s.safe} edges={['top']}>
       <View style={s.header}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <Text style={s.back}>← Back</Text>
+        <TouchableOpacity onPress={() => router.back()} style={s.backRow}>
+          <Ionicons name="chevron-back" size={18} color={C.textSecondary} />
+          <Text style={s.back}>Back</Text>
         </TouchableOpacity>
-        <Text style={s.title}>🧾 Split Room</Text>
+        <View style={s.titleRow}>
+          <Ionicons name="receipt-outline" size={16} color={C.textPrimary} />
+          <Text style={s.title}>Split Room</Text>
+        </View>
         <View style={{ width: 50 }} />
       </View>
 
@@ -149,9 +154,14 @@ export default function SplitRoomScreen() {
               setReady({ id: checkId, ready: me.status !== 'ready' })
             }
           >
-            <Text style={s.readyBtnText}>
-              {me.status === 'ready' ? '✓ Ready' : 'Mark ready'}
-            </Text>
+            <View style={s.readyBtnInner}>
+              {me.status === 'ready' && (
+                <Ionicons name="checkmark" size={16} color="#FFFFFF" />
+              )}
+              <Text style={s.readyBtnText}>
+                {me.status === 'ready' ? 'Ready' : 'Mark ready'}
+              </Text>
+            </View>
           </TouchableOpacity>
 
           {allReady && (
@@ -160,7 +170,10 @@ export default function SplitRoomScreen() {
               onPress={() => proposeDice(checkId)}
               disabled={proposing}
             >
-              <Text style={s.diceBtnText}>🎲 Roll D20</Text>
+              <View style={s.diceBtnInner}>
+                <Ionicons name="dice" size={16} color="#FFFFFF" />
+                <Text style={s.diceBtnText}>Roll D20</Text>
+              </View>
             </TouchableOpacity>
           )}
         </View>
@@ -247,8 +260,10 @@ const s = StyleSheet.create({
     paddingHorizontal: 16, paddingVertical: 12,
     borderBottomWidth: 1, borderBottomColor: C.borderDefault,
   },
-  back: { fontFamily: F.bodySemiBold, fontSize: 14, color: C.textSecondary, width: 60 },
-  title: { fontFamily: F.headingBold, fontSize: 17, color: C.textPrimary, flex: 1, textAlign: 'center' },
+  backRow: { flexDirection: 'row', alignItems: 'center', gap: 2, width: 60 },
+  back: { fontFamily: F.bodySemiBold, fontSize: 14, color: C.textSecondary },
+  titleRow: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7 },
+  title: { fontFamily: F.headingBold, fontSize: 17, color: C.textPrimary },
 
   content: { padding: 20, gap: 12 },
 
@@ -296,8 +311,10 @@ const s = StyleSheet.create({
     backgroundColor: C.brandPrimary,
   },
   readyBtnDone: { backgroundColor: C.success },
+  readyBtnInner: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6 },
   readyBtnText: { fontFamily: F.bodyBold, fontSize: 15, color: '#FFFFFF' },
 
   diceBtn: { paddingHorizontal: 22, paddingVertical: 14, borderRadius: 14, backgroundColor: C.accentGold },
+  diceBtnInner: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   diceBtnText: { fontFamily: F.bodyBold, fontSize: 15, color: '#FFFFFF' },
 });

@@ -26,6 +26,7 @@ export interface AuthUser {
   bio: string | null;
   main_city_id: number;
   race_id: number | null;
+  gender: 'm' | 'f' | null;
   role: string;
   is_active: boolean;
   social_rating: number;

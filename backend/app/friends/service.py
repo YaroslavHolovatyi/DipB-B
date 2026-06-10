@@ -29,6 +29,7 @@ from app.friends.schemas import (
     FriendRead,
     FriendRequestRead,
     FriendUser,
+    UserSearchResult,
 )
 from app.shared.exceptions import (
     BadRequestError,
@@ -70,6 +71,79 @@ async def list_friends(db: AsyncSession, user_id: int) -> list[FriendRead]:
         )
         for link, u in rows
     ]
+
+
+async def search_users(
+    db: AsyncSession, user_id: int, q: str, limit: int = 20
+) -> list[UserSearchResult]:
+    """
+    Search all users by username / first / last name (case-insensitive,
+    substring). Each hit is annotated with the relationship to the caller so
+    the client can render the right action (chat / accept / cancel / add).
+    """
+    pattern = f"%{q.strip()}%"
+    users = (
+        await db.execute(
+            select(User)
+            .where(
+                User.id != user_id,
+                or_(
+                    User.username.ilike(pattern),
+                    User.first_name.ilike(pattern),
+                    User.last_name.ilike(pattern),
+                ),
+            )
+            .order_by(User.username)
+            .limit(limit)
+        )
+    ).scalars().all()
+    if not users:
+        return []
+
+    found_ids = [u.id for u in users]
+
+    friend_ids = set(
+        (
+            await db.execute(
+                select(UserFriend.friend_id).where(
+                    UserFriend.user_id == user_id,
+                    UserFriend.friend_id.in_(found_ids),
+                    UserFriend.status == "accepted",
+                )
+            )
+        ).scalars().all()
+    )
+
+    pending = (
+        await db.execute(
+            select(FriendRequest).where(
+                FriendRequest.status == "pending",
+                or_(
+                    (FriendRequest.sender_id == user_id)
+                    & FriendRequest.recipient_id.in_(found_ids),
+                    (FriendRequest.recipient_id == user_id)
+                    & FriendRequest.sender_id.in_(found_ids),
+                ),
+            )
+        )
+    ).scalars().all()
+    outgoing = {r.recipient_id: r.id for r in pending if r.sender_id == user_id}
+    incoming = {r.sender_id: r.id for r in pending if r.recipient_id == user_id}
+
+    results: list[UserSearchResult] = []
+    for u in users:
+        if u.id in friend_ids:
+            rel, req_id = "friend", None
+        elif u.id in incoming:
+            rel, req_id = "incoming", incoming[u.id]
+        elif u.id in outgoing:
+            rel, req_id = "outgoing", outgoing[u.id]
+        else:
+            rel, req_id = "none", None
+        results.append(
+            UserSearchResult(user=_friend_user(u), relationship=rel, request_id=req_id)
+        )
+    return results
 
 
 async def _ensure_not_already_friends(

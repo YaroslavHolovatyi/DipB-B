@@ -10,7 +10,7 @@ export type RsvpStatus = 'going' | 'maybe' | 'declined' | 'pending';
 export interface Tavern {
   id: string;
   name: string;
-  vibe: string;        // e.g. "🍺 Craft", "🎸 Live", "🕯 Cozy"
+  vibe: string;        // e.g. "Craft", "Live", "Cozy"
   distanceKm: number;
   rating: number;      // 1–5
   gradientColors: [string, string];  // for the image placeholder gradient
@@ -24,7 +24,7 @@ export interface Raid {
   time: string;        // "19:00"
   date: string;        // "Fri, May 29"
   rsvp: RsvpStatus;
-  icon: string;        // emoji
+  icon: string;        // Ionicon name
 }
 
 export interface ActivityEvent {

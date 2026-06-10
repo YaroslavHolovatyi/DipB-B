@@ -8,7 +8,7 @@ export const MOCK_TAVERNS: Tavern[] = [
   {
     id: '1',
     name: 'Lviv Craft Haven',
-    vibe: '🍺 Craft',
+    vibe: 'Craft',
     distanceKm: 0.4,
     rating: 4.8,
     gradientColors: ['#7C3F00', '#B8761A'],
@@ -16,7 +16,7 @@ export const MOCK_TAVERNS: Tavern[] = [
   {
     id: '2',
     name: "The Dragon's Den",
-    vibe: '🎸 Live',
+    vibe: 'Live',
     distanceKm: 1.1,
     rating: 4.6,
     gradientColors: ['#1A3A5C', '#2D6A8A'],
@@ -24,7 +24,7 @@ export const MOCK_TAVERNS: Tavern[] = [
   {
     id: '3',
     name: 'Old Quarter Pub',
-    vibe: '🕯 Cozy',
+    vibe: 'Cozy',
     distanceKm: 1.8,
     rating: 4.5,
     gradientColors: ['#2D3748', '#4A5568'],
@@ -32,7 +32,7 @@ export const MOCK_TAVERNS: Tavern[] = [
   {
     id: '4',
     name: 'Arcane Alehouse',
-    vibe: '✨ Magic',
+    vibe: 'Magic',
     distanceKm: 2.2,
     rating: 4.7,
     gradientColors: ['#4A1942', '#7B2F6E'],
@@ -40,7 +40,7 @@ export const MOCK_TAVERNS: Tavern[] = [
   {
     id: '5',
     name: 'The Iron Flagon',
-    vibe: '⚒️ Rustic',
+    vibe: 'Rustic',
     distanceKm: 2.9,
     rating: 4.4,
     gradientColors: ['#3B2A1A', '#6B4A2A'],
@@ -56,7 +56,7 @@ export const MOCK_RAIDS: Raid[] = [
     time: '19:00',
     date: 'Fri, May 29',
     rsvp: 'going',
-    icon: '🍻',
+    icon: 'beer',
   },
   {
     id: 'r2',
@@ -66,7 +66,7 @@ export const MOCK_RAIDS: Raid[] = [
     time: '21:30',
     date: 'Sat, May 30',
     rsvp: 'maybe',
-    icon: '⚔️',
+    icon: 'flag',
   },
 ];
 
@@ -76,7 +76,7 @@ export const MOCK_ACTIVITY: ActivityEvent[] = [
     actorName: 'Sophia (Elf)',
     actorInitial: 'S',
     actorRace: 'elf',
-    text: 'Sophia (Elf) checked in at Arcane Alehouse ✨',
+    text: 'Sophia (Elf) checked in at Arcane Alehouse',
     boldParts: ['Sophia (Elf)', 'Arcane Alehouse'],
     timeAgo: '2m',
   },
@@ -85,7 +85,7 @@ export const MOCK_ACTIVITY: ActivityEvent[] = [
     actorName: 'Max (Orc)',
     actorInitial: 'M',
     actorRace: 'orc',
-    text: "Max (Orc) became the 🏆 Kind Soul at The Dragon's Den",
+    text: "Max (Orc) became the Kind Soul at The Dragon's Den",
     boldParts: ['Max (Orc)', "The Dragon's Den"],
     timeAgo: '14m',
   },
@@ -103,8 +103,8 @@ export const MOCK_ACTIVITY: ActivityEvent[] = [
     actorName: 'Kateryna (Dwarf)',
     actorInitial: 'K',
     actorRace: 'dwarf',
-    text: 'Kateryna (Dwarf) unlocked achievement: 🍺 Century Drinker',
-    boldParts: ['Kateryna (Dwarf)', '🍺 Century Drinker'],
+    text: 'Kateryna (Dwarf) unlocked achievement: Century Drinker',
+    boldParts: ['Kateryna (Dwarf)', 'Century Drinker'],
     timeAgo: '3h',
   },
 ];

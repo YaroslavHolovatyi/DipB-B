@@ -29,6 +29,14 @@ class FriendRead(BaseModel):
     accepted_at: datetime | None = None
 
 
+class UserSearchResult(BaseModel):
+    """A user found via search, annotated with their relationship to the caller."""
+
+    user: FriendUser
+    relationship: Literal["friend", "incoming", "outgoing", "none"]
+    request_id: int | None = None  # set when relationship is incoming/outgoing
+
+
 # --------------------------------------------------------------------------- #
 # Friend requests
 # --------------------------------------------------------------------------- #

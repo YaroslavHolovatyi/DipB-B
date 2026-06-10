@@ -1,25 +1,40 @@
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import type { Achievement } from '../../types/profile';
 import { C, F } from '../../theme/styleHelpers';
 
+type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
+
+interface BadgeItem {
+  id: string;
+  name: string;
+  state: 'unlocked' | 'rare' | 'locked';
+  icon?: IoniconName;
+}
+
 interface Props {
-  item: Achievement;
+  item: BadgeItem;
 }
 
 export function AchievementBadge({ item }: Props) {
   const isLocked = item.state === 'locked';
+  const tint =
+    item.state === 'rare'
+      ? C.brandPrimary
+      : item.state === 'locked'
+        ? C.textDisabled
+        : C.accentGoldText;
 
   return (
     <View style={s.wrap}>
       {/* Icon box */}
       <View style={[s.iconBox, s[item.state]]}>
-        <Text style={[s.emoji, isLocked && s.emojiLocked]}>{item.emoji}</Text>
+        <Ionicons name={item.icon ?? 'trophy'} size={24} color={tint} />
 
         {/* Lock overlay badge */}
         {isLocked && (
           <View style={s.lockBadge}>
-            <Text style={s.lockEmoji}>🔒</Text>
+            <Ionicons name="lock-closed" size={8} color={C.bgCard} />
           </View>
         )}
       </View>
@@ -57,7 +72,6 @@ const s = StyleSheet.create({
     borderColor:     C.accentGold,
   },
   rare: {
-    // Indigo gradient approximated with a solid for RN (LinearGradient would need extra import)
     backgroundColor: C.brandPrimarySubtle,
     borderWidth:     2,
     borderColor:     C.brandPrimary,
@@ -65,13 +79,6 @@ const s = StyleSheet.create({
   locked: {
     backgroundColor: C.borderDefault,
     opacity:         0.5,
-  },
-
-  emoji: {
-    fontSize: 24,
-  },
-  emojiLocked: {
-    // Already faded by parent opacity
   },
 
   lockBadge: {
@@ -84,9 +91,6 @@ const s = StyleSheet.create({
     backgroundColor: C.textDisabled,
     alignItems:      'center',
     justifyContent:  'center',
-  },
-  lockEmoji: {
-    fontSize: 8,
   },
 
   name: {

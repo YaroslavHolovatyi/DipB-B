@@ -6,6 +6,7 @@
  * layout's redirect effect then bounces us to (tabs).
  */
 
+import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -113,12 +114,12 @@ export default function SignInScreen() {
               activeOpacity={0.7}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
-              <Text style={s.backArrow}>←</Text>
+              <Ionicons name="chevron-back" size={20} color="#94A3B8" />
               <Text style={s.backLabel}>Back</Text>
             </TouchableOpacity>
 
             <View style={s.header}>
-              <Text style={s.emoji}>⚔️</Text>
+              <Ionicons name="shield-half" size={40} color="#D99A1C" style={s.headerIcon} />
               <Text style={s.title}>Welcome Back</Text>
               <Text style={s.subtitle}>Your tavern awaits, adventurer.</Text>
             </View>
@@ -204,7 +205,7 @@ const s = StyleSheet.create({
   backLabel: { fontFamily: F.bodySemiBold, fontSize: 15, color: DC.textSecondary },
 
   header: { alignItems: 'center', paddingTop: 24, paddingBottom: 32, gap: 6 },
-  emoji: { fontSize: 40, marginBottom: 4 },
+  headerIcon: { marginBottom: 4 },
   title: {
     fontFamily: F.headingBold, fontSize: 30, color: DC.gold, textAlign: 'center',
     letterSpacing: -0.5,

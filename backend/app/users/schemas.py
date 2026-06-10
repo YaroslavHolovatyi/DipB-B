@@ -16,6 +16,7 @@ class UserUpdate(BaseModel):
     avatar_url: str | None = None
     main_city_id: int | None = Field(default=None, ge=1)
     bio: str | None = Field(default=None, max_length=500)
+    gender: Literal["m", "f"] | None = None
 
 
 class MyInterestsUpdate(BaseModel):

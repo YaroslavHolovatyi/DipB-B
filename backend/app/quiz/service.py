@@ -87,6 +87,8 @@ async def submit_quiz(
 
     # 4) Persist
     user.race_id = winning_race_id
+    if payload.gender is not None:
+        user.gender = payload.gender
     db.add(
         UserQuizResult(
             user_id=user.id,
@@ -106,6 +108,7 @@ async def submit_quiz(
         race_id=race.id,
         race_slug=race.slug,
         race_name=race.name,
+        gender=user.gender,
         score_breakdown=breakdown,
         completed_at=datetime.now(tz=UTC),
     )
@@ -125,10 +128,12 @@ async def latest_result(db: AsyncSession, user_id: int) -> QuizResult | None:
     race = await db.get(Race, row.race_id)
     if race is None:
         return None
+    user = await db.get(User, user_id)
     return QuizResult(
         race_id=race.id,
         race_slug=race.slug,
         race_name=race.name,
+        gender=user.gender if user is not None else None,
         score_breakdown={int(k): int(v) for k, v in (row.score_breakdown or {}).items()},
         completed_at=row.completed_at,
     )

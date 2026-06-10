@@ -1,12 +1,9 @@
+import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { colors } from '../../theme/colors';
 
 /**
- * Tab icons — using Unicode symbols as lightweight placeholders.
- * Replace with a proper icon library (e.g. @expo/vector-icons or
- * lucide-react-native) once the UI stabilises.
- *
  * Five-tab footer:
  *   Search   — taverns catalogue + map (folds in the old Map tab)
  *   Social   — raids + parties discovery
@@ -17,28 +14,30 @@ import { colors } from '../../theme/colors';
  * Profile is no longer a tab — it is reached from the header avatar on the
  * Search and Social screens.
  */
-const ICONS: Record<string, string> = {
-  index:    '🔍',
-  social:   '🎉',
-  create:   '➕',
-  messages: '💬',
-  tavern:   '🐉',
+type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
+
+const ICONS: Record<string, IoniconName> = {
+  index:    'search',
+  social:   'sparkles',
+  create:   'add-circle',
+  messages: 'chatbubbles',
+  tavern:   'dice',
 };
 
 function TabIcon({ name, focused }: { name: string; focused: boolean }) {
   return (
     <View style={tabStyles.iconWrap}>
-      <Text style={[tabStyles.emoji, focused && tabStyles.emojiActive]}>
-        {ICONS[name] ?? '●'}
-      </Text>
+      <Ionicons
+        name={ICONS[name] ?? 'ellipse'}
+        size={22}
+        color={focused ? colors.brandPrimary : colors.textSecondaryDark}
+      />
     </View>
   );
 }
 
 const tabStyles = StyleSheet.create({
-  iconWrap:   { alignItems: 'center', justifyContent: 'center' },
-  emoji:      { fontSize: 22, opacity: 0.45 },
-  emojiActive:{ opacity: 1 },
+  iconWrap: { alignItems: 'center', justifyContent: 'center' },
 });
 
 export default function TabsLayout() {

@@ -13,10 +13,7 @@
  */
 
 import { useEffect } from 'react';
-import {
-  Fraunces_600SemiBold,
-  Fraunces_700Bold,
-} from '@expo-google-fonts/fraunces';
+import { MedievalSharp_400Regular } from '@expo-google-fonts/medievalsharp';
 import {
   JetBrainsMono_500Medium,
   JetBrainsMono_700Bold,
@@ -114,8 +111,7 @@ function SessionBootstrap() {
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
-    Fraunces_600SemiBold,
-    Fraunces_700Bold,
+    MedievalSharp_400Regular,
     PlusJakartaSans_400Regular,
     PlusJakartaSans_600SemiBold,
     PlusJakartaSans_700Bold,

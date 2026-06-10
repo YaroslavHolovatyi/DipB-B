@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, status
+from fastapi import APIRouter, Query, status
 
 from app.core.deps import CurrentUser, DbSession
 from app.friends import service
@@ -13,6 +13,7 @@ from app.friends.schemas import (
     FriendRead,
     FriendRequestCreate,
     FriendRequestRead,
+    UserSearchResult,
 )
 
 router = APIRouter(prefix="/friends", tags=["friends"])
@@ -23,6 +24,17 @@ router = APIRouter(prefix="/friends", tags=["friends"])
 @router.get("", response_model=list[FriendRead])
 async def list_friends(db: DbSession, user: CurrentUser) -> list[FriendRead]:
     return await service.list_friends(db, user.id)
+
+
+@router.get("/search", response_model=list[UserSearchResult])
+async def search_users(
+    db: DbSession,
+    user: CurrentUser,
+    q: str = Query(min_length=2, max_length=64),
+    limit: int = Query(default=20, ge=1, le=50),
+) -> list[UserSearchResult]:
+    """Search all users by username or name, annotated with friendship status."""
+    return await service.search_users(db, user.id, q, limit)
 
 
 @router.get("/requests/incoming", response_model=list[FriendRequestRead])

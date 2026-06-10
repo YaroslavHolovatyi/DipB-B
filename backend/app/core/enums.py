@@ -38,6 +38,8 @@ def _pg_enum(name: str, *labels: str) -> ENUM:
 # --- Users / auth ---------------------------------------------------------- #
 user_role = _pg_enum("user_role", "user", "admin", "moderator")
 push_platform = _pg_enum("push_platform", "ios", "android", "web")
+# Added by migration 0007_user_gender. Drives the m/f race avatar on profiles.
+gender = _pg_enum("gender", "m", "f")
 
 # --- Bars / drinks --------------------------------------------------------- #
 price_category = _pg_enum("price_category", "budget", "mid", "premium", "luxury")
